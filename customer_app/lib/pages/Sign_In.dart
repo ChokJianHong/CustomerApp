@@ -1,6 +1,6 @@
 import 'package:customer_app/pages/HomePage.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-
 import '../assets/components/text_box.dart'; // Import the custom text box widget
 import '../assets/components/button.dart'; // Import custom button
 
@@ -61,7 +61,59 @@ class SignInPage extends StatelessWidget {
               context,
               MaterialPageRoute(builder: (context) => const HomePage()),
             );
-              })
+              }),
+              const SizedBox(height: 20,),
+              //text or continue with
+              Row(
+                children: [
+                  const Expanded(child: Divider(thickness: 1, color: Colors.white, endIndent: 10,),
+                  ),
+                  Text("or continue with  ", style: TextStyle(color: Colors.grey[400],fontSize: 14),),
+                  const Expanded(child: Divider(thickness: 1, color: Colors.white, endIndent: 10,),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20,),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.account_circle),
+                    color: Colors.white,
+                    iconSize: 50,
+                    onPressed: () {
+                      // Handle Google login
+                    },
+                  ),
+                  SizedBox(width: 30),
+                  IconButton(
+                    icon: Icon(Icons.settings), // Substitute with your second icon
+                    color: Colors.white,
+                    iconSize: 50,
+                    onPressed: () {
+                      // Handle second login
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20,),
+              // "Not a member? Register Now" section
+              RichText(text: TextSpan(text: 'Not a member? ',style: TextStyle(color: Colors.grey[400], fontSize: 14),
+              children: <TextSpan>[
+                TextSpan(
+                  text: 'Register Now',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  recognizer: TapGestureRecognizer()
+                  ..onTap = (){
+
+                  },
+                ),
+              ],
+              ),
+              ),
             ],
           ),
         ),

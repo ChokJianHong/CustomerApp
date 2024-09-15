@@ -63,9 +63,4 @@ flutter:
   assets:
     - lib/Pages/signinlock.png
 
-  fonts:
-    - family: SF Pro
-      fonts:
-        - asset: lib/font/SFPRODISPLAYREGULAR.OTF
-        - asset: lib/font/SFPRODISPLAYMEDIUM.OTF
-          weight: 700
+  
