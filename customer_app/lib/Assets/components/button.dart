@@ -1,3 +1,4 @@
+import 'package:customer_app/core/configs/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 /* 
@@ -28,23 +29,22 @@ class MyButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        // Padding inside
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-            // Color of the button
-            color: Theme.of(context).colorScheme.tertiary,
-            // Curved corners
-            borderRadius: BorderRadius.circular(8)),
-        child: Center(
-          child: Text(
-            text,
-            style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Color(0xFFFCFEFE),
-                fontSize: 16),
+    return SizedBox(
+      width: double.infinity,
+      height: 50,
+      child: ElevatedButton(
+        onPressed: onTap,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.blue,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+        child: Text(
+          text,
+          style: const TextStyle(
+            fontSize: 18,
+            color: Colors.white,
           ),
         ),
       ),

@@ -107,9 +107,9 @@ class SignInPage extends StatelessWidget {
                         // Handle Google login
                       },
                     ),
-                    SizedBox(width: 30),
+                    const SizedBox(width: 30),
                     IconButton(
-                      icon: Icon(
+                      icon: const Icon(
                           Icons.settings), // Substitute with your second icon
                       color: Colors.white,
                       iconSize: 50,

@@ -1,5 +1,7 @@
+import 'package:customer_app/Assets/components/button.dart';
 import 'package:customer_app/pages/Item_Register.dart';
 import 'package:flutter/material.dart';
+import 'package:customer_app/core/configs/theme/app_colors.dart';
 
 class Register extends StatelessWidget {
   const Register({super.key});
@@ -7,10 +9,10 @@ class Register extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF391370),
+      backgroundColor: AppColors.primary,
       appBar: AppBar(
         backgroundColor:
-            const Color(0xFF391370), // Match app bar color with background
+            AppColors.primary, // Match app bar color with background
         elevation: 0, // Remove shadow
         leading: IconButton(
           icon: const Icon(
@@ -33,7 +35,7 @@ class Register extends StatelessWidget {
               const Text(
                 "Let's Create Your Account",
                 style: TextStyle(
-                  color: Color(0xFFF7F7F8),
+                  color: AppColors.lightpurple,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
@@ -111,30 +113,15 @@ class Register extends StatelessWidget {
               const SizedBox(
                 height: 20,
               ),
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const ItemRegister()),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00A8E8),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: const Text(
-                    'Continue',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
+              MyButton(
+                text: 'Continue',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ItemRegister()),
+                  );
+                },
               ),
               const SizedBox(
                 height: 20,
