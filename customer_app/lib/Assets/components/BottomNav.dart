@@ -1,6 +1,8 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:customer_app/core/configs/theme/app_colors.dart';
 import 'package:customer_app/pages/HomePage.dart';
+import 'package:customer_app/pages/OrderPage.dart';
+import 'package:customer_app/pages/Requisition.dart';
 import 'package:flutter/material.dart';
 
 class BottomNav extends StatelessWidget {
@@ -54,6 +56,10 @@ class BottomNav extends StatelessWidget {
 void _navigateToPage(BuildContext context, int index) {
   switch (index) {
     case 0:
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const Requisition()),
+      );
       break;
     case 1:
       Navigator.pushReplacement(
@@ -62,6 +68,10 @@ void _navigateToPage(BuildContext context, int index) {
       );
       break;
     case 2:
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const OrderPage()),
+      );
       break;
     default:
       // Handle default case
