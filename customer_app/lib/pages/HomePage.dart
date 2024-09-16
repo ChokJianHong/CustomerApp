@@ -23,6 +23,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: AppColors.primary,
       appBar: const CustomAppBar(),
+      
       bottomNavigationBar: BottomNav(onTap: _onTapTapped, currentIndex: _currentIndex),
     );
   }

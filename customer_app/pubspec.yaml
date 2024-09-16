@@ -61,6 +61,8 @@ flutter:
   uses-material-design: true
 
   assets:
-    - lib/Pages/signinlock.png
+    - lib/pages/signinlock.png
+    - lib/pages/Alarm.png
+    - lib/pages/Autogate.png
 
   
