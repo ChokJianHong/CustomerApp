@@ -1,4 +1,5 @@
 import 'package:customer_app/core/configs/theme/app_colors.dart';
+import 'package:customer_app/pages/Settings.dart';
 import 'package:flutter/material.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -9,7 +10,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
 
 
-      leading: const Icon(Icons.settings, color: Colors.white,),
+      leading: GestureDetector(child: const Icon(Icons.settings, color: Colors.white,),onTap: () {
+        Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const Setting()),
+                  );
+      },),
       actions: const [
         Padding(
           padding: EdgeInsets.only(right: 16.0),

@@ -65,6 +65,7 @@ flutter:
     - lib/pages/Alarm.png
     - lib/pages/Autogate.png
     - lib/pages/Time.png
-    - lib/pages/banner.png
+    - lib/pages/Profile.png
+    - lib/pages/smallProfile.png
 
   
