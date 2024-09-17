@@ -20,11 +20,13 @@ To use this widget, you need:
 class MyButton extends StatelessWidget {
   final String text;
   final void Function()? onTap;
+  final Color? backgroundColor;
 
   const MyButton({
     super.key,
     required this.text,
     required this.onTap,
+    this.backgroundColor,
   });
 
   @override
@@ -35,7 +37,7 @@ class MyButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onTap,
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.blue,
+          backgroundColor: backgroundColor ?? AppColors.blue,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),

@@ -3,6 +3,7 @@ import 'package:customer_app/Assets/components/Divider.dart';
 import 'package:customer_app/Assets/components/button.dart';
 import 'package:customer_app/core/configs/theme/app_colors.dart';
 import 'package:customer_app/pages/ConfirmationRequest.dart';
+import 'package:customer_app/pages/HomePage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -31,7 +32,10 @@ class _RequisitionFormState extends State<RequisitionForm> {
             color: Colors.white,
           ), // Back arrow icon
           onPressed: () {
-            Navigator.pop(context); // Pop the current page and go back
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const HomePage()),
+            );
           },
         ),
       ),
@@ -166,9 +170,21 @@ class _RequisitionFormState extends State<RequisitionForm> {
                 width: double.infinity,
                 height: 100,
                 decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(color: Colors.black),
-                    borderRadius: BorderRadius.circular(10)),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Padding(
+                  padding:
+                      EdgeInsets.all(8.0), // Add padding inside the container
+                  child: TextField(
+                    maxLines: null, // Allow multiple lines
+                    decoration: InputDecoration(
+                      border:
+                          InputBorder.none, // Remove border of the TextField
+                    ),
+                    style: TextStyle(fontSize: 18),
+                  ),
+                ),
               ),
               const SizedBox(
                 height: 20,

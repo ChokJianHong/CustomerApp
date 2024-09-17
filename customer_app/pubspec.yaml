@@ -64,5 +64,7 @@ flutter:
     - lib/pages/signinlock.png
     - lib/pages/Alarm.png
     - lib/pages/Autogate.png
+    - lib/pages/Time.png
+    - lib/pages/banner.png
 
   
