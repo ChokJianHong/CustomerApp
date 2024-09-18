@@ -1,6 +1,7 @@
 import 'package:customer_app/Assets/components/SettingItem.dart';
 import 'package:customer_app/Assets/components/button.dart';
 import 'package:customer_app/core/configs/theme/app_colors.dart';
+import 'package:customer_app/pages/Profile.dart';
 import 'package:flutter/material.dart';
 
 class Setting extends StatelessWidget {
@@ -59,13 +60,19 @@ class Setting extends StatelessWidget {
               color: AppColors.secondary,
               child: ListView(
                 padding: const EdgeInsets.all(0),
-                children: const [
-                  SettingItem(title: 'Account'),
-                  SettingItem(title: 'My Addresses'),
-                  SettingItem(title: 'Notification Settings'),
-                  SettingItem(title: 'App Language'),
-                  SettingItem(title: 'Help Center'),
-                  SettingItem(title: 'About'),
+                children: [
+                  SettingItem(title: 'Account', onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const Profile()),
+                      );
+                  },),
+                  const SettingItem(title: 'My Addresses'),
+                  const SettingItem(title: 'Notification Settings'),
+                  const SettingItem(title: 'App Language'),
+                  const SettingItem(title: 'Help Center'),
+                  const SettingItem(title: 'About'),
                 ],
               ),
             ),

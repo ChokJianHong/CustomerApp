@@ -208,7 +208,9 @@ class _HomePageState extends State<HomePage> {
                                   color: Colors.grey,
                                 ),
                               ),
-                              SizedBox(height: 20,),
+                              SizedBox(
+                                height: 20,
+                              ),
                             ],
                           ),
                         ),
@@ -218,8 +220,11 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            const SizedBox(height: 20,),
-            const Center(child: Image(image: AssetImage('lib/pages/banner.png'))),
+            const SizedBox(
+              height: 20,
+            ),
+            const Center(
+                child: Image(image: AssetImage('lib/pages/banner.png'))),
           ],
         ),
       ),

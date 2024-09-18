@@ -1,7 +1,9 @@
 import 'package:customer_app/Assets/components/AppBar.dart';
 import 'package:customer_app/Assets/components/BottomNav.dart';
 import 'package:customer_app/core/configs/theme/app_colors.dart';
+import 'package:customer_app/pages/RequestDetails.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class OrderPage extends StatefulWidget {
   const OrderPage({super.key});
@@ -69,6 +71,55 @@ class _OrderPageState extends State<OrderPage> {
               child: ListView(
                 children: [
                   // Order item 1
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const RequestDetails()),
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      margin: const EdgeInsets.only(bottom: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Auto Gate',
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                'Dylan',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                '2024-6-5 3:00P.M.',
+                                style: TextStyle(
+                                    fontSize: 14, color: Colors.grey),
+                              ),
+                            ],
+                          ),
+                          Text(
+                            'Status: Completed',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  
+                  // Order item 2
                   Container(
                     padding: const EdgeInsets.all(16),
                     margin: const EdgeInsets.only(bottom: 10),
@@ -82,46 +133,6 @@ class _OrderPageState extends State<OrderPage> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'Auto Gate',
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              'Dylan',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              '2024-6-5 3:00P.M.',
-                              style: TextStyle(
-                                  fontSize: 14, color: Colors.grey),
-                            ),
-                          ],
-                        ),
-                        Text(
-                          'Status: Completed',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ),
-                  
-                  // Order item 2
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    margin: const EdgeInsets.only(bottom: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
                             Text(
                               'Alarm',
                               style: TextStyle(
@@ -139,7 +150,7 @@ class _OrderPageState extends State<OrderPage> {
                             ),
                           ],
                         ),
-                        const Text(
+                        Text(
                           'Status: Completed',
                           style: TextStyle(
                               fontSize: 16, fontWeight: FontWeight.bold),

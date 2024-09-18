@@ -67,5 +67,7 @@ flutter:
     - lib/pages/Time.png
     - lib/pages/Profile.png
     - lib/pages/smallProfile.png
+    - lib/pages/arrowRight.png
+    - lib/pages/banner.png
 
   
