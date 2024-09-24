@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart'; // Import the email validator package
 
 class SignInPage extends StatefulWidget {
+  const SignInPage({super.key});
+
   @override
   _SignInPageState createState() => _SignInPageState();
 }
@@ -54,7 +56,7 @@ class _SignInPageState extends State<SignInPage> {
 
     try {
       final api = SignInAPI();
-      final userData = await api.signInUser(
+      final userData = await api.SignInUser(
         emailController.text,
         passwordController.text,
       );

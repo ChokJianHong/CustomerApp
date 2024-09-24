@@ -1,12 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 const baseUrl = "http://10.0.2.2:5005";
 
 class SignInAPI{
   
-    Future<Map<String, dynamic>> SignInUSer(String email, String password) async {
+    Future<Map<String, dynamic>> SignInUser(String email, String password) async {
     try {
       final response = await http
           .post(
