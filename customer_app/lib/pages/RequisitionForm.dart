@@ -60,7 +60,7 @@ class _RequisitionFormState extends State<RequisitionForm> {
                   // Alarm System Button
                   categoryButton(
                     label: 'Alarm System',
-                    imagePath: 'lib/pages/Alarm.png',
+                    imagePath: 'lib/Assets/photos/Alarm.png',
                     isSelected: isAlarmSelected,
                     onTap: () {
                       setState(() {
@@ -73,7 +73,7 @@ class _RequisitionFormState extends State<RequisitionForm> {
                   // Autogate System Button
                   categoryButton(
                     label: 'AutoGate System',
-                    imagePath: 'lib/pages/Autogate.png',
+                    imagePath: 'lib/Assets/photos/Autogate.png',
                     isSelected: isAutogateSelected,
                     onTap: () {
                       setState(() {

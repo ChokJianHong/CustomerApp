@@ -223,7 +223,7 @@ class _HomePageState extends State<HomePage> {
               height: 20,
             ),
             const Center(
-                child: Image(image: AssetImage('lib/pages/banner.png'))),
+                child: Image(image: AssetImage('lib/Assets/photos/banner.png'))),
           ],
         ),
       ),

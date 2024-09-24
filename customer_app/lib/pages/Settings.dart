@@ -26,7 +26,7 @@ class Setting extends StatelessWidget {
                 CircleAvatar(
                   radius: 40,
                   backgroundImage: AssetImage(
-                      'lib/pages/smallProfile.png'), // Replace with your image
+                      'lib/Assets/photos/smallProfile.png'), // Replace with your image
                 ),
                 SizedBox(width: 16),
                 Column(

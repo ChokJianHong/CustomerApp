@@ -18,7 +18,7 @@ class ConfirmationRequest extends StatelessWidget {
             const SizedBox(
               height: 50,
             ),
-            const Center(child: Image(image: AssetImage('lib/pages/Time.png'))),
+            const Center(child: Image(image: AssetImage('lib/Assets/photos/Time.png'))),
             const SizedBox(
               height: 20,
             ),

@@ -14,7 +14,7 @@ class Profile extends StatelessWidget {
         child: Column(
           children: [
             const SizedBox(height: 20,),
-            Center(child: Image.asset("lib/pages/Profile.png")),
+            Center(child: Image.asset("lib/Assets/photos/Profile.png")),
             const SizedBox(height: 10,),
             const Text('Lisa',style: TextStyle(color: Colors.white, fontSize: 20),),
             const SizedBox(height: 20,),
