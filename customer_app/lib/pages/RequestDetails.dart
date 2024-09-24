@@ -26,11 +26,11 @@ class _RequestDetailsState extends State<RequestDetails> {
       backgroundColor: AppColors.primary,
       appBar: const CustomAppBar(),
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Card(
           color: Colors.white,
           child: Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -81,16 +81,16 @@ class _RequestDetailsState extends State<RequestDetails> {
                   ],
                 ),
                 const ADivider(),
-                Text("Technician: Dylan"),
-                SizedBox(
+                const Text("Technician: Dylan"),
+                const SizedBox(
                   height: 10,
                 ),
-                Text("Estimated Time: 1:55 P.M. - 2:15 P.M."),
-                SizedBox(
+                const Text("Estimated Time: 1:55 P.M. - 2:15 P.M."),
+                const SizedBox(
                   height: 10,
                 ),
-                Text("Contact Number: +6012-3456789"),
-                SizedBox(
+                const Text("Contact Number: +6012-3456789"),
+                const SizedBox(
                   height: 10,
                 ),
               ],

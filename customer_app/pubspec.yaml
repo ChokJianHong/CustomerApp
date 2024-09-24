@@ -38,6 +38,7 @@ dependencies:
   curved_navigation_bar: ^1.0.6
   table_calendar: ^3.1.2
   http: ^1.2.2
+  email_validator:
 
 dev_dependencies:
   flutter_test:
@@ -62,13 +63,5 @@ flutter:
   uses-material-design: true
 
   assets:
-    - lib/pages/signinlock.png
-    - lib/pages/Alarm.png
-    - lib/pages/Autogate.png
-    - lib/pages/Time.png
-    - lib/pages/Profile.png
-    - lib/pages/smallProfile.png
-    - lib/pages/arrowRight.png
-    - lib/pages/banner.png
-
+    - lib/Assets/photos/
   

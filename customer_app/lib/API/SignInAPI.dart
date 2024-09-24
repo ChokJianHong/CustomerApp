@@ -1,11 +1,10 @@
-import 'dart:convert';
-import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 const baseUrl = "http://10.0.2.2:5005";
 
-class SignInAPI{
-    Future<Map<String, dynamic>> SignInUSer(String email, String password) async {
+class SignInAPI {
+  Future<Map<String, dynamic>> signInUser(String email, String password) async {
     try {
       final response = await http
           .post(
@@ -13,23 +12,26 @@ class SignInAPI{
             headers: {
               'Content-Type': 'application/json; charset=UTF-8',
             },
-            // Encode the body so that the program recognizes it is a JSON file
             body: jsonEncode({
               'email': email,
               'password': password,
               'userType': 'customer',
             }),
           )
-          .timeout(const Duration(seconds: 20)); // Add a timeout of 10 seconds
+          .timeout(const Duration(seconds: 20));
 
       if (response.statusCode == 200) {
-        // Parse the JSON response body to a Dart object
-        return jsonDecode(response.body);
+        final data = jsonDecode(response.body);
+        if (data.containsKey('userId')) {
+          return data;
+        } else {
+          throw Exception('User ID not found in response');
+        }
       } else {
-        throw Exception('Failed to register user: ${response.statusCode}');
+        throw Exception('Failed to sign in: ${response.statusCode}');
       }
     } catch (error) {
-      throw Exception('Error registering user: $error');
+      throw Exception('Error signing in: $error');
     }
   }
 }

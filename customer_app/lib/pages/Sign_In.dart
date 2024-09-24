@@ -1,15 +1,76 @@
+import 'package:customer_app/API/SignInAPI.dart';
+import 'package:customer_app/Assets/components/button.dart';
+import 'package:customer_app/Assets/components/text_box.dart';
 import 'package:customer_app/pages/HomePage.dart';
 import 'package:customer_app/pages/Reqister.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import '../assets/components/text_box.dart'; // Import the custom text box widget
-import '../assets/components/button.dart'; // Import custom button
+import 'package:email_validator/email_validator.dart'; // Import the email validator package
 
-class SignInPage extends StatelessWidget {
+class SignInPage extends StatefulWidget {
+  @override
+  _SignInPageState createState() => _SignInPageState();
+}
+
+class _SignInPageState extends State<SignInPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  bool isLoading = false;
+  String? errorMessage;
 
-  SignInPage({super.key});
+  bool _validateInputs() {
+    final email = emailController.text;
+    final password = passwordController.text;
+
+    if (email.isEmpty || !EmailValidator.validate(email)) {
+      setState(() {
+        errorMessage = 'Please enter a valid email address.';
+      });
+      return false;
+    }
+
+    if (password.isEmpty) {
+      setState(() {
+        errorMessage = 'Password cannot be empty.';
+      });
+      return false;
+    }
+
+    return true;
+  }
+
+  void _signIn() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = null; // Reset error message
+    });
+
+    if (!_validateInputs()) {
+      setState(() {
+        isLoading = false; // Stop loading if validation fails
+      });
+      return; // Exit if validation fails
+    }
+
+    try {
+      final api = SignInAPI();
+      final userData = await api.signInUser(
+        emailController.text,
+        passwordController.text,
+      );
+
+      // Navigate to home page or handle success
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    } catch (e) {
+      setState(() {
+        errorMessage = e.toString(); // Set error message
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,82 +86,59 @@ class SignInPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 // Logo
-                Image.asset('lib/pages/signinlock.png'),
+                Image.asset('customer_app/lib/Assets/photos/signinlock.png'),
                 const SizedBox(height: 20),
-                // Text for user
-                Text(
-                  'Welcome Back! You’ve been missed',
-                  style: theme.textTheme.bodySmall,
-                ),
-                const SizedBox(height: 20),
-                // Email
-                MyTextField(
-                    controller: emailController,
-                    hintText: 'Email Address',
-                    obscureText: false),
-                const SizedBox(height: 20),
-                // Password
-                MyTextField(
-                    controller: passwordController,
-                    hintText: 'Password',
-                    obscureText: true),
-                const SizedBox(height: 10),
-                // Forget Password
-                const Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    "Forgot Password",
+                const Text('Welcome Back!',
                     style: TextStyle(
-                        color: Color(0xFF828282),
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'SF Pro'),
-                  ),
+                      fontWeight: FontWeight.w500,
+                    )),
+                const SizedBox(height: 20),
+                MyTextField(
+                  controller: emailController,
+                  hintText: 'Email Address',
+                  obscureText: false,
                 ),
                 const SizedBox(height: 20),
-                //Sign in button
-                MyButton(
-                    text: "Sign In",
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const HomePage()),
-                      );
-                    }),
-                const SizedBox(
-                  height: 20,
+                MyTextField(
+                  controller: passwordController,
+                  hintText: 'Password',
+                  obscureText: true,
                 ),
-                //text or continue with
+                const SizedBox(height: 10),
+                if (errorMessage != null)
+                  Text(
+                    errorMessage!,
+                    style: TextStyle(color: Colors.red),
+                  ),
+                const SizedBox(height: 20),
+                isLoading
+                    ? CircularProgressIndicator()
+                    : MyButton(
+                        text: "Sign In",
+                        onTap: _signIn,
+                      ),
+                const SizedBox(height: 20),
                 Row(
                   children: [
                     const Expanded(
                       child: Divider(
-                        thickness: 1,
-                        color: Colors.white,
-                        endIndent: 10,
-                      ),
+                          thickness: 1, color: Colors.white, endIndent: 10),
                     ),
-                    Text(
-                      "or continue with  ",
-                      style: TextStyle(color: Colors.grey[400], fontSize: 14),
-                    ),
+                    Text("or continue with",
+                        style:
+                            TextStyle(color: Colors.grey[400], fontSize: 14)),
                     const Expanded(
                       child: Divider(
-                        thickness: 1,
-                        color: Colors.white,
-                        endIndent: 10,
-                      ),
+                          thickness: 1, color: Colors.white, endIndent: 10),
                     ),
                   ],
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     IconButton(
-                      icon: Icon(Icons.account_circle),
+                      icon: const Icon(Icons.account_circle),
                       color: Colors.white,
                       iconSize: 50,
                       onPressed: () {
@@ -119,10 +157,7 @@ class SignInPage extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
-                // "Not a member? Register Now" section
+                const SizedBox(height: 20),
                 RichText(
                   text: TextSpan(
                     text: 'Not a member? ',
@@ -131,16 +166,13 @@ class SignInPage extends StatelessWidget {
                       TextSpan(
                         text: 'Register Now',
                         style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
+                            color: Colors.white, fontWeight: FontWeight.bold),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const Register(),
-                              ),
+                                  builder: (context) => Register()),
                             );
                           },
                       ),

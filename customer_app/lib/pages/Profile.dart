@@ -10,7 +10,7 @@ class Profile extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.primary,
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             const SizedBox(height: 20,),
@@ -18,11 +18,11 @@ class Profile extends StatelessWidget {
             const SizedBox(height: 10,),
             const Text('Lisa',style: TextStyle(color: Colors.white, fontSize: 20),),
             const SizedBox(height: 20,),
-            ProfileAttribute(title: "Username"),
-            ProfileAttribute(title: "Email Address"),
-            ProfileAttribute(title: "Phone Number"),
-            ProfileAttribute(title: "Passwords"),
-            ProfileAttribute(title: "Appliances"),
+            const ProfileAttribute(title: "Username"),
+            const ProfileAttribute(title: "Email Address"),
+            const ProfileAttribute(title: "Phone Number"),
+            const ProfileAttribute(title: "Passwords"),
+            const ProfileAttribute(title: "Appliances"),
           ],
         ),
       ),
