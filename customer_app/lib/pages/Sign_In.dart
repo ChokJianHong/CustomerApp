@@ -60,7 +60,7 @@ class _SignInPageState extends State<SignInPage> {
         emailController.text,
         passwordController.text,
       );
-
+      print('User Data: $userData');
       // Navigate to home page or handle success
       Navigator.pushReplacement(
         context,
