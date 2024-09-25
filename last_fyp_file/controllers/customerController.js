@@ -2,7 +2,7 @@ const db = require("../utils/database");
 const bcrypt = require('bcryptjs');
 
 function customerRegister(req, res) {
-  const { email, password, name, phone_number, location, alarm_brand, auto_gate_brand, warranty } = req.body;
+  const { email, password, name, phone_number, location , alarm_brand, auto_gate_brand,warranty} = req.body;
 
   // Check if email already exists
   const isUserExistQuery = `SELECT * FROM customer WHERE email='${email}'`;
@@ -22,9 +22,8 @@ function customerRegister(req, res) {
       const hashedPassword = await bcrypt.hash(password, 10); // Salt rounds = 10
 
       // Insert the new user into the database with the hashed password using string interpolation
-      const createUserQuery = `INSERT INTO customer (email, password, name, phone_number, location, alarm_brand, auto_gate_brand, warranty) 
-VALUES ('${email}', '${hashedPassword}', '${name}', '${phone_number}', '${location}', '${alarm_brand}', '${auto_gate_brand}', '${warranty}')`;
-
+      const createUserQuery = `INSERT INTO customer (email, password, name, phone_number, location,alarm_brand,auto_gate_brand,warranty) 
+                               VALUES ('${email}', '${hashedPassword}', '${name}', '${phone_number}', '${location}','${alarm_brand}','${auto_gate_brand}','${warranty}')`;
 
       db.query(createUserQuery, (error, rows) => {
         if (error) {
@@ -39,10 +38,7 @@ VALUES ('${email}', '${hashedPassword}', '${name}', '${phone_number}', '${locati
       return res.status(500).json({ status: 500, message: "Internal Server Error" });
     }
   });
-
 }
-
-
 
 function getAllCustomers(req, res) {
   const { type } = req.user;
@@ -83,6 +79,30 @@ function getCustomerById(req, res) {
     return res.status(200).json({ status: 200, data: customer[0] });
   });
 }
+
+function getCustomerByToken(req, res) {
+  const token = req.headers.authorization.split(" ")[1]; // Extract token from authorization header
+
+  if (!token) {
+    return res.status(401).json({ message: "Unauthorized", status: 401 });
+  }
+
+  const getCustomerQuery = `SELECT * FROM customer WHERE token = '${token}'`;
+  db.query(getCustomerQuery, (error, customer) => {
+    if (error) {
+      throw error;
+    }
+
+    if (customer.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "Customer not found", status: 404 });
+    }
+
+    return res.status(200).json({ status: 200, data: customer[0] });
+  });
+}
+
 
 function updateCustomer(req, res) {
   const customerId = req.params.id;
@@ -151,5 +171,5 @@ module.exports = {
   getCustomerById,
   updateCustomer,
   deleteCustomer,
-
+  getCustomerByToken,
 };

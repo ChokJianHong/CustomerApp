@@ -13,6 +13,7 @@ const {
 
 const {
   customerRegister,
+  getCustomerByToken,
   getAllCustomers,
   getCustomerById,
   updateCustomer,
@@ -30,7 +31,7 @@ const {
   completedOrdersCount,
   ongoingOrdersCount,
   viewCompletedOrderHistory,
-
+  viewCusOrdersDetail,
   viewRequestDetail,
   assignTechnician,
   getOrderDetail,
@@ -74,9 +75,9 @@ router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", resetPassword);
 // customer routes
 router.post("/customer/register", customerRegister);
-
-
+router.get("/customer/:token", getCustomerByToken);
 // order routes
+router.get( "/orders/details/:id",decodeToken,viewCusOrdersDetail);
 router.get("/orders", decodeToken, viewAllOrders);
 router.post("/orders", decodeToken, upload.single("image"), createOrder);
 router.get("/orders/history", decodeToken, viewCompletedOrderHistory);
@@ -116,21 +117,21 @@ router.put("/admin/banner/:id", decodeToken, upload.single("image"), updateBanne
 
 
 // request form 
-router.post("/request", createRequestForm);
-router.put("/request/:id", updateRequestFormStatus);
-router.get("/request", getAllRequestForms);
-router.delete("/request/:id", deleteRequestForm);
-router.get("/request/:id", getRequestFormById);
+router.post("/request",  createRequestForm);
+router.put("/request/:id",  updateRequestFormStatus);
+router.get("/request",  getAllRequestForms);
+router.delete("/request/:id",  deleteRequestForm);
+router.get("/request/:id",  getRequestFormById);
 router.get("/request/technician/:name", getRequestFormsByTechnician);
 
 // inventory
 
 // Inventory Routes
-router.post("/inventory", createInventoryItem);
+router.post("/inventory",  createInventoryItem);
 router.get("/inventory", getAllInventoryItems);
-router.get("/inventory/:id", getInventoryItemById);
-router.put("/inventory/:id", updateInventoryItem);
-router.delete("/inventory/:id", deleteInventoryItem);
+router.get("/inventory/:id",  getInventoryItemById);
+router.put("/inventory/:id",  updateInventoryItem);
+router.delete("/inventory/:id",  deleteInventoryItem);
 
 
 

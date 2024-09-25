@@ -40,6 +40,9 @@ dependencies:
   http: ^1.2.2
   email_validator: '^2.1.17'
   flutter_secure_storage:
+  provider: ^6.1.2
+  dart_jsonwebtoken: ^2.14.0
+  jwt_decoder: ^2.0.1
 
 dev_dependencies:
   flutter_test:
@@ -64,9 +67,10 @@ flutter:
   uses-material-design: true
 
   assets:
-    - lib/assets/photos/signinlock.png
+    - lib/Assets/photos/signinlock.png
     - lib/Assets/photos/arrowRight.png
     - lib/Assets/photos/Autogate.png
+    - lib/Assets/photos/Alarm.png
     - lib/Assets/photos/banner.png
     - lib/Assets/photos/Profile.png
     - lib/Assets/photos/smallProfile.png

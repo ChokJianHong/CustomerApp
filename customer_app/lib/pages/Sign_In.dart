@@ -1,11 +1,13 @@
+import 'package:customer_app/API/GetCustomerToken.dart';
+import 'package:customer_app/pages/Reqister.dart';
+import 'package:flutter/material.dart';
 import 'package:customer_app/API/SignInAPI.dart';
 import 'package:customer_app/Assets/components/button.dart';
 import 'package:customer_app/Assets/components/text_box.dart';
 import 'package:customer_app/pages/HomePage.dart';
-import 'package:customer_app/pages/Reqister.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
-import 'package:email_validator/email_validator.dart'; // Import the email validator package
+import 'package:email_validator/email_validator.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -41,25 +43,34 @@ class _SignInPageState extends State<SignInPage> {
     return true;
   }
 
-
   void _signIn() async {
     setState(() {
       isLoading = true;
-      errorMessage = null; // Reset error message
+      errorMessage = null;
     });
 
     if (!_validateInputs()) {
       setState(() {
-        isLoading = false; // Stop loading if validation fails
+        isLoading = false;
       });
-      return; // Exit if validation fails
+      return;
     }
 
     try {
       final api = SignInAPI();
-      final userData =
-          await api.loginUser(emailController.text, passwordController.text);
-      print('User Data: $userData');
+      final userData = await api.loginUser(emailController.text, passwordController.text);
+
+      // Assuming the token is returned in the 'token' field
+      final token = userData['token'];
+      print('Token: $token');
+
+      // Store the token securely
+      final storage = FlutterSecureStorage();
+      await storage.write(key: 'userToken', value: token);
+
+      // Fetch customer details using the token
+      await _getCustomerDetails(token);
+
       // Navigate to home page or handle success
       Navigator.pushReplacement(
         context,
@@ -67,9 +78,21 @@ class _SignInPageState extends State<SignInPage> {
       );
     } catch (e) {
       setState(() {
-        errorMessage = e.toString(); // Set error message
+        errorMessage = e.toString();
         isLoading = false;
       });
+    }
+  }
+
+  Future<void> _getCustomerDetails(String token) async {
+    try {
+      final customerTokenApi = CustomerToken();
+      final customerData = await customerTokenApi.getCustomerByToken(token);
+      print('Customer Data: $customerData');
+      // Handle customer data (e.g., store it, display it, etc.)
+    } catch (e) {
+      print('Error fetching customer details: $e');
+      // Handle errors accordingly
     }
   }
 
@@ -86,13 +109,9 @@ class _SignInPageState extends State<SignInPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                // Logo
-                Image.asset('lib/assets/photos/signinlock.png'),
+                Image.asset('lib/Assets/photos/signinlock.png'),
                 const SizedBox(height: 20),
-                const Text('Welcome Back!',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                    )),
+                const Text('Welcome Back!', style: TextStyle(fontWeight: FontWeight.w500)),
                 const SizedBox(height: 20),
                 MyTextField(
                   controller: emailController,
@@ -107,30 +126,20 @@ class _SignInPageState extends State<SignInPage> {
                 ),
                 const SizedBox(height: 10),
                 if (errorMessage != null)
-                  Text(
-                    errorMessage!,
-                    style: TextStyle(color: Colors.red),
-                  ),
+                  Text(errorMessage!, style: const TextStyle(color: Colors.red)),
                 const SizedBox(height: 20),
                 isLoading
                     ? CircularProgressIndicator()
-                    : MyButton(
-                        text: "Sign In",
-                        onTap: _signIn,
-                      ),
+                    : MyButton(text: "Sign In", onTap: _signIn),
                 const SizedBox(height: 20),
                 Row(
                   children: [
                     const Expanded(
-                      child: Divider(
-                          thickness: 1, color: Colors.white, endIndent: 10),
+                      child: Divider(thickness: 1, color: Colors.white, endIndent: 10),
                     ),
-                    Text("or continue with",
-                        style:
-                            TextStyle(color: Colors.grey[400], fontSize: 14)),
+                    Text("or continue with", style: TextStyle(color: Colors.grey[400], fontSize: 14)),
                     const Expanded(
-                      child: Divider(
-                          thickness: 1, color: Colors.white, endIndent: 10),
+                      child: Divider(thickness: 1, color: Colors.white, endIndent: 10),
                     ),
                   ],
                 ),
@@ -148,8 +157,7 @@ class _SignInPageState extends State<SignInPage> {
                     ),
                     const SizedBox(width: 30),
                     IconButton(
-                      icon: const Icon(
-                          Icons.settings), // Substitute with your second icon
+                      icon: const Icon(Icons.settings), // Substitute with your second icon
                       color: Colors.white,
                       iconSize: 50,
                       onPressed: () {
@@ -166,15 +174,10 @@ class _SignInPageState extends State<SignInPage> {
                     children: <TextSpan>[
                       TextSpan(
                         text: 'Register Now',
-                        style: const TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold),
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Register()),
-                            );
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => Register()));
                           },
                       ),
                     ],

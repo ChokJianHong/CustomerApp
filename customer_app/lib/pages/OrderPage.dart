@@ -1,170 +1,82 @@
-import 'package:customer_app/Assets/components/AppBar.dart';
-import 'package:customer_app/Assets/components/BottomNav.dart';
-import 'package:customer_app/core/configs/theme/app_colors.dart';
+import 'package:customer_app/API/GetCustomerOrder.dart';
+import 'package:customer_app/Assets/Model/OrderModel.dart';
+import 'package:customer_app/Assets/components/OrderItem.dart';
+import 'package:customer_app/Assets/components/TokenProvider.dart';
 import 'package:customer_app/pages/RequestDetails.dart';
 import 'package:flutter/material.dart';
 
-class OrderPage extends StatefulWidget {
-  const OrderPage({super.key});
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:provider/provider.dart'; // If using Provider for token management
 
+class OrdersPage extends StatefulWidget {
   @override
-  State<OrderPage> createState() => _OrderPageState();
+  _OrdersPageState createState() => _OrdersPageState();
 }
 
-class _OrderPageState extends State<OrderPage> {
-  int _currentIndex = 2;
-  String dropdownValue = 'Completed';
+class _OrdersPageState extends State<OrdersPage> {
+  late Future<List<OrderModel>> _ordersFuture;
+  late String customerId;
 
-  void _onTapTapped(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
+  @override
+  void initState() {
+    super.initState();
+    // Assuming you have a provider for token management
+    String token = Provider.of<TokenProvider>(context, listen: false).token; 
+
+    // Decode the token to extract customer ID
+    try {
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+      customerId = decodedToken['customer_id'];
+    } catch (error) {
+      print('Error decoding token: $error');
+      // Set a default value for customerId
+      customerId = 'default'; // You can choose any default value here
+    }
+
+    _ordersFuture = customerId.isNotEmpty
+        ? CustomerOrder().getCustomerOrders(token, customerId)
+        : Future.value([]);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(),
-      backgroundColor: AppColors.primary,
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Dropdown for status selection
-            Align(
-              alignment: Alignment.centerRight,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.deepPurple[300],
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: DropdownButton<String>(
-                  value: dropdownValue,
-                  icon: const Icon(Icons.arrow_downward, color: Colors.white),
-                  iconSize: 16,
-                  dropdownColor: Colors.deepPurple,
-                  elevation: 16,
-                  style: const TextStyle(color: Colors.white),
-                  underline: Container(), // Remove the default underline
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      dropdownValue = newValue!;
-                    });
-                  },
-                  items: <String>['Completed', 'Pending', 'In Progress']
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
+      backgroundColor: Colors.grey[300],
+      body: FutureBuilder<List<OrderModel>>(
+        future: _ordersFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
+          } else if (snapshot.hasData) {
+            final orders = snapshot.data!;
+            return ListView.builder(
+              itemCount: orders.length,
+              itemBuilder: (context, index) {
+                final order = orders[index];
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RequestDetails(
+                          
+                        ),
+                      ),
                     );
-                  }).toList(),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Orders List
-            Expanded(
-              child: ListView(
-                children: [
-                  // Order item 1
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const RequestDetails()),
-                      );
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      margin: const EdgeInsets.only(bottom: 10),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Auto Gate',
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                'Dylan',
-                                style: TextStyle(fontSize: 16),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                '2024-6-5 3:00P.M.',
-                                style: TextStyle(
-                                    fontSize: 14, color: Colors.grey),
-                              ),
-                            ],
-                          ),
-                          Text(
-                            'Status: Completed',
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  
-                  // Order item 2
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    margin: const EdgeInsets.only(bottom: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Alarm',
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              'Dylan',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              '2024-6-5 3:00P.M.',
-                              style: TextStyle(
-                                  fontSize: 14, color: Colors.grey),
-                            ),
-                          ],
-                        ),
-                        Text(
-                          'Status: Completed',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+                  },
+                  child: OrderItem(order: order), // Use the new OrderItem widget
+                );
+              },
+            );
+          } else {
+            return const Center(child: Text('No orders available'));
+          }
+        },
       ),
-      bottomNavigationBar:
-          BottomNav(onTap: _onTapTapped, currentIndex: _currentIndex),
     );
   }
 }
