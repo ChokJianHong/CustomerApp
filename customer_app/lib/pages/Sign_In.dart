@@ -41,6 +41,7 @@ class _SignInPageState extends State<SignInPage> {
     return true;
   }
 
+
   void _signIn() async {
     setState(() {
       isLoading = true;
@@ -56,15 +57,13 @@ class _SignInPageState extends State<SignInPage> {
 
     try {
       final api = SignInAPI();
-      final userData = await api.SignInUser(
-        emailController.text,
-        passwordController.text,
-      );
+      final userData =
+          await api.loginUser(emailController.text, passwordController.text);
       print('User Data: $userData');
       // Navigate to home page or handle success
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => HomePage()),
+        MaterialPageRoute(builder: (context) => const HomePage()),
       );
     } catch (e) {
       setState(() {

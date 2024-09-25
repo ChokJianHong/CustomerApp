@@ -3,6 +3,8 @@ const bcrypt = require('bcryptjs');
 
 function customerRegister(req, res) {
   const { email, password, name, phone_number, location } = req.body;
+  const { alarm_brand, auto_gate_brand, warranty } = req.body;
+
 
   // Check if email already exists
   const isUserExistQuery = `SELECT * FROM customer WHERE email='${email}'`;
@@ -37,8 +39,35 @@ function customerRegister(req, res) {
       console.error("Error hashing the password:", err);
       return res.status(500).json({ status: 500, message: "Internal Server Error" });
     }
+
+    try {
+
+      // Insert the new user into the database with the hashed password using string interpolation
+      const createUserQuery = `INSERT INTO customer (alarm_brand, auto_gate_brand, warranty ) 
+                                 VALUES ('${alarm_brand}', '${auto_gate_brand}', '${warranty}')`;
+
+      db.query(createUserQuery, (error, rows) => {
+        if (error) {
+          return res.status(500).json({ status: 500, message: "Internal Server Error" });
+        }
+
+        return res.status(201).json({ status: 201, message: "User created successfully" });
+      });
+
+    } catch (err) {
+      return res.status(500).json({ status: 500, message: "Internal Server Error" });
+    }
   });
+
+
 }
+
+function customerRegisterItems(req, res) {
+  const { alarm_brand, auto_gate_brand, warranty } = req.body;
+
+
+};
+
 
 function getAllCustomers(req, res) {
   const { type } = req.user;
@@ -147,4 +176,5 @@ module.exports = {
   getCustomerById,
   updateCustomer,
   deleteCustomer,
+  customerRegisterItems
 };

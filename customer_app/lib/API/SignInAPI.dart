@@ -1,11 +1,14 @@
 import 'dart:convert';
+import 'dart:async'; // For handling timeouts
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
-const baseUrl = "http://10.0.2.2:5005";
+const baseUrl = "http://10.0.2.2:5005"; // Adjust if needed
 
-class SignInAPI{
-  
-    Future<Map<String, dynamic>> SignInUser(String email, String password) async {
+class SignInAPI {
+  final storage = const FlutterSecureStorage();
+
+  Future<Map<String, dynamic>> loginUser(String email, String password) async {
     try {
       final response = await http
           .post(
@@ -13,49 +16,23 @@ class SignInAPI{
             headers: {
               'Content-Type': 'application/json; charset=UTF-8',
             },
+            // Encode the body so that the program recognizes it is a JSON file
             body: jsonEncode({
               'email': email,
               'password': password,
               'userType': 'customer',
             }),
           )
-          .timeout(const Duration(seconds: 20));
+          .timeout(const Duration(seconds: 20)); // Add a timeout of 10 seconds
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        if (data.containsKey('userId')) {
-          return data;
-        } else {
-          throw Exception('User ID not found in response');
-        }
-      } else {
-        throw Exception('Failed to sign in: ${response.statusCode}');
-      }
-    } catch (error) {
-      throw Exception('Error signing in: $error');
-    }
-  }
-  Future<Map<String, dynamic>> getCustomerByToken(String token) async {
-    try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/dashboarddatabase/customer/$token'),
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer $token',
-        },
-      ).timeout(const Duration(seconds: 10));
-
-      print('Response body: ${response.body}');
-
-      if (response.statusCode == 200) {
+        // Parse the JSON response body to a Dart object
         return jsonDecode(response.body);
       } else {
-        throw Exception(
-            'Failed to get customer details: ${response.reasonPhrase}');
+        throw Exception('Failed to register user: ${response.statusCode}');
       }
-    } catch (error, stackTrace) {
-      print('Error getting customer details: $error\n$stackTrace');
-      throw Exception('Error getting customer details: $error');
+    } catch (error) {
+      throw Exception('Error registering user: $error');
     }
   }
 }
