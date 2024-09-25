@@ -5,7 +5,19 @@ import 'package:customer_app/core/configs/theme/app_colors.dart';
 import 'package:customer_app/API/registerAPI.dart'; // Ensure you import your API class
 
 class ItemRegister extends StatefulWidget {
-  const ItemRegister({super.key});
+  final String username;
+  final String email;
+  final String phone;
+  final String password;
+
+  const ItemRegister({
+    Key? key,
+    required this.username,
+    required this.email,
+    required this.phone,
+    required this.password,
+    required String location,
+  }) : super(key: key);
 
   @override
   _ItemRegisterState createState() => _ItemRegisterState();
@@ -18,18 +30,16 @@ class _ItemRegisterState extends State<ItemRegister> {
       TextEditingController();
   final TextEditingController _alarmWarrantyController =
       TextEditingController();
-  final TextEditingController _autoGateWarrantyController =
-      TextEditingController();
 
   DateTime? _selectedAlarmWarranty;
   DateTime? _selectedGateWarranty;
+  bool _isSubmitting = false; // Track submission state
 
   @override
   void dispose() {
     _alarmBrandController.dispose();
     _autoGateBrandController.dispose();
     _alarmWarrantyController.dispose();
-    _autoGateWarrantyController.dispose();
     super.dispose();
   }
 
@@ -45,8 +55,7 @@ class _ItemRegisterState extends State<ItemRegister> {
     if (pickedDate != null) {
       String formattedDate =
           "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
-      controller.text =
-          formattedDate; // Update the TextField with the selected date
+      controller.text = formattedDate; // Update the TextField
 
       // Store the selected date
       if (isAlarm) {
@@ -58,25 +67,36 @@ class _ItemRegisterState extends State<ItemRegister> {
   }
 
   void _onSubmit() async {
-    // Validate the form fields before proceeding
     if (_formKey.currentState!.validate()) {
       setState(() {
-        // Show loading indicator (you can implement your loading logic here)
+        _isSubmitting = true; // Disable button
       });
 
-      // Collect the values from your text fields and date pickers
-      String alarmBrand = _alarmBrandController.text;
-      DateTime? alarmWarranty = _selectedAlarmWarranty;
-      String gateBrand = _autoGateBrandController.text;
-      DateTime? gateWarranty = _selectedGateWarranty;
-
       try {
+        // Collect the values from your text fields and date pickers
+        String alarmBrand = _alarmBrandController.text;
+        String gateBrand = _autoGateBrandController.text;
+
+        // Check for selected dates
+        if (_selectedAlarmWarranty == null) {
+          _showErrorDialog('Please select both warranty dates.');
+          return;
+        }
+
+        // Format the warranty dates as strings
+        String alarmWarranty =
+            "${_selectedAlarmWarranty!.year}-${_selectedAlarmWarranty!.month.toString().padLeft(2, '0')}-${_selectedAlarmWarranty!.day.toString().padLeft(2, '0')}";
+
         // Call the register function with the collected values
-        final response = await RegisterAPI().registerCustomerBrands(
+        final response = await RegisterAPI().registerCustomer(
+          widget.email,
+          widget.password,
+          widget.username,
+          widget.phone,
+          'Location',
           alarmBrand,
-          alarmWarranty,
           gateBrand,
-          gateWarranty,
+          alarmWarranty,
         );
 
         // Handle the response
@@ -93,7 +113,9 @@ class _ItemRegisterState extends State<ItemRegister> {
       } catch (e) {
         _showErrorDialog('An error occurred during registration: $e');
       } finally {
-        // Hide loading indicator (you can implement your loading logic here)
+        setState(() {
+          _isSubmitting = false; // Re-enable button
+        });
       }
     }
   }
@@ -103,14 +125,14 @@ class _ItemRegisterState extends State<ItemRegister> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Error'),
+          title: const Text('Error'),
           content: Text(message),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         );
@@ -139,7 +161,6 @@ class _ItemRegisterState extends State<ItemRegister> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Form(
-            // Wrap with Form widget for validation
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -203,7 +224,6 @@ class _ItemRegisterState extends State<ItemRegister> {
                             return null; // Return null if valid
                           },
                         ),
-                        const SizedBox(height: 10),
                       ],
                     ),
                   ),
@@ -237,38 +257,8 @@ class _ItemRegisterState extends State<ItemRegister> {
                               borderSide: BorderSide.none,
                             ),
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter the AutoGate brand';
-                            }
-                            return null; // Return null if valid
-                          },
                         ),
                         const SizedBox(height: 20),
-                        TextFormField(
-                          controller: _autoGateWarrantyController,
-                          readOnly: true,
-                          decoration: InputDecoration(
-                            hintText: 'AutoGate Warranty Date',
-                            filled: true,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide.none,
-                            ),
-                            suffixIcon: IconButton(
-                              icon: const Icon(Icons.calendar_today),
-                              onPressed: () => _selectDate(
-                                  context, _autoGateWarrantyController, false),
-                            ),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please select the AutoGate warranty date';
-                            }
-                            return null; // Return null if valid
-                          },
-                        ),
-                        const SizedBox(height: 10),
                       ],
                     ),
                   ),
@@ -278,8 +268,8 @@ class _ItemRegisterState extends State<ItemRegister> {
                   padding: const EdgeInsets.all(16.0),
                   child: Center(
                     child: MyButton(
-                      text: "Submit",
-                      onTap: _onSubmit,
+                      text: _isSubmitting ? "Submitting..." : "Submit",
+                      onTap: _isSubmitting ? null : _onSubmit,
                     ),
                   ),
                 ),

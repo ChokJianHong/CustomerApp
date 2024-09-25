@@ -66,52 +66,6 @@ class _RegisterState extends State<Register> {
     return null;
   }
 
-  void _onRegister() async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        final response = await RegisterAPI().registerCustomer(
-            _emailController.text,
-            _passwordController.text,
-            _usernameController.text,
-            _phoneController.text,
-            "location" // Add a proper location if needed
-            );
-
-        // Check if the registration was successful
-        if (response['message'] == 'User created successfully') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const ItemRegister()),
-          );
-        } else {
-          _showErrorDialog('Registration failed: ${response['message']}');
-        }
-      } catch (e) {
-        _showErrorDialog('An error occurred during registration: $e');
-      }
-    }
-  }
-
-  void _showErrorDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Error'),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -224,7 +178,30 @@ class _RegisterState extends State<Register> {
                     ? const CircularProgressIndicator() // Show loader when registering
                     : MyButton(
                         text: 'Continue',
-                        onTap: _onRegister,
+                        onTap: () async {
+                          if (_formKey.currentState?.validate() == true) {
+                            setState(() {
+                              _isLoading = true; // Start loading state
+                            });
+
+                            // After successful registration, navigate to the next page
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ItemRegister(
+                                        username: _usernameController.text,
+                                        email: _emailController.text,
+                                        phone: _phoneController.text,
+                                        password: _passwordController.text,
+                                        location: '',
+                                      )),
+                            );
+
+                            setState(() {
+                              _isLoading = false; // Stop loading state
+                            });
+                          }
+                        },
                       ),
                 const SizedBox(height: 20),
                 // Or continue with

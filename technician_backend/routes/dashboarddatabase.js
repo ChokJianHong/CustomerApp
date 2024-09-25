@@ -17,7 +17,6 @@ const {
   getCustomerById,
   updateCustomer,
   deleteCustomer,
-  customerRegisterItems
 } = require("../controllers/customerController");
 
 const router = express.Router();
@@ -75,7 +74,7 @@ router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", resetPassword);
 // customer routes
 router.post("/customer/register", customerRegister);
-router.post("/customer/register-items", customerRegisterItems);
+
 
 // order routes
 router.get("/orders", decodeToken, viewAllOrders);
