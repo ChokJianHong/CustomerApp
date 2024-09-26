@@ -2,16 +2,22 @@ import 'dart:convert';
 import 'package:customer_app/Assets/Model/OrderModel.dart';
 import 'package:http/http.dart' as http;
 
-
 const baseUrl = "http://10.0.2.2:5005";
 
 class CustomerOrder {
   Future<List<OrderModel>> getCustomerOrders(
-      String token, String customerId) async {
+      String token, String customerId, {String? status}) async {
     try {
       print('Fetching orders for customer ID: $customerId with token: $token');
+
+      // Build the URL correctly
+      String url = '$baseUrl/dashboarddatabase/orders?customerId=$customerId';
+      if (status != null && status != 'All') {
+        url += '&status=$status'; // Correctly appending the status parameter
+      }
+
       final response = await http.get(
-        Uri.parse('$baseUrl/dashboarddatabase/orders'),
+        Uri.parse(url),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': token,
