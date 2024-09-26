@@ -1,3 +1,4 @@
+import 'package:customer_app/Assets/Model/OrderModel.dart';
 import 'package:customer_app/Assets/components/AppBar.dart';
 import 'package:customer_app/Assets/components/BottomNav.dart';
 import 'package:customer_app/core/configs/theme/app_colors.dart';
@@ -179,19 +180,68 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 16),
             // Use dynamic height for the ListView
-            SizedBox(
-              height: size.height * 0.25, // Adjust height as needed
-              child: ListView.builder(
-                itemCount: 5, // Replace with your orders count
-                itemBuilder: (context, index) {
-                  return _buildOrderCard(
-                    'Auto Gate',
-                    'Dylan',
-                    '2024-06-12 12:00 P.M.',
-                    size,
+            FutureBuilder<List<OrderModel>>(
+              future: _latestOrderFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
                   );
-                },
-              ),
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else if (snapshot.hasData) {
+                  final List<OrderModel> latestOrders = snapshot.data!;
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: latestOrders.length,
+                    itemBuilder: (context, index) {
+                      final OrderModel order = latestOrders[index];
+                      return ListTile(
+                        title: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 15, vertical: 15),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              color: Colors.red),
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  order.problemType,
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                Text(
+                                  order.orderDate,
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                Text(
+                                  order.orderTime,
+                                  style: TextStyle(color: Colors.white),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => OrderDetailPage(
+                                orderId: order.orderId.toString(),
+                                token: widget.token,
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  );
+                }
+                return SizedBox();
+              },
             ),
           ],
         ),
