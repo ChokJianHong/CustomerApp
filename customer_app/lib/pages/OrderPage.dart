@@ -23,7 +23,7 @@ class _OrdersPageState extends State<OrdersPage> {
 
   // Added variable for dropdown filter
   String? _selectedStatus;
-  final List<String> _statusOptions = ['All', 'Pending', 'Completed', 'Cancelled']; // Add more statuses as needed
+  final List<String> _statusOptions = ['All', 'Pending','OnGoing', 'Completed', 'Cancelled']; // Add more statuses as needed
 
   void _onTapTapped(int index) {
     setState(() {
@@ -68,7 +68,7 @@ class _OrdersPageState extends State<OrdersPage> {
               items: _statusOptions.map((String status) {
                 return DropdownMenuItem<String>(
                   value: status,
-                  child: Text(status),
+                  child: Text(status,style: const TextStyle(color: Colors.white),),
                 );
               }).toList(),
               onChanged: (String? newValue) {
@@ -77,6 +77,7 @@ class _OrdersPageState extends State<OrdersPage> {
                   _ordersFuture = _fetchOrders(); // Re-fetch orders based on selected filter
                 });
               },
+              dropdownColor: AppColors.secondary,
             ),
             const SizedBox(height: 16), // Add some space between dropdown and list
             Expanded(
