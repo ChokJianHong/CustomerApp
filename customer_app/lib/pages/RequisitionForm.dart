@@ -74,6 +74,9 @@ class _RequisitionFormState extends State<RequisitionForm> {
 
   @override
   Widget build(BuildContext context) {
+    final size =
+        MediaQuery.of(context).size; // Get screen size for responsiveness
+
     return Scaffold(
       backgroundColor: AppColors.primary,
       appBar: AppBar(
@@ -92,15 +95,18 @@ class _RequisitionFormState extends State<RequisitionForm> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.symmetric(
+          horizontal: size.width * 0.04, // Responsive horizontal padding
+          vertical: size.height * 0.02, // Responsive vertical padding
+        ),
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // CATEGORIES Section
-              _buildSectionTitle('CATEGORIES', Icons.category),
-              const SizedBox(height: 10),
+              _buildSectionTitle('CATEGORIES', Icons.category, size),
+              SizedBox(height: size.height * 0.015), // Responsive spacing
 
               // Use CategoryButtons widget here
               CategoryButtons(
@@ -109,13 +115,13 @@ class _RequisitionFormState extends State<RequisitionForm> {
                 onSelectCategory: _onSelectCategory,
               ),
 
-              const SizedBox(height: 20), // Increased spacing
+              SizedBox(height: size.height * 0.03), // Responsive spacing
               const ADivider(),
-              const SizedBox(height: 20), // Increased spacing
+              SizedBox(height: size.height * 0.03),
 
               // DATE & TIME Section
-              _buildSectionTitle('DATE & TIME', Icons.calendar_today),
-              const SizedBox(height: 10),
+              _buildSectionTitle('DATE & TIME', Icons.calendar_today, size),
+              SizedBox(height: size.height * 0.015),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -146,37 +152,36 @@ class _RequisitionFormState extends State<RequisitionForm> {
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: size.height * 0.03),
               const ADivider(),
 
               // EMERGENCY LEVEL Section
-              _buildSectionTitle('EMERGENCY LEVEL', Icons.warning),
-              const SizedBox(height: 20),
+              _buildSectionTitle('EMERGENCY LEVEL', Icons.warning, size),
+              SizedBox(height: size.height * 0.03),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildEmergencyButton('STANDARD', Colors.green),
-                  _buildEmergencyButton('URGENT', Colors.orange),
-                  _buildEmergencyButton('EMERGENCY', Colors.red),
+                  _buildEmergencyButton('STANDARD', Colors.green, size),
+                  _buildEmergencyButton('URGENT', Colors.orange, size),
+                  _buildEmergencyButton('EMERGENCY', Colors.red, size),
                 ],
               ),
-              const SizedBox(height: 20),
-              const ADivider(),
+              SizedBox(height: size.height * 0.03),
 
               // PROBLEM DESCRIPTION Section (Collapsible)
               ExpansionTile(
                 title: _buildSectionTitle(
-                    'PROBLEM DESCRIPTION', Icons.description),
+                    'PROBLEM DESCRIPTION', Icons.description, size),
                 children: [
-                  _buildDescriptionField(),
-                  const SizedBox(height: 20),
+                  _buildDescriptionField(size),
+                  SizedBox(height: size.height * 0.03),
                 ],
               ),
 
               // PICTURE OF PROBLEM Section (Collapsible)
               ExpansionTile(
-                title:
-                    _buildSectionTitle('PICTURE OF PROBLEM', Icons.camera_alt),
+                title: _buildSectionTitle(
+                    'PICTURE OF PROBLEM', Icons.camera_alt, size),
                 children: [
                   Container(
                     width: double.infinity,
@@ -190,24 +195,26 @@ class _RequisitionFormState extends State<RequisitionForm> {
                           style: TextStyle(color: Colors.white)),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: size.height * 0.03),
                 ],
               ),
 
               // LOCATION Section
               ExpansionTile(
-                title: _buildSectionTitle('LOCATION', Icons.location_on),
+                title: _buildSectionTitle('LOCATION', Icons.location_on, size),
                 children: [
                   ElevatedButton.icon(
                     onPressed: _selectLocation,
                     icon: const Icon(Icons.map),
                     label: Text(selectedLocation ?? 'Select Location'),
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: size.height * 0.03),
                 ],
               ),
 
-              const SizedBox(height: 30), // Increased spacing before button
+              SizedBox(
+                  height:
+                      size.height * 0.04), // Responsive spacing before button
               // Continue Button
               MyButton(
                 text: 'Continue',
@@ -229,16 +236,16 @@ class _RequisitionFormState extends State<RequisitionForm> {
   }
 
   // Section Title Widget with Icon
-  Widget _buildSectionTitle(String title, IconData icon) {
+  Widget _buildSectionTitle(String title, IconData icon, Size size) {
     return Row(
       children: [
         Icon(icon, color: Colors.white),
-        const SizedBox(width: 10),
+        SizedBox(width: size.width * 0.02), // Responsive icon-text spacing
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: 16, // Slightly increased font size for better readability
+            fontSize: size.width * 0.045, // Responsive font size
             color: AppColors.grey,
           ),
         ),
@@ -246,52 +253,67 @@ class _RequisitionFormState extends State<RequisitionForm> {
     );
   }
 
-  // Emergency Button Widget with Animated Color Change
-  Widget _buildEmergencyButton(String label, Color color) {
+  // Emergency Button Widget with Animated Color Change and Responsive Design
+  Widget _buildEmergencyButton(String label, Color color, Size size) {
     final isSelected = selectedEmergencyLevel == label;
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-      decoration: BoxDecoration(
-        color: isSelected ? color.withOpacity(0.8) : Colors.grey[300],
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: isSelected
-            ? [BoxShadow(color: color.withOpacity(0.4), blurRadius: 10)]
-            : [],
-      ),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          shadowColor: Colors.transparent,
-          elevation: 0,
+    return Flexible(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        decoration: BoxDecoration(
+          color: isSelected ? color.withOpacity(0.8) : Colors.grey[300],
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: isSelected
+              ? [BoxShadow(color: color.withOpacity(0.4), blurRadius: 10)]
+              : [],
         ),
-        onPressed: () {
-          setState(() {
-            selectedEmergencyLevel = label;
-          });
-        },
-        child: Text(
-          label,
-          style: TextStyle(color: isSelected ? Colors.white : Colors.black),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.transparent,
+            shadowColor: Colors.transparent,
+            elevation: 0,
+            padding: const EdgeInsets.symmetric(
+                horizontal: 5.0, vertical: 9.0), // Adjust padding
+            minimumSize: Size(size.width * 0.28,
+                size.height * 0.06), // Increased width to avoid wrapping
+          ),
+          onPressed: () {
+            setState(() {
+              selectedEmergencyLevel = label;
+            });
+          },
+          child: FittedBox(
+            // Ensures text fits inside button
+            child: Text(
+              label,
+              style: TextStyle(
+                color: isSelected ? Colors.white : Colors.black,
+                fontSize: size.width * 0.03, // Slightly adjusted font size
+              ),
+            ),
+          ),
         ),
       ),
     );
   }
 
   // Description Field Widget
-  Widget _buildDescriptionField() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: TextField(
-          maxLines: null,
-          decoration: const InputDecoration(
-            border: InputBorder.none,
-            hintText: 'Describe the issue here...',
-          ),
-          style: const TextStyle(fontSize: 18),
+  Widget _buildDescriptionField(Size size) {
+    return TextField(
+      maxLines: 5,
+      style: const TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: Colors.grey[800],
+        hintText: 'Describe your issue...',
+        hintStyle: TextStyle(color: Colors.grey[400]),
+        contentPadding: EdgeInsets.symmetric(
+          vertical: size.height * 0.02,
+          horizontal: size.width * 0.03,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
         ),
       ),
     );
