@@ -7,7 +7,7 @@ const baseUrl = "http://10.0.2.2:5005";
 
 class CustomerOrder {
   Future<List<OrderModel>> getCustomerOrders(
-      String token, String customerId) async {
+      String token, String customerId, {String? status}) async {
     try {
       print('Fetching orders for customer ID: $customerId with token: $token');
       final response = await http.get(
