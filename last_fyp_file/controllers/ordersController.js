@@ -8,30 +8,30 @@ function createOrder(req, res) {
       .json({ message: "Only customers can create orders", status: 401 });
   }
 
-  const { order_detail, urgency_level, location_detail, problem_type } =
-    req.body;
+  const { order_detail, urgency_level, location_detail, problem_type, order_date, order_time } = req.body;
   const order_img = req.file ? `uploads/${req.file.filename}` : null;
 
   const now = new Date();
-  const order_date = now.toISOString().slice(0, 10).split("T")[0];
-  const order_time = now.toTimeString().slice(0, 8);
+  const formattedOrderDate = order_date || now.toISOString().slice(0, 10);
+  const formattedOrderTime = order_time || now.toTimeString().slice(0, 8);
 
   const createOrderQuery = `
     INSERT INTO ordertable (customer_id, problem_type, order_date, order_time, order_status, order_detail, order_img, urgency_level, location_details, price_status)
-    VALUES (${userId}, '${problem_type}', '${order_date}', '${order_time}', 'pending', '${order_detail}', '${order_img}', '${urgency_level}', '${location_detail}', 'unpaid')
+    VALUES (${userId}, '${problem_type}', '${formattedOrderDate}', '${formattedOrderTime}', 'pending', '${order_detail}', '${order_img}', '${urgency_level}', '${location_detail}', 'unpaid')
   `;
+
   db.query(createOrderQuery, (error, result) => {
     if (error) {
       console.error("Error creating order:", error);
       return res.status(500).json({ message: "Failed to create order" });
     }
-
     return res.status(201).json({ message: "Order created successfully" });
   });
 }
 
+
 function deleteOrder(req, res) {
-  
+
   const { id } = req.params;
 
   // Use string interpolation to build the query
@@ -131,7 +131,7 @@ function viewRequestDetail(req, res) {
       problem:
         (results[0]?.technician_specialization &&
           results[0].technician_specialization[0].toUpperCase() +
-            results[0].technician_specialization.substring(1)) ||
+          results[0].technician_specialization.substring(1)) ||
         "",
       customer: {
         name: results[0].customer_name,
@@ -213,7 +213,7 @@ function getOrderDetail(req, res) {
       problem:
         (results[0]?.technician_specialization &&
           results[0].technician_specialization[0].toUpperCase() +
-            results[0].technician_specialization.substring(1)) ||
+          results[0].technician_specialization.substring(1)) ||
         "",
       customer: {
         name: results[0].customer_name,
@@ -378,9 +378,9 @@ function createReview(req, res) {
   const {
     rating,
     reviewText,
-    
+
   } = req.body;
-  
+
   const { type } = req.user;
 
   if (type === "technician") {
@@ -389,28 +389,28 @@ function createReview(req, res) {
 
   const now = new Date();
   const review_date = now.toISOString().slice(0, 10).split("T")[0];
-  
+
   let createReviewQuery = `UPDATE ordertable SET rating = '${rating}', review_text = '${reviewText}'`;
   createReviewQuery = review_date
     ? `${createReviewQuery}, review_date = '${review_date}'`
     : createReviewQuery;
-  
 
-    createReviewQuery = `${createReviewQuery} WHERE order_id = ${orderId}`;
-    db.query(createReviewQuery, (error, result) => {
-      if (error) {
-        throw error;
-      }
-  
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ message: "Review not found" });
-      }
-  
-      return res
-        .status(200)
-        .json({ message: "Review updated successfully", status: 200 });
-    });
-  
+
+  createReviewQuery = `${createReviewQuery} WHERE order_id = ${orderId}`;
+  db.query(createReviewQuery, (error, result) => {
+    if (error) {
+      throw error;
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Review not found" });
+    }
+
+    return res
+      .status(200)
+      .json({ message: "Review updated successfully", status: 200 });
+  });
+
 }
 
 function getOrdersCountByStatus(status) {
@@ -514,7 +514,7 @@ function viewAllOrders(req, res) {
 }
 
 
-function viewCancelledOrderHistory(req, res){
+function viewCancelledOrderHistory(req, res) {
   const { type } = req.user;
 
   // Check if the user is an admin
@@ -550,7 +550,7 @@ function viewCompletedOrderHistory(req, res) {
   if (type !== "admin") {
     return res.status(401).json({ message: "Unauthorized" });
   }
-  
+
   let completedOrderQuery =
     "SELECT o.*, t.name AS technician_name FROM ordertable o INNER JOIN technician t ON o.technician_id = t.technician_id";
 
@@ -612,7 +612,7 @@ function viewCusOrdersDetail(req, res) {
     if (results.length === 0) {
       return res.status(404).json({ error: "No orders found for the specified criteria", status: 404 });
     }
-    
+
     // Map results to a structured response
     const orders = results.map(result => ({
       orderId: result.order_id,

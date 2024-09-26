@@ -13,12 +13,10 @@ import 'package:intl/intl.dart';
 
 class RequisitionForm extends StatefulWidget {
   final String token;
-  final OrderAPI orderService = OrderAPI();
-
-  RequisitionForm({super.key, required this.token});
+  const RequisitionForm({Key? key, required this.token}) : super(key: key);
 
   @override
-  State<RequisitionForm> createState() => _RequisitionFormState();
+  _RequisitionFormState createState() => _RequisitionFormState();
 }
 
 class _RequisitionFormState extends State<RequisitionForm> {
@@ -27,34 +25,45 @@ class _RequisitionFormState extends State<RequisitionForm> {
   String? selectedLocation;
   String? selectedEmergencyLevel;
   String? problemDescription;
-  String? selectedCategory; // Now tracks selected category from CategoryButtons
+  String? selectedCategory;
 
-  Future<void> _selectDate() async {
-    final DateTime? picked = await showDatePicker(
+  TextEditingController dateController = TextEditingController();
+  TextEditingController timeController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    dateController.text = DateFormat('yyyy-MM-dd').format(DateTime.now());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    timeController.text = TimeOfDay.now().format(context);
+  }
+
+  Future<void> _selectDateTime() async {
+    final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: selectedDate ?? DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
     );
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-        print('Selected Date: $selectedDate'); // Debugging line
-      });
-    }
-  }
 
-  Future<void> _selectTime() async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime:
-          selectedTime ?? TimeOfDay.now(), // Use selected time if available
-    );
-    if (picked != null && picked != selectedTime) {
-      setState(() {
-        selectedTime = picked;
-        print('Selected Time: $selectedTime'); // Debugging line
-      });
+    if (pickedDate != null) {
+      final TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: selectedTime ?? TimeOfDay.now(),
+      );
+
+      if (pickedTime != null) {
+        setState(() {
+          selectedDate = pickedDate;
+          selectedTime = pickedTime;
+          dateController.text = DateFormat('yyyy-MM-dd').format(selectedDate!);
+          timeController.text = selectedTime!.format(context);
+        });
+      }
     }
   }
 
@@ -75,232 +84,173 @@ class _RequisitionFormState extends State<RequisitionForm> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => HomePage(token: widget.token),
-              ),
-            );
-          },
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => HomePage(token: widget.token)),
+          ),
         ),
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(
-          horizontal: size.width * 0.04,
-          vertical: size.height * 0.02,
-        ),
-        child: SingleChildScrollView(
+            horizontal: size.width * 0.04, vertical: size.height * 0.02),
+        child: ListView(
           physics: const BouncingScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildSectionTitle('CATEGORIES', Icons.category, size),
-              SizedBox(height: size.height * 0.015),
-
-              // Use CategoryButtons widget here
-              CategoryButtons(
-                onCategorySelected: (category) {
-                  setState(() {
-                    selectedCategory = category; // Update selected category
-                  });
-                },
-              ),
-              SizedBox(height: 20),
-
-              // Display selected category
-              if (selectedCategory != null)
-                Text(
-                  'Selected Category: $selectedCategory',
-                  style: TextStyle(fontSize: 16, color: AppColors.primary),
+          children: [
+            _buildSectionTitle('CATEGORIES', Icons.category, size),
+            const SizedBox(height: 15),
+            CategoryButtons(
+              onCategorySelected: (category) {
+                setState(() {
+                  selectedCategory = category;
+                });
+              },
+            ),
+            if (selectedCategory != null)
+              Text('Selected Category: $selectedCategory',
+                  style: TextStyle(fontSize: 16, color: AppColors.primary)),
+            const SizedBox(height: 30),
+            const ADivider(),
+            const SizedBox(height: 30),
+            _buildSectionTitle('DATE & TIME', Icons.calendar_today, size),
+            const SizedBox(height: 15),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.secondary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
                 ),
-
-              SizedBox(height: size.height * 0.03),
-              const ADivider(),
-              SizedBox(height: size.height * 0.03),
-
-              // DATE & TIME Section
-              _buildSectionTitle('DATE & TIME', Icons.calendar_today, size),
-              SizedBox(height: size.height * 0.015),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: ElevatedButton.icon(
-                        onPressed: _selectDate,
-                        icon: const Icon(Icons.calendar_today),
-                        label: Text(
-                          selectedDate != null
-                              ? 'Date: ${DateFormat('yyyy-MM-dd').format(selectedDate!)}'
-                              : 'Select Date',
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: _selectTime,
-                      icon: const Icon(Icons.access_time),
-                      label: Text(
-                        selectedTime != null
-                            ? 'Time: ${selectedTime!.format(context)}'
-                            : 'Select Time',
-                      ),
-                    ),
-                  ),
-                ],
+                padding: EdgeInsets.symmetric(vertical: 15),
               ),
-              SizedBox(height: size.height * 0.03),
-              const ADivider(),
-
-              // EMERGENCY LEVEL Section
-              _buildSectionTitle('EMERGENCY LEVEL', Icons.warning, size),
-              SizedBox(height: size.height * 0.03),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildEmergencyButton('STANDARD', Colors.green, size),
-                  _buildEmergencyButton('URGENT', Colors.orange, size),
-                  _buildEmergencyButton('EMERGENCY', Colors.red, size),
-                ],
+              onPressed: _selectDateTime,
+              child: Text(
+                '${dateController.text} at ${timeController.text}',
+                style: TextStyle(color: Colors.white, fontSize: 16),
               ),
-              SizedBox(height: size.height * 0.03),
-
-              // PROBLEM DESCRIPTION Section (Collapsible)
-              ExpansionTile(
-                title: _buildSectionTitle(
-                    'PROBLEM DESCRIPTION', Icons.description, size),
-                children: [
-                  _buildDescriptionField(size),
-                  SizedBox(height: size.height * 0.03),
-                ],
-              ),
-
-              // PICTURE OF PROBLEM Section (Collapsible)
-              ExpansionTile(
-                title: _buildSectionTitle(
-                    'PICTURE OF PROBLEM', Icons.camera_alt, size),
-                children: [
-                  Container(
-                    width: double.infinity,
-                    color: AppColors.secondary,
-                    child: ElevatedButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.camera),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                      ),
-                      label: const Text('Insert Picture',
-                          style: TextStyle(color: Colors.white)),
-                    ),
-                  ),
-                  SizedBox(height: size.height * 0.03),
-                ],
-              ),
-
-              // LOCATION Section
-              ExpansionTile(
-                title: _buildSectionTitle('LOCATION', Icons.location_on, size),
-                children: [
-                  ElevatedButton.icon(
-                    onPressed: _selectLocation,
-                    icon: const Icon(Icons.map),
-                    label: Text(selectedLocation ?? 'Select Location'),
-                  ),
-                  SizedBox(height: size.height * 0.03),
-                ],
-              ),
-
-              SizedBox(
-                  height:
-                      size.height * 0.04), // Responsive spacing before button
-              // Continue Button
-              MyButton(
-                text: 'Continue',
-                onTap: () async {
-                  // Ensure all fields are filled
-                  if (selectedDate == null ||
-                      selectedTime == null ||
-                      selectedLocation == null ||
-                      problemDescription == null ||
-                      selectedEmergencyLevel == null ||
-                      selectedCategory == null) {
-                    // Show an error message if fields are missing
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Please fill in all fields!')),
-                    );
-                    return;
-                  }
-
-                  // Combine date and time into a single UTC DateTime
-                  final combinedDateTime = getCombinedDateTime();
-                  if (combinedDateTime == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content: Text('Error with date and time selection!')),
-                    );
-                    return;
-                  }
-
-                  // Prepare order data
-                  Map<String, dynamic> orderData = {
-                    'order_date': combinedDateTime.toIso8601String(),
-                    'location_details': selectedLocation,
-                    'urgency_level': selectedEmergencyLevel,
-                    'order_detail': problemDescription,
-                    'problem_type': selectedCategory,
-                  };
-
-                  try {
-                    // Call your order creation function with the orderData
-                    final result = await OrderAPI.createOrder(
-                      token: widget.token,
-                      orderData: orderData,
-                    );
-
-                    // Print the result to debug the response
-                    print("API Response: $result");
-
-                    // Check if the response status is successful
-                    if (result['status'] == 'success') {
-                      // Navigate to confirmation page or show success message
-                      Text("IT WOKS");
-                    } else {
-                      // Show an error message if the response contains an error
-                      String errorMessage =
-                          result['message'] ?? 'An error occurred';
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Error: $errorMessage')),
-                      );
-                    }
-                  } catch (error) {
-                    // Handle any exceptions like network issues or timeout
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content:
-                              Text('Network error: Unable to create order')),
-                    );
-                    print("Error during API call: $error");
-                  }
-                },
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 30),
+            const ADivider(),
+            _buildSectionTitle('EMERGENCY LEVEL', Icons.warning, size),
+            const SizedBox(height: 30),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: ['STANDARD', 'URGENT', 'EMERGENCY'].map((level) {
+                return _buildEmergencyButton(
+                    level,
+                    level == 'STANDARD'
+                        ? Colors.green
+                        : (level == 'URGENT' ? Colors.orange : Colors.red),
+                    size);
+              }).toList(),
+            ),
+            const SizedBox(height: 30),
+            _buildExpansionTile('PROBLEM DESCRIPTION', Icons.description,
+                _buildDescriptionField()),
+            _buildExpansionTile(
+                'PICTURE OF PROBLEM', Icons.camera_alt, _buildPictureButton()),
+            _buildExpansionTile(
+                'LOCATION', Icons.location_on, _buildLocationButton()),
+            const SizedBox(height: 40),
+            MyButton(
+              text: 'Continue',
+              onTap: () => _handleContinue(),
+            ),
+          ],
         ),
       ),
     );
+  }
+
+  Widget _buildExpansionTile(String title, IconData icon, Widget child) {
+    return ExpansionTile(
+      title: _buildSectionTitle(title, icon, MediaQuery.of(context).size),
+      children: [child, const SizedBox(height: 30)],
+    );
+  }
+
+  Widget _buildPictureButton() {
+    return Container(
+      width: double.infinity,
+      color: AppColors.secondary,
+      child: ElevatedButton.icon(
+        onPressed: () {
+          // Implement picture upload functionality here
+        },
+        icon: const Icon(Icons.camera),
+        style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+        label:
+            const Text('Insert Picture', style: TextStyle(color: Colors.white)),
+      ),
+    );
+  }
+
+  Widget _buildLocationButton() {
+    return ElevatedButton.icon(
+      onPressed: _selectLocation,
+      icon: const Icon(Icons.map),
+      label: Text(selectedLocation ?? 'Select Location'),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.secondary,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+    );
+  }
+
+  void _handleContinue() async {
+    if (selectedDate == null ||
+        selectedTime == null ||
+        selectedLocation == null ||
+        problemDescription == null ||
+        selectedEmergencyLevel == null ||
+        selectedCategory == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please fill in all fields!')));
+      return;
+    }
+
+    Map<String, dynamic> orderData = {
+      'order_date': dateController.text,
+      'order_time': timeController.text,
+      'location_details': selectedLocation,
+      'urgency_level': selectedEmergencyLevel,
+      'order_detail': problemDescription,
+      'problem_type': selectedCategory,
+    };
+
+    try {
+      final result =
+          await OrderAPI.createOrder(token: widget.token, orderData: orderData);
+      if (result['status'] == 'success') {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ConfirmationRequest(
+                    token: widget.token))); // Navigate to confirmation page
+      } else {
+        String errorMessage = result['message'] ?? 'An error occurred';
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Error: $errorMessage')));
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Network error: Unable to create order')));
+    }
   }
 
   Widget _buildSectionTitle(String title, IconData icon, Size size) {
     return Row(
       children: [
         Icon(icon, color: Colors.white),
-        SizedBox(width: size.width * 0.02),
+        const SizedBox(width: 8),
         Text(
           title,
-          style: TextStyle(fontSize: size.width * 0.045, color: Colors.white),
+          style: TextStyle(
+            fontSize: size.width * 0.045,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ],
     );
@@ -312,57 +262,49 @@ class _RequisitionFormState extends State<RequisitionForm> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
+        height: size.height * 0.06, // Set a fixed height for uniformity
         decoration: BoxDecoration(
           color: isSelected ? color.withOpacity(0.8) : Colors.grey[300],
           borderRadius: BorderRadius.circular(8),
-          boxShadow: isSelected
-              ? [BoxShadow(color: color.withOpacity(0.4), blurRadius: 10)]
-              : [],
         ),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.transparent,
-            shadowColor: Colors.transparent,
-          ),
+        child: TextButton(
           onPressed: () {
             setState(() {
               selectedEmergencyLevel = label;
             });
           },
-          child: Text(label,
-              style:
-                  TextStyle(color: isSelected ? Colors.white : Colors.black)),
+          child: Text(
+            label,
+            style: TextStyle(
+              color: Colors.black, // Change text color to black
+              fontSize: size.width * 0.04,
+            ),
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildDescriptionField(Size size) {
+  Widget _buildDescriptionField() {
     return TextField(
       onChanged: (value) {
-        problemDescription = value; // Track description changes
+        setState(() {
+          problemDescription = value;
+        });
       },
+      maxLines: 3,
       decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        hintText: 'Describe the problem',
-        fillColor: Colors.white,
-        filled: true,
+        hintText: 'Describe the problem...',
+        hintStyle: TextStyle(color: Colors.black54), // Darker hint text color
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide:
+              BorderSide(color: Colors.white), // Change border color to white
+        ),
+        fillColor: Color.fromARGB(31, 255, 255, 255), // Background color
+        filled: true, // Enable filling
       ),
+      style: TextStyle(color: Colors.black), // Darker input text color
     );
-  }
-
-  DateTime? getCombinedDateTime() {
-    if (selectedDate != null && selectedTime != null) {
-      final now = DateTime.now();
-      final combinedDateTime = DateTime(
-        selectedDate!.year,
-        selectedDate!.month,
-        selectedDate!.day,
-        selectedTime!.hour,
-        selectedTime!.minute,
-      );
-      return combinedDateTime.toUtc(); // Convert to UTC before sending
-    }
-    return null;
   }
 }
