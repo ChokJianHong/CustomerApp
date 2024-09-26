@@ -25,7 +25,7 @@ class _RequestDetailsState extends State<RequestDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.primary,
-      appBar: const CustomAppBar(),
+      appBar:  CustomAppBar(token: widget.token,),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Card(

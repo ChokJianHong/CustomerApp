@@ -3,7 +3,8 @@ import 'package:customer_app/pages/Settings.dart';
 import 'package:flutter/material.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const CustomAppBar({super.key});
+  final String token;
+  const CustomAppBar({super.key,required this.token});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +15,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const Setting()),
+                        builder: (context) => Setting(token: token,)),
                   );
       },),
       actions: const [

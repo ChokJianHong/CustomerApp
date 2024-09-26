@@ -1,11 +1,12 @@
 import 'package:customer_app/Assets/components/SettingItem.dart';
 import 'package:customer_app/Assets/components/button.dart';
 import 'package:customer_app/core/configs/theme/app_colors.dart';
-import 'package:customer_app/pages/Profile.dart';
+import 'package:customer_app/pages/profile.dart';
 import 'package:flutter/material.dart';
 
 class Setting extends StatelessWidget {
-  const Setting({super.key});
+  final String token;
+  const Setting({super.key,required this.token});
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +66,7 @@ class Setting extends StatelessWidget {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const Profile()),
+                            builder: (context) => Profile(token: token,)),
                       );
                   },),
                   const SettingItem(title: 'My Addresses'),

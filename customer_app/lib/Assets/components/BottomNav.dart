@@ -1,7 +1,7 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:customer_app/core/configs/theme/app_colors.dart';
-import 'package:customer_app/pages/HomePage.dart';
-import 'package:customer_app/pages/OrderPage.dart'; // Ensure this is the correct import
+import 'package:customer_app/pages/homePage.dart';
+import 'package:customer_app/pages/orderPage.dart'; // Ensure this is the correct import
 import 'package:customer_app/pages/RequisitionForm.dart';
 import 'package:flutter/material.dart';
 

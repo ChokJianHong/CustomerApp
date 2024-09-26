@@ -76,6 +76,8 @@ router.post("/reset-password", resetPassword);
 // customer routes
 router.post("/customer/register", customerRegister);
 router.get("/customer/:token", getCustomerByToken);
+router.post("/customer/updateProfile", updateCustomer);
+
 // order routes
 router.get( "/orders/details/:id",decodeToken,viewCusOrdersDetail);
 router.get("/orders", decodeToken, viewAllOrders);

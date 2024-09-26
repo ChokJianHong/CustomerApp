@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:customer_app/API/SignInAPI.dart';
 import 'package:customer_app/Assets/components/button.dart';
 import 'package:customer_app/Assets/components/text_box.dart';
-import 'package:customer_app/pages/HomePage.dart';
+import 'package:customer_app/pages/homePage.dart';
 import 'package:flutter/gestures.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';

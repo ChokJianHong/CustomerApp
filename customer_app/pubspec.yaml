@@ -44,6 +44,7 @@ dependencies:
   dart_jsonwebtoken: ^2.14.0
   jwt_decoder: ^2.0.1
   google_places_flutter:
+  auto_size_text:
 
 dev_dependencies:
   flutter_test:

@@ -4,7 +4,7 @@ import 'package:customer_app/Assets/components/button.dart';
 import 'package:customer_app/Assets/components/catergory_buttons.dart';
 import 'package:customer_app/core/configs/theme/app_colors.dart';
 import 'package:customer_app/pages/ConfirmationRequest.dart';
-import 'package:customer_app/pages/HomePage.dart';
+import 'package:customer_app/pages/homePage.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // For date formatting
 

@@ -15,9 +15,7 @@ class BackArrow extends StatelessWidget {
           Icons.arrow_back,
           color: Colors.white,
         ), // Back arrow icon
-        onPressed: () {
-          onTap;
-        },
+        onPressed: onTap ?? () => Navigator.pop(context), // Invoke the onTap function or pop the page
       ),
     );
   }

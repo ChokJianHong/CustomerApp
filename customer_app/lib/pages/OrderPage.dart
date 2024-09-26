@@ -2,6 +2,7 @@ import 'package:customer_app/API/GetCustomerOrder.dart';
 import 'package:customer_app/Assets/Model/OrderModel.dart';
 import 'package:customer_app/Assets/components/AppBar.dart';
 import 'package:customer_app/Assets/components/BottomNav.dart';
+import 'package:customer_app/Assets/components/newj.dart';
 import 'package:customer_app/core/configs/theme/app_colors.dart';
 import 'package:customer_app/pages/RequestDetails.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,13 @@ class _OrdersPageState extends State<OrdersPage> {
 
   // Added variable for dropdown filter
   String? _selectedStatus;
-  final List<String> _statusOptions = ['All', 'Pending','OnGoing', 'Completed', 'Cancelled']; // Add more statuses as needed
+  final List<String> _statusOptions = [
+    'All',
+    'Pending',
+    'OnGoing',
+    'Completed',
+    'Cancelled'
+  ]; // Add more statuses as needed
 
   void _onTapTapped(int index) {
     setState(() {
@@ -49,13 +56,14 @@ class _OrdersPageState extends State<OrdersPage> {
 
   // Function to fetch orders based on the selected filter
   Future<List<OrderModel>> _fetchOrders() {
-    return CustomerOrder().getCustomerOrders(widget.token, customerId, status: _selectedStatus);
+    return CustomerOrder()
+        .getCustomerOrders(widget.token, customerId, status: _selectedStatus);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(),
+      appBar:  CustomAppBar(token: widget.token,),
       backgroundColor: AppColors.primary,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -63,23 +71,31 @@ class _OrdersPageState extends State<OrdersPage> {
           children: [
             // Dropdown Filter
             DropdownButton<String>(
-              hint: const Text('Select Order Status',style: TextStyle(color: Colors.white),),
+              hint: const Text(
+                'Select Order Status',
+                style: TextStyle(color: Colors.white),
+              ),
               value: _selectedStatus,
               items: _statusOptions.map((String status) {
                 return DropdownMenuItem<String>(
                   value: status,
-                  child: Text(status,style: const TextStyle(color: Colors.white),),
+                  child: Text(
+                    status,
+                    style: const TextStyle(color: Colors.white),
+                  ),
                 );
               }).toList(),
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedStatus = newValue;
-                  _ordersFuture = _fetchOrders(); // Re-fetch orders based on selected filter
+                  _ordersFuture =
+                      _fetchOrders(); // Re-fetch orders based on selected filter
                 });
               },
               dropdownColor: AppColors.secondary,
             ),
-            const SizedBox(height: 16), // Add some space between dropdown and list
+            const SizedBox(
+                height: 16), // Add some space between dropdown and list
             Expanded(
               child: FutureBuilder<List<OrderModel>>(
                 future: _ordersFuture,
@@ -96,62 +112,11 @@ class _OrdersPageState extends State<OrdersPage> {
                       itemCount: orders.length,
                       itemBuilder: (context, index) {
                         final order = orders[index];
-                        return ListTile(
-                          title: Container(
-                            height: 100,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 20, top: 20),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(order.problemType, style: const TextStyle(fontSize: 12)),
-                                      const SizedBox(height: 20),
-                                      Text(order.orderDate, style: const TextStyle(fontSize: 12))
-                                    ],
-                                  ),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          const Text('Priority:', style: TextStyle(fontSize: 12)),
-                                          const SizedBox(width: 5),
-                                          Text(order.urgencyLevel, style: const TextStyle(color: Colors.red, fontSize: 12)),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 20),
-                                      Row(
-                                        children: [
-                                          const Text('Status:', style: TextStyle(fontSize: 12)),
-                                          const SizedBox(width: 5),
-                                          Text(order.orderStatus, style: const TextStyle(fontSize: 12))
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(width: 10)
-                                ],
-                              ),
-                            ),
-                          ),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => RequestDetails(
-                                  token: widget.token,
-                                ),
-                              ),
-                            );
-                          },
-                        );
+                        return NewJobcard(
+                            name: order.problemType,
+                            location: order.locationDetails,
+                            jobType: order.urgencyLevel,
+                            status: order.orderStatus);
                       },
                     );
                   } else {

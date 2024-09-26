@@ -2,6 +2,7 @@ import 'package:customer_app/API/GetCustomerOrder.dart';
 import 'package:customer_app/Assets/Model/OrderModel.dart';
 import 'package:customer_app/Assets/components/AppBar.dart';
 import 'package:customer_app/Assets/components/BottomNav.dart';
+import 'package:customer_app/Assets/components/currentjobtem.dart';
 import 'package:customer_app/core/configs/theme/app_colors.dart';
 import 'package:customer_app/pages/RequestDetails.dart';
 import 'package:flutter/material.dart';
@@ -31,21 +32,22 @@ class _HomePageState extends State<HomePage> {
   }
 
   String formatDateTime(String utcDateTime) {
-  try {
-    // Parse the UTC date string into a DateTime object
-    DateTime parsedDate = DateTime.parse(utcDateTime);
+    try {
+      // Parse the UTC date string into a DateTime object
+      DateTime parsedDate = DateTime.parse(utcDateTime);
 
-    // Convert the UTC date to local time
-    DateTime localDate = parsedDate.toLocal();
+      // Convert the UTC date to local time
+      DateTime localDate = parsedDate.toLocal();
 
-    // Format the local date into a desired string format
-    return DateFormat('yyyy-MM-dd HH:mm:ss').format(localDate); // Adjust format as needed
-  } catch (e) {
-    // Handle potential parsing errors
-    print('Error parsing date: $e');
-    return 'Invalid date'; // Return a default value or error message
+      // Format the local date into a desired string format
+      return DateFormat('yyyy-MM-dd HH:mm:ss')
+          .format(localDate); // Adjust format as needed
+    } catch (e) {
+      // Handle potential parsing errors
+      print('Error parsing date: $e');
+      return 'Invalid date'; // Return a default value or error message
+    }
   }
-}
 
   @override
   void initState() {
@@ -72,7 +74,7 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       backgroundColor: AppColors.primary,
-      appBar: const CustomAppBar(),
+      appBar:  CustomAppBar(token: widget.token,),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -202,13 +204,7 @@ class _HomePageState extends State<HomePage> {
 
   // Build Current Orders Section
   Widget _buildCurrentOrders(Size size) {
-    return Card(
-      color: AppColors.secondary,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      elevation: 4,
-      child: Padding(
+    return Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -251,84 +247,10 @@ class _HomePageState extends State<HomePage> {
                     itemCount: ongoingOrders.length,
                     itemBuilder: (context, index) {
                       final OrderModel order = ongoingOrders[index];
-                      return ListTile(
-                        title: Container(
-                          height: 100,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 20, top: 20),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                // Wrap in Flexible to avoid overflow
-                                Flexible(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(order.problemType,
-                                          style: const TextStyle(fontSize: 12)),
-                                      const SizedBox(height: 20),
-                                      Row(
-                                        children: [
-                                          Text(formatDateTime(order.orderDate).split(' ')[0],
-                                              style: const TextStyle(fontSize: 12)),
-                                          Text( order.orderTime,
-                                              style: const TextStyle(fontSize: 12)),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Flexible(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          const Text('Priority:',
-                                              style: TextStyle(fontSize: 12)),
-                                          const SizedBox(width: 5),
-                                          Text(order.urgencyLevel,
-                                              style: const TextStyle(
-                                                  color: Colors.red,
-                                                  fontSize: 12)),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 20),
-                                      Row(
-                                        children: [
-                                          const Text('Status:',
-                                              style: TextStyle(fontSize: 12)),
-                                          const SizedBox(width: 5),
-                                          Text(order.orderStatus,
-                                              style: const TextStyle(
-                                                  fontSize: 12)),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                              ],
-                            ),
-                          ),
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => RequestDetails(
-                                token: widget.token,
-                              ),
-                            ),
-                          );
-                        },
-                      );
+                      return JobCard(
+                          name: order.problemType,
+                          description: order.orderDetail,
+                          status: order.orderStatus);
                     },
                   );
                 }
@@ -337,8 +259,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 
   // Build Order Card Widget
