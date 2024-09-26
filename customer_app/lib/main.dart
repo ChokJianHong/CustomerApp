@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: SignInPage(), // Choose the home page you want
+      home: const SignInPage(), // Choose the home page you want
       debugShowCheckedModeBanner: false, // Add if needed
 
     );

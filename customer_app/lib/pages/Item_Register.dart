@@ -11,13 +11,13 @@ class ItemRegister extends StatefulWidget {
   final String password;
 
   const ItemRegister({
-    Key? key,
+    super.key,
     required this.username,
     required this.email,
     required this.phone,
     required this.password,
     required String location,
-  }) : super(key: key);
+  });
 
   @override
   _ItemRegisterState createState() => _ItemRegisterState();

@@ -109,11 +109,11 @@ class _SignInPageState extends State<SignInPage> {
                 if (errorMessage != null)
                   Text(
                     errorMessage!,
-                    style: TextStyle(color: Colors.red),
+                    style: const TextStyle(color: Colors.red),
                   ),
                 const SizedBox(height: 20),
                 isLoading
-                    ? CircularProgressIndicator()
+                    ? const CircularProgressIndicator()
                     : MyButton(
                         text: "Sign In",
                         onTap: _signIn,
@@ -173,7 +173,7 @@ class _SignInPageState extends State<SignInPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => Register()),
+                                  builder: (context) => const Register()),
                             );
                           },
                       ),
