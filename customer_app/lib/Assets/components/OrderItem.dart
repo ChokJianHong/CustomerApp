@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class OrderItem extends StatelessWidget {
   final OrderModel order;
 
-  const OrderItem({Key? key, required this.order}) : super(key: key);
+  const OrderItem({super.key, required this.order});
 
   @override
   Widget build(BuildContext context) {

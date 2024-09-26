@@ -71,7 +71,7 @@ flutter:
     - lib/Assets/photos/signinlock.png
     - lib/Assets/photos/arrowRight.png
     - lib/Assets/photos/Autogate.png
-    - lib/Assets/photos/Alarm.png
+    - lib/Assets/photos/alarm.png
     - lib/Assets/photos/banner.png
     - lib/Assets/photos/Profile.png
     - lib/Assets/photos/smallProfile.png

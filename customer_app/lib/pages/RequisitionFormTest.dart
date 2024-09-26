@@ -264,15 +264,15 @@ class _RequisitionFormState extends State<RequisitionForm> {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
+      child: const Padding(
+        padding: EdgeInsets.all(8.0),
         child: TextField(
           maxLines: null,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             border: InputBorder.none,
             hintText: 'Describe the issue here...',
           ),
-          style: const TextStyle(fontSize: 18),
+          style: TextStyle(fontSize: 18),
         ),
       ),
     );

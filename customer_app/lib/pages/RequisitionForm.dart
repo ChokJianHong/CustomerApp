@@ -1,11 +1,11 @@
 import 'package:customer_app/Assets/components/CategoryButton.dart';
 import 'package:customer_app/Assets/components/Divider.dart';
 import 'package:customer_app/Assets/components/button.dart';
+import 'package:customer_app/Assets/components/catergory_buttons.dart';
 import 'package:customer_app/core/configs/theme/app_colors.dart';
 import 'package:customer_app/pages/ConfirmationRequest.dart';
 import 'package:customer_app/pages/HomePage.dart';
 import 'package:flutter/material.dart';
-import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:intl/intl.dart'; // For date formatting
 
 class RequisitionForm extends StatefulWidget {
@@ -59,6 +59,19 @@ class _RequisitionFormState extends State<RequisitionForm> {
     });
   }
 
+  // Function to handle category selection
+  void _onSelectCategory(String category) {
+    setState(() {
+      if (category == 'Alarm') {
+        isAlarmSelected = true;
+        isAutogateSelected = false;
+      } else if (category == 'Autogate') {
+        isAlarmSelected = false;
+        isAutogateSelected = true;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,58 +101,47 @@ class _RequisitionFormState extends State<RequisitionForm> {
               // CATEGORIES Section
               _buildSectionTitle('CATEGORIES', Icons.category),
               const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  categoryButton(
-                    label: 'Alarm System',
-                    imagePath: 'lib/Assets/photos/alarm.png',
-                    isSelected: isAlarmSelected,
-                    onTap: () {
-                      setState(() {
-                        isAlarmSelected = true;
-                        isAutogateSelected = false;
-                      });
-                    },
-                  ),
-                  categoryButton(
-                    label: 'AutoGate System',
-                    imagePath: 'lib/Assets/photos/Autogate.png',
-                    isSelected: isAutogateSelected,
-                    onTap: () {
-                      setState(() {
-                        isAutogateSelected = true;
-                        isAlarmSelected = false;
-                      });
-                    },
-                  ),
-                ],
+
+              // Use CategoryButtons widget here
+              CategoryButtons(
+                isAlarmSelected: isAlarmSelected,
+                isAutogateSelected: isAutogateSelected,
+                onSelectCategory: _onSelectCategory,
               ),
-              const SizedBox(height: 10),
+
+              const SizedBox(height: 20), // Increased spacing
               const ADivider(),
-              const SizedBox(height: 10),
+              const SizedBox(height: 20), // Increased spacing
 
               // DATE & TIME Section
               _buildSectionTitle('DATE & TIME', Icons.calendar_today),
+              const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ElevatedButton.icon(
-                    onPressed: _selectDate,
-                    icon: const Icon(Icons.calendar_today),
-                    label: Text(
-                      selectedDate != null
-                          ? 'Date: ${DateFormat('yyyy-MM-dd').format(selectedDate!)}'
-                          : 'Select Date',
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: ElevatedButton.icon(
+                        onPressed: _selectDate,
+                        icon: const Icon(Icons.calendar_today),
+                        label: Text(
+                          selectedDate != null
+                              ? 'Date: ${DateFormat('yyyy-MM-dd').format(selectedDate!)}'
+                              : 'Select Date',
+                        ),
+                      ),
                     ),
                   ),
-                  ElevatedButton.icon(
-                    onPressed: _selectTime,
-                    icon: const Icon(Icons.access_time),
-                    label: Text(
-                      selectedTime != null
-                          ? 'Time: ${selectedTime!.format(context)}'
-                          : 'Select Time',
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: _selectTime,
+                      icon: const Icon(Icons.access_time),
+                      label: Text(
+                        selectedTime != null
+                            ? 'Time: ${selectedTime!.format(context)}'
+                            : 'Select Time',
+                      ),
                     ),
                   ),
                 ],
@@ -161,38 +163,51 @@ class _RequisitionFormState extends State<RequisitionForm> {
               const SizedBox(height: 20),
               const ADivider(),
 
-              // PROBLEM DESCRIPTION Section
-              _buildSectionTitle('PROBLEM DESCRIPTION', Icons.description),
-              const SizedBox(height: 10),
-              _buildDescriptionField(),
-              const SizedBox(height: 20),
-              const ADivider(),
-
-              // PICTURE OF PROBLEM Section
-              _buildSectionTitle('PICTURE OF PROBLEM', Icons.camera_alt),
-              Container(
-                width: double.infinity,
-                color: AppColors.secondary,
-                child: ElevatedButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.camera),
-                  style:
-                      ElevatedButton.styleFrom(backgroundColor: Colors.black),
-                  label: const Text('Insert Picture',
-                      style: TextStyle(color: Colors.white)),
-                ),
+              // PROBLEM DESCRIPTION Section (Collapsible)
+              ExpansionTile(
+                title: _buildSectionTitle(
+                    'PROBLEM DESCRIPTION', Icons.description),
+                children: [
+                  _buildDescriptionField(),
+                  const SizedBox(height: 20),
+                ],
               ),
-              const SizedBox(height: 20),
+
+              // PICTURE OF PROBLEM Section (Collapsible)
+              ExpansionTile(
+                title:
+                    _buildSectionTitle('PICTURE OF PROBLEM', Icons.camera_alt),
+                children: [
+                  Container(
+                    width: double.infinity,
+                    color: AppColors.secondary,
+                    child: ElevatedButton.icon(
+                      onPressed: () {},
+                      icon: const Icon(Icons.camera),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black),
+                      label: const Text('Insert Picture',
+                          style: TextStyle(color: Colors.white)),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
 
               // LOCATION Section
-              _buildSectionTitle('LOCATION', Icons.location_on),
-              ElevatedButton.icon(
-                onPressed: _selectLocation,
-                icon: const Icon(Icons.map),
-                label: Text(selectedLocation ?? 'Select Location'),
+              ExpansionTile(
+                title: _buildSectionTitle('LOCATION', Icons.location_on),
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: _selectLocation,
+                    icon: const Icon(Icons.map),
+                    label: Text(selectedLocation ?? 'Select Location'),
+                  ),
+                  const SizedBox(height: 20),
+                ],
               ),
-              const SizedBox(height: 20),
 
+              const SizedBox(height: 30), // Increased spacing before button
               // Continue Button
               MyButton(
                 text: 'Continue',
@@ -223,7 +238,7 @@ class _RequisitionFormState extends State<RequisitionForm> {
           title,
           style: const TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: 14,
+            fontSize: 16, // Slightly increased font size for better readability
             color: AppColors.grey,
           ),
         ),
@@ -231,27 +246,24 @@ class _RequisitionFormState extends State<RequisitionForm> {
     );
   }
 
-  // Emergency Button Widget with Color Change
   // Emergency Button Widget with Animated Color Change
   Widget _buildEmergencyButton(String label, Color color) {
     final isSelected = selectedEmergencyLevel == label;
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 300), // Animation duration
-      curve: Curves.easeInOut, // Smooth curve for animation
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
       decoration: BoxDecoration(
         color: isSelected ? color.withOpacity(0.8) : Colors.grey[300],
-        borderRadius: BorderRadius.circular(8), // Optional: Rounded corners
+        borderRadius: BorderRadius.circular(8),
         boxShadow: isSelected
             ? [BoxShadow(color: color.withOpacity(0.4), blurRadius: 10)]
             : [],
       ),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors
-              .transparent, // Set the background transparent to let the AnimatedContainer handle color
-          shadowColor:
-              Colors.transparent, // Remove default shadow to use custom shadow
-          elevation: 0, // Remove default elevation
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          elevation: 0,
         ),
         onPressed: () {
           setState(() {

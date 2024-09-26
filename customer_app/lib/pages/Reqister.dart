@@ -1,4 +1,3 @@
-import 'package:customer_app/API/registerAPI.dart';
 import 'package:flutter/material.dart';
 import 'package:customer_app/Assets/components/button.dart';
 import 'package:customer_app/pages/Item_Register.dart';

@@ -67,7 +67,7 @@ class _SignInPageState extends State<SignInPage> {
       print('Token: $token');
 
       // Store the token securely
-      final storage = FlutterSecureStorage();
+      final storage = const FlutterSecureStorage();
       await storage.write(key: 'userToken', value: token);
 
       // Fetch customer details using the token
@@ -133,7 +133,7 @@ class _SignInPageState extends State<SignInPage> {
                       style: const TextStyle(color: Colors.red)),
                 const SizedBox(height: 20),
                 isLoading
-                    ? CircularProgressIndicator()
+                    ? const CircularProgressIndicator()
                     : MyButton(text: "Sign In", onTap: _signIn),
                 const SizedBox(height: 20),
                 Row(
@@ -190,7 +190,7 @@ class _SignInPageState extends State<SignInPage> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => Register()));
+                                    builder: (context) => const Register()));
                           },
                       ),
                     ],

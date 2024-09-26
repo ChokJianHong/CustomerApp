@@ -111,8 +111,8 @@ class _OrdersPageState extends State<OrdersPage> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(order.problemType, style: const TextStyle(fontSize: 12)),
-                                      SizedBox(height: 20),
-                                      Text(order.orderDate, style: TextStyle(fontSize: 12))
+                                      const SizedBox(height: 20),
+                                      Text(order.orderDate, style: const TextStyle(fontSize: 12))
                                     ],
                                   ),
                                   Column(
@@ -120,22 +120,22 @@ class _OrdersPageState extends State<OrdersPage> {
                                     children: [
                                       Row(
                                         children: [
-                                          Text('Priority:', style: TextStyle(fontSize: 12)),
-                                          SizedBox(width: 5),
-                                          Text(order.urgencyLevel, style: TextStyle(color: Colors.red, fontSize: 12)),
+                                          const Text('Priority:', style: TextStyle(fontSize: 12)),
+                                          const SizedBox(width: 5),
+                                          Text(order.urgencyLevel, style: const TextStyle(color: Colors.red, fontSize: 12)),
                                         ],
                                       ),
-                                      SizedBox(height: 20),
+                                      const SizedBox(height: 20),
                                       Row(
                                         children: [
-                                          Text('Status:', style: TextStyle(fontSize: 12)),
-                                          SizedBox(width: 5),
-                                          Text(order.orderStatus, style: TextStyle(fontSize: 12))
+                                          const Text('Status:', style: TextStyle(fontSize: 12)),
+                                          const SizedBox(width: 5),
+                                          Text(order.orderStatus, style: const TextStyle(fontSize: 12))
                                         ],
                                       ),
                                     ],
                                   ),
-                                  SizedBox(width: 10)
+                                  const SizedBox(width: 10)
                                 ],
                               ),
                             ),

@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
   final String token;
-  const HomePage({super.key,required this.token});
+
+  const HomePage({super.key, required this.token});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -22,6 +23,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // Use MediaQuery to get screen size
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
       backgroundColor: AppColors.primary,
       appBar: const CustomAppBar(),
@@ -30,203 +34,41 @@ class _HomePageState extends State<HomePage> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              const SizedBox(height: 20),
-              // Service Hours Container
-              Container(
-                decoration: BoxDecoration(
-                  color: AppColors.secondary,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                width: double.infinity,
-                child: const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Service Hours',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Monday - Friday',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              Text(
-                                'Saturday - Sunday',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              Text(
-                                'Public Holiday',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '9:00 A.M. to 5:00 P.M.',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              Text(
-                                '9:00 A.M. to 12:00 P.M.',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              Text(
-                                'OFF',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 10),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              // Current Orders Title and Orders List
-
-              Container(
-                decoration: BoxDecoration(
-                  color: AppColors.secondary,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Current Orders',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Column(
-                        children: [
-                          // Order Container
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(16.0),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Auto Gate',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Text(
-                                      'Dylan',
-                                      style: TextStyle(fontSize: 16),
-                                    ),
-                                  ],
-                                ),
-                                Text(
-                                  '2024-06-12 12:00 P.M.',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(16.0),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Auto Gate',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Text(
-                                      'Dylan',
-                                      style: TextStyle(fontSize: 16),
-                                    ),
-                                  ],
-                                ),
-                                Text(
-                                  '2024-06-12 12:00 P.M.',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 20,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+              SizedBox(
+                  height: size.height * 0.02), // Adjust size proportionally
+              _buildServiceHours(size),
+              SizedBox(
+                  height: size.height * 0.02), // Adjust spacing proportionally
+              _buildCurrentOrders(size),
+              SizedBox(height: size.height * 0.02),
+              Center(
+                child: Container(
+                  width: size.width * 0.9, // Take 90% of the screen width
+                  height:
+                      size.height * 0.2, // Limit height to 20% of screen height
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(
+                        10), // Optional: Add border radius for styling
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        spreadRadius: 1,
+                        blurRadius: 10,
+                        offset: const Offset(0, 4), // Shadow position
                       ),
                     ],
                   ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(
+                        10), // Apply border radius to the image as well
+                    child: Image.asset(
+                      'lib/Assets/photos/banner.png',
+                      fit: BoxFit
+                          .contain, // Ensure the entire image fits within the container
+                    ),
+                  ),
                 ),
               ),
-              const SizedBox(
-                height: 20,
-              ),
-              const Center(
-                  child:
-                      Image(image: AssetImage('lib/Assets/photos/banner.png'))),
             ],
           ),
         ),
@@ -234,7 +76,170 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: BottomNav(
         onTap: _onTapTapped,
         currentIndex: _currentIndex,
-        token: widget.token, 
+        token: widget.token,
+      ),
+    );
+  }
+
+  // Build Service Hours Section
+  Widget _buildServiceHours(Size size) {
+    return Card(
+      color: AppColors.secondary,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Service Hours',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Dynamically size the columns
+                _buildServiceDayColumn(
+                  'Monday - Friday',
+                  '9:00 A.M. to 5:00 P.M.',
+                  size.width / 3,
+                ),
+                _buildServiceDayColumn(
+                  'Saturday - Sunday',
+                  '9:00 A.M. to 12:00 P.M.',
+                  size.width / 3,
+                ),
+                _buildServiceDayColumn(
+                  'Public Holiday',
+                  'OFF',
+                  size.width / 3,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Service Day Column Helper
+  Widget _buildServiceDayColumn(String day, String time, double width) {
+    return Flexible(
+      child: SizedBox(
+        width: width,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              day,
+              style: const TextStyle(color: Colors.white, fontSize: 14),
+              overflow: TextOverflow.ellipsis, // Prevent overflow
+              maxLines: 1, // Limit to one line
+            ),
+            Text(
+              time,
+              style: const TextStyle(color: Colors.white, fontSize: 14),
+              overflow: TextOverflow.ellipsis, // Prevent overflow
+              maxLines: 1, // Limit to one line
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Build Current Orders Section
+  Widget _buildCurrentOrders(Size size) {
+    return Card(
+      color: AppColors.secondary,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Current Orders',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Use dynamic height for the ListView
+            SizedBox(
+              height: size.height * 0.25, // Adjust height as needed
+              child: ListView.builder(
+                itemCount: 5, // Replace with your orders count
+                itemBuilder: (context, index) {
+                  return _buildOrderCard(
+                    'Auto Gate',
+                    'Dylan',
+                    '2024-06-12 12:00 P.M.',
+                    size,
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Build Order Card Widget
+  Widget _buildOrderCard(
+      String service, String person, String dateTime, Size size) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                service,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                person,
+                style: const TextStyle(fontSize: 16),
+              ),
+            ],
+          ),
+          SizedBox(
+            width: size.width * 0.4, // Adjust width dynamically for date text
+            child: Text(
+              dateTime,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.grey,
+              ),
+              textAlign: TextAlign.right,
+            ),
+          ),
+        ],
       ),
     );
   }
