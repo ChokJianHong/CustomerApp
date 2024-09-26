@@ -70,7 +70,7 @@ void _navigateToPage(BuildContext context, int index) {
     case 2:
     Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => OrdersPage()),
+        MaterialPageRoute(builder: (context) => const OrderPage()),
       );
       break;
     default:
