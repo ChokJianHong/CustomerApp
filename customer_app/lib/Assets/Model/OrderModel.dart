@@ -1,12 +1,14 @@
+
+
 class OrderModel {
-  final int orderId;
+  final int? orderId;
   final int customerId;
   final String orderDate;
   final String? orderDoneDate;
   final String orderTime;
   final String orderStatus;
   final String orderDetail;
-  final String orderImg;
+  final String? orderImg;
   final String? orderDoneImg;
   final String urgencyLevel;
   final String problemType;
@@ -17,7 +19,7 @@ class OrderModel {
   final String priceDetails;
   final String priceStatus;
   final int? totalPrice;
-  final int accept;
+  final int? accept;
 
   OrderModel({
     required this.orderId,

@@ -580,7 +580,7 @@ function viewCusOrdersDetail(req, res) {
   // Build the base SQL query
   let dbQuery = `
     SELECT 
-      request_forms.*,
+      ordertable.*,
       c.name AS customer_name,
       c.location AS customer_address,
       c.phone_number AS customer_phone_number,
@@ -589,7 +589,7 @@ function viewCusOrdersDetail(req, res) {
       c.alarm_brand AS customer_alarm_brand,
       c.warranty AS customer_warranty
     FROM 
-      request_table
+      ordertable
     JOIN 
       customer c ON ordertable.customer_id = c.customer_id
     WHERE 
@@ -599,7 +599,7 @@ function viewCusOrdersDetail(req, res) {
 
   // If a valid status is provided, filter by order status
   if (status && status !== 'All') {
-    dbQuery += ' AND request_forms.status = ?';
+    dbQuery += ' AND ordertable.order_status = ?';
     queryParams.push(status); // Add status to the query parameters
   }
 

@@ -32,7 +32,6 @@ class _ItemRegisterState extends State<ItemRegister> {
       TextEditingController();
 
   DateTime? _selectedAlarmWarranty;
-  DateTime? _selectedGateWarranty;
   bool _isSubmitting = false; // Track submission state
 
   @override
@@ -60,8 +59,6 @@ class _ItemRegisterState extends State<ItemRegister> {
       // Store the selected date
       if (isAlarm) {
         _selectedAlarmWarranty = pickedDate;
-      } else {
-        _selectedGateWarranty = pickedDate;
       }
     }
   }
@@ -73,17 +70,17 @@ class _ItemRegisterState extends State<ItemRegister> {
       });
 
       try {
-        // Collect the values from your text fields and date pickers
+        // Collect the values from your text fields
         String alarmBrand = _alarmBrandController.text;
         String gateBrand = _autoGateBrandController.text;
 
-        // Check for selected dates
+        // Ensure the alarm warranty date is selected
         if (_selectedAlarmWarranty == null) {
-          _showErrorDialog('Please select both warranty dates.');
+          _showErrorDialog('Please select the alarm warranty date.');
           return;
         }
 
-        // Format the warranty dates as strings
+        // Format the warranty date as a string
         String alarmWarranty =
             "${_selectedAlarmWarranty!.year}-${_selectedAlarmWarranty!.month.toString().padLeft(2, '0')}-${_selectedAlarmWarranty!.day.toString().padLeft(2, '0')}";
 
@@ -94,9 +91,9 @@ class _ItemRegisterState extends State<ItemRegister> {
           widget.username,
           widget.phone,
           'Location',
-          alarmBrand,
-          gateBrand,
-          alarmWarranty,
+          alarmBrand, // Alarm Brand
+          gateBrand, // AutoGate Brand
+          alarmWarranty, // Only passing the alarm warranty date
         );
 
         // Handle the response

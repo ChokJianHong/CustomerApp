@@ -1,30 +1,35 @@
 import 'package:customer_app/core/configs/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
-class CategoryButtons extends StatelessWidget {
-  final bool isAlarmSelected;
-  final bool isAutogateSelected;
-  final Function(String) onSelectCategory;
+class CategoryButtons extends StatefulWidget {
+  final Function(String) onCategorySelected; // Callback for selected category
 
-  const CategoryButtons({
-    required this.isAlarmSelected,
-    required this.isAutogateSelected,
-    required this.onSelectCategory,
-    super.key,
-  });
+  const CategoryButtons({super.key, required this.onCategorySelected});
+
+  @override
+  _CategoryButtonsState createState() => _CategoryButtonsState();
+}
+
+class _CategoryButtonsState extends State<CategoryButtons> {
+  String selectedCategory = ''; // Track the selected category
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        // Use Expanded to ensure dynamic width and equal distribution
         Expanded(
           child: categoryButton(
             label: 'Alarm System',
             imagePath: 'lib/Assets/photos/Alarm.png',
-            isSelected: isAlarmSelected,
-            onTap: () => onSelectCategory('Alarm'),
+            isSelected: selectedCategory == 'Alarm',
+            onTap: () {
+              setState(() {
+                selectedCategory = 'Alarm'; // Set selected category
+                widget.onCategorySelected(
+                    selectedCategory); // Notify parent widget
+              });
+            },
           ),
         ),
         const SizedBox(width: 10), // Add space between buttons
@@ -32,8 +37,14 @@ class CategoryButtons extends StatelessWidget {
           child: categoryButton(
             label: 'AutoGate System',
             imagePath: 'lib/Assets/photos/Autogate.png',
-            isSelected: isAutogateSelected,
-            onTap: () => onSelectCategory('Autogate'),
+            isSelected: selectedCategory == 'Autogate',
+            onTap: () {
+              setState(() {
+                selectedCategory = 'Autogate'; // Set selected category
+                widget.onCategorySelected(
+                    selectedCategory); // Notify parent widget
+              });
+            },
           ),
         ),
       ],
