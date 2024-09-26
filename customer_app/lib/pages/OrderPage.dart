@@ -23,7 +23,7 @@ class _OrdersPageState extends State<OrdersPage> {
 
   // Added variable for dropdown filter
   String? _selectedStatus;
-  List<String> _statusOptions = ['All', 'Pending', 'Completed', 'Cancelled']; // Add more statuses as needed
+  final List<String> _statusOptions = ['All', 'Pending', 'Completed', 'Cancelled']; // Add more statuses as needed
 
   void _onTapTapped(int index) {
     setState(() {
@@ -63,7 +63,7 @@ class _OrdersPageState extends State<OrdersPage> {
           children: [
             // Dropdown Filter
             DropdownButton<String>(
-              hint: Text('Select Order Status'),
+              hint: const Text('Select Order Status',style: TextStyle(color: Colors.white),),
               value: _selectedStatus,
               items: _statusOptions.map((String status) {
                 return DropdownMenuItem<String>(
@@ -78,7 +78,7 @@ class _OrdersPageState extends State<OrdersPage> {
                 });
               },
             ),
-            SizedBox(height: 16), // Add some space between dropdown and list
+            const SizedBox(height: 16), // Add some space between dropdown and list
             Expanded(
               child: FutureBuilder<List<OrderModel>>(
                 future: _ordersFuture,
@@ -110,7 +110,7 @@ class _OrdersPageState extends State<OrdersPage> {
                                   Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text(order.problemType, style: TextStyle(fontSize: 12)),
+                                      Text(order.problemType, style: const TextStyle(fontSize: 12)),
                                       SizedBox(height: 20),
                                       Text(order.orderDate, style: TextStyle(fontSize: 12))
                                     ],
