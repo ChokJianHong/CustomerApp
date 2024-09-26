@@ -1,5 +1,5 @@
 import 'package:customer_app/API/GetCustomerToken.dart';
-import 'package:customer_app/API/updateCustomerDetails.dart';
+
 import 'package:customer_app/Assets/components/button.dart';
 import 'package:customer_app/Assets/components/profileAttribute.dart';
 import 'package:customer_app/core/configs/theme/app_colors.dart';
@@ -86,7 +86,7 @@ class _ProfileState extends State<Profile> {
     print('CustomerId before update: $customerId'); // Debugging line
 
     try {
-      final response = await UpdateCustomer().updateCustomerProfile(
+      final response = await CustomerToken().updateCustomerProfile(
         widget.token,
         customerId!,
         name,

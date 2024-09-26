@@ -106,6 +106,10 @@ function getCustomerByToken(req, res) {
 
 function updateCustomer(req, res) {
   const customerId = req.params.id;
+  
+  // Log the received customerId
+  console.log(`Received customerId: ${customerId}`);
+  
   const {
     name,
     phone_number = null,
@@ -114,26 +118,38 @@ function updateCustomer(req, res) {
     autogate_brand,
   } = req.body;
 
+  // Log the request body for debugging
+  console.log('Request Body:', req.body);
+
   const { type } = req.user;
 
   if (type === "technician") {
     return res.status(401).json({ message: "Unauthorized", status: 401 });
   }
+
   let updateCustomerQuery = `UPDATE customer SET name = '${name}', location = '${location}'`;
+  
   updateCustomerQuery = phone_number
     ? `${updateCustomerQuery}, phone_number = '${phone_number}'`
     : updateCustomerQuery;
+    
   updateCustomerQuery = alarm_brand
     ? `${updateCustomerQuery}, alarm_brand = '${alarm_brand}'`
     : updateCustomerQuery;
+    
   updateCustomerQuery = autogate_brand
     ? `${updateCustomerQuery}, auto_gate_brand = '${autogate_brand}'`
     : updateCustomerQuery;
 
   updateCustomerQuery = `${updateCustomerQuery} WHERE customer_id = ${customerId}`;
+  
+  // Log the final query for debugging
+  console.log('Executing Query:', updateCustomerQuery);
+
   db.query(updateCustomerQuery, (error, result) => {
     if (error) {
-      throw error;
+      console.error('Database Error:', error);
+      return res.status(500).json({ message: "Internal Server Error" });
     }
 
     if (result.affectedRows === 0) {
