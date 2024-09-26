@@ -574,61 +574,74 @@ function viewCompletedOrderHistory(req, res) {
 
 
 function viewCusOrdersDetail(req, res) {
-  const orderId = req.params.id;
+  const customerId = req.params.customerId; // Assuming this comes from the route params
+  const status = req.query.status; // Status is now retrieved from query parameters
 
-  const dbQuery = `
+  // Build the base SQL query
+  let dbQuery = `
     SELECT 
       ordertable.*,
       c.name AS customer_name,
       c.location AS customer_address,
       c.phone_number AS customer_phone_number,
-      c.email as customer_email,
-      c.auto_gate_brand as customer_auto_gate_brand,
-      c.alarm_brand as customer_alarm_brand,
-      c.warranty as customer_warranty
+      c.email AS customer_email,
+      c.auto_gate_brand AS customer_auto_gate_brand,
+      c.alarm_brand AS customer_alarm_brand,
+      c.warranty AS customer_warranty
     FROM 
       ordertable
     JOIN 
       customer c ON ordertable.customer_id = c.customer_id
     WHERE 
-      ordertable.order_id = ?
-  `;
+      c.customer_id = ?`;
 
-  db.query(dbQuery, [orderId], (error, results) => {
+  const queryParams = [customerId]; // Initialize with customer ID
+
+  // If a valid status is provided, filter by order status
+  if (status && status !== 'All') {
+    dbQuery += ' AND ordertable.order_status = ?';
+    queryParams.push(status); // Add status to the query parameters
+  }
+
+  db.query(dbQuery, queryParams, (error, results) => {
     if (error) {
       console.error("Error executing database query:", error);
       return res.status(500).json({ error: "Internal Server Error" });
     }
 
     if (results.length === 0) {
-      return res.status(404).json({ error: "Order not found", status: 404 });
+      return res.status(404).json({ error: "No orders found for the specified criteria", status: 404 });
     }
     
-    const orderDetails = {
-      orderId: results[0].order_id,
-      orderDate: results[0].order_date,
-      orderDoneDate: results[0].order_done_date,
-      orderStatus: results[0].order_status,
-      orderImage: results[0].order_img,
-      orderDoneImage: results[0].order_done_img,
-      orderDetail: results[0].order_detail,
-      priority: results[0].urgency_level,
-      locationDetail: results[0].location_detail,
-      priceStatus: results[0].price_status,
-      totalPrice: results[0].total_price,
-      problemType: results[0].problem_type,
+    // Map results to a structured response
+    const orders = results.map(result => ({
+      orderId: result.order_id,
+      orderDate: result.order_date,
+      orderTime: result.order_time,
+      orderStatus: result.order_status,
+      orderDetail: result.order_detail,
+      orderImage: result.order_img,
+      orderDoneImage: result.order_done_img,
+      urgencyLevel: result.urgency_level,
+      locationDetails: result.location_details,
+      priceStatus: result.price_status,
+      totalPrice: result.total_price,
+      technicianEta: result.technician_eta,
+      problemType: result.problem_type,
+      orderDoneDate: result.order_done_date,
+      accept: result.accept,
       customer: {
-        name: results[0].customer_name,
-        address: results[0].customer_address,
-        email: results[0].customer_email,
-        phone: results[0].customer_phone_number,
-        autogateBrand: results[0].customer_auto_gate_brand,
-        alarmBrand: results[0].customer_alarm_brand,
-        warranty: results[0].customer_warranty,
+        name: result.customer_name,
+        address: result.customer_address,
+        email: result.customer_email,
+        phone: result.customer_phone_number,
+        autogateBrand: result.customer_auto_gate_brand,
+        alarmBrand: result.customer_alarm_brand,
+        warranty: result.customer_warranty,
       },
-    };
+    }));
 
-    return res.status(200).json({ status: 200, result: orderDetails });
+    return res.status(200).json({ status: 200, result: orders });
   });
 }
 
