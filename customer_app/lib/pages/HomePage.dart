@@ -1,8 +1,12 @@
+import 'package:customer_app/API/GetCustomerOrder.dart';
 import 'package:customer_app/Assets/Model/OrderModel.dart';
 import 'package:customer_app/Assets/components/AppBar.dart';
 import 'package:customer_app/Assets/components/BottomNav.dart';
 import 'package:customer_app/core/configs/theme/app_colors.dart';
+import 'package:customer_app/pages/RequestDetails.dart';
 import 'package:flutter/material.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
   final String token;
@@ -15,11 +19,50 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 1;
+  final CustomerOrder customerOrder =
+      CustomerOrder(); // Instantiate the service
+  late String customerId;
+  late Future<List<OrderModel>> _latestOrderFuture;
 
   void _onTapTapped(int index) {
     setState(() {
       _currentIndex = index;
     });
+  }
+
+  String formatDateTime(String utcDateTime) {
+  try {
+    // Parse the UTC date string into a DateTime object
+    DateTime parsedDate = DateTime.parse(utcDateTime);
+
+    // Convert the UTC date to local time
+    DateTime localDate = parsedDate.toLocal();
+
+    // Format the local date into a desired string format
+    return DateFormat('yyyy-MM-dd HH:mm:ss').format(localDate); // Adjust format as needed
+  } catch (e) {
+    // Handle potential parsing errors
+    print('Error parsing date: $e');
+    return 'Invalid date'; // Return a default value or error message
+  }
+}
+
+  @override
+  void initState() {
+    super.initState();
+    try {
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(widget.token);
+      customerId = decodedToken['userId'].toString(); // Adjust key as needed
+      print('Customer ID: $customerId');
+    } catch (error) {
+      print('Error decoding token: $error');
+      customerId = 'default'; // Set a default value
+    }
+
+    // Fetch orders using the customer ID
+    _latestOrderFuture = customerId.isNotEmpty
+        ? customerOrder.getCustomerOrders(widget.token, customerId)
+        : Future.value([]); // Initialize with empty list
   }
 
   @override
@@ -168,6 +211,7 @@ class _HomePageState extends State<HomePage> {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
@@ -179,7 +223,6 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: 16),
-            // Use dynamic height for the ListView
             FutureBuilder<List<OrderModel>>(
               future: _latestOrderFuture,
               builder: (context, snapshot) {
@@ -191,36 +234,86 @@ class _HomePageState extends State<HomePage> {
                   return Text('Error: ${snapshot.error}');
                 } else if (snapshot.hasData) {
                   final List<OrderModel> latestOrders = snapshot.data!;
+                  final ongoingOrders = latestOrders
+                      .where((order) => order.orderStatus == 'ongoing')
+                      .toList();
+
+                  if (ongoingOrders.isEmpty) {
+                    return const Text(
+                      'No ongoing orders.',
+                      style: TextStyle(color: Colors.white),
+                    );
+                  }
+
                   return ListView.builder(
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: latestOrders.length,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: ongoingOrders.length,
                     itemBuilder: (context, index) {
-                      final OrderModel order = latestOrders[index];
+                      final OrderModel order = ongoingOrders[index];
                       return ListTile(
                         title: Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 15, vertical: 15),
+                          height: 100,
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              color: Colors.red),
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 10),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            padding: const EdgeInsets.only(left: 20, top: 20),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  order.problemType,
-                                  style: TextStyle(color: Colors.white),
+                                // Wrap in Flexible to avoid overflow
+                                Flexible(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(order.problemType,
+                                          style: const TextStyle(fontSize: 12)),
+                                      const SizedBox(height: 20),
+                                      Row(
+                                        children: [
+                                          Text(formatDateTime(order.orderDate).split(' ')[0],
+                                              style: const TextStyle(fontSize: 12)),
+                                          Text( order.orderTime,
+                                              style: const TextStyle(fontSize: 12)),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                Text(
-                                  order.orderDate,
-                                  style: TextStyle(color: Colors.white),
+                                Flexible(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          const Text('Priority:',
+                                              style: TextStyle(fontSize: 12)),
+                                          const SizedBox(width: 5),
+                                          Text(order.urgencyLevel,
+                                              style: const TextStyle(
+                                                  color: Colors.red,
+                                                  fontSize: 12)),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 20),
+                                      Row(
+                                        children: [
+                                          const Text('Status:',
+                                              style: TextStyle(fontSize: 12)),
+                                          const SizedBox(width: 5),
+                                          Text(order.orderStatus,
+                                              style: const TextStyle(
+                                                  fontSize: 12)),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                Text(
-                                  order.orderTime,
-                                  style: TextStyle(color: Colors.white),
-                                )
+                                const SizedBox(width: 10),
                               ],
                             ),
                           ),
@@ -229,8 +322,7 @@ class _HomePageState extends State<HomePage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => OrderDetailPage(
-                                orderId: order.orderId.toString(),
+                              builder: (context) => RequestDetails(
                                 token: widget.token,
                               ),
                             ),
@@ -240,7 +332,7 @@ class _HomePageState extends State<HomePage> {
                     },
                   );
                 }
-                return SizedBox();
+                return const SizedBox(); // Return an empty box if no data
               },
             ),
           ],
