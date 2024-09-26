@@ -5,7 +5,6 @@ import 'package:customer_app/core/configs/theme/app_colors.dart';
 import 'package:customer_app/pages/ConfirmationRequest.dart';
 import 'package:customer_app/pages/HomePage.dart';
 import 'package:flutter/material.dart';
-import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:intl/intl.dart'; // For date formatting
 
 class RequisitionForm extends StatefulWidget {
@@ -70,7 +69,7 @@ class _RequisitionFormState extends State<RequisitionForm> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
             Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const HomePage(token: widget,)));
+                MaterialPageRoute(builder: (context) => HomePage(token: widget.token,)));
           },
         ),
       ),
@@ -196,7 +195,7 @@ class _RequisitionFormState extends State<RequisitionForm> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const ConfirmationRequest()),
+                        builder: (context) => ConfirmationRequest(token: widget.token,)),
                   );
                 },
               ),
