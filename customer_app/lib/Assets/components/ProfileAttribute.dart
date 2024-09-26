@@ -17,7 +17,7 @@ class ProfileAttribute extends StatelessWidget {
         ),
         onTap: onTap,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-        trailing: Image.asset("lib/pages/arrowRight.png"),
+        trailing: Image.asset("lib/Assets/photos/arrowRight.png"),
       ),
     );
   }
