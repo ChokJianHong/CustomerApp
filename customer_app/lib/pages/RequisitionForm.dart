@@ -7,7 +7,8 @@ import 'package:customer_app/pages/HomePage.dart';
 import 'package:flutter/material.dart';
 
 class RequisitionForm extends StatefulWidget {
-  const RequisitionForm({super.key});
+  final String token;
+  const RequisitionForm({super.key, required this.token});
 
   @override
   State<RequisitionForm> createState() => _RequisitionFormState();
@@ -33,7 +34,10 @@ class _RequisitionFormState extends State<RequisitionForm> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const HomePage()),
+              MaterialPageRoute(
+                  builder: (context) => HomePage(
+                        token: widget.token,
+                      )),
             );
           },
         ),
@@ -218,7 +222,7 @@ class _RequisitionFormState extends State<RequisitionForm> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const ConfirmationRequest()),
+                        builder: (context) => ConfirmationRequest(token: widget.token,)),
                   );
                 },
               ),

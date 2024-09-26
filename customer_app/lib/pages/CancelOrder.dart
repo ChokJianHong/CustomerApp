@@ -4,7 +4,8 @@ import 'package:customer_app/pages/ConfirmationRequest.dart';
 import 'package:flutter/material.dart';
 
 class CancelOrder extends StatelessWidget {
-  const CancelOrder({super.key});
+  final String token;
+  const CancelOrder({super.key, required this.token});
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +55,7 @@ class CancelOrder extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const ConfirmationRequest()),
+                      builder: (context) => ConfirmationRequest(token: token,)),
                 );
               },
             )

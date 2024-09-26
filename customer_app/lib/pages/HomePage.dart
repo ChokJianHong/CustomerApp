@@ -4,7 +4,8 @@ import 'package:customer_app/core/configs/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final String token;
+  const HomePage({super.key,required this.token});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -115,7 +116,7 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(height: 20),
               // Current Orders Title and Orders List
-        
+
               Container(
                 decoration: BoxDecoration(
                   color: AppColors.secondary,
@@ -224,13 +225,17 @@ class _HomePageState extends State<HomePage> {
                 height: 20,
               ),
               const Center(
-                  child: Image(image: AssetImage('lib/Assets/photos/banner.png'))),
+                  child:
+                      Image(image: AssetImage('lib/Assets/photos/banner.png'))),
             ],
           ),
         ),
       ),
-      bottomNavigationBar:
-          BottomNav(onTap: _onTapTapped, currentIndex: _currentIndex),
+      bottomNavigationBar: BottomNav(
+        onTap: _onTapTapped,
+        currentIndex: _currentIndex,
+        token: widget.token, 
+      ),
     );
   }
 }

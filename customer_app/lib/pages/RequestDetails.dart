@@ -5,7 +5,8 @@ import 'package:customer_app/core/configs/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class RequestDetails extends StatefulWidget {
-  const RequestDetails({super.key});
+  final String token;
+  const RequestDetails({super.key, required this.token});
 
   @override
   State<RequestDetails> createState() => _RequestDetailsState();
@@ -98,8 +99,11 @@ class _RequestDetailsState extends State<RequestDetails> {
           ),
         ),
       ),
-      bottomNavigationBar:
-          BottomNav(onTap: _onTapTapped, currentIndex: _currentIndex),
+      bottomNavigationBar: BottomNav(
+        onTap: _onTapTapped,
+        currentIndex: _currentIndex,
+        token: widget.token,
+      ),
     );
   }
 }

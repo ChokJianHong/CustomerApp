@@ -1,18 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:customer_app/Assets/components/TokenProvider.dart';
+
 import 'package:customer_app/pages/Sign_In.dart';
-import 'package:provider/provider.dart';
 
-void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (context) => TokenProvider(),
-      child: const MyApp(),
-    ),
-  );
-}
-
+void main() => runApp(const MyApp());
 class MyApp extends StatelessWidget {
+  
   const MyApp({super.key});
 
   @override
@@ -37,7 +29,8 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: SignInPage(),
+      home: const SignInPage(
+      ),
       debugShowCheckedModeBanner: false,
     );
   }

@@ -1,26 +1,32 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:customer_app/core/configs/theme/app_colors.dart';
 import 'package:customer_app/pages/HomePage.dart';
-import 'package:customer_app/pages/OrderPage.dart';
+import 'package:customer_app/pages/OrderPage.dart'; // Ensure this is the correct import
 import 'package:customer_app/pages/RequisitionForm.dart';
 import 'package:flutter/material.dart';
 
 class BottomNav extends StatelessWidget {
   final Function(int) onTap;
   final int currentIndex;
+  final String token;
 
-  const BottomNav({super.key, required this.onTap, required this.currentIndex});
+  const BottomNav({
+    super.key,
+    required this.onTap,
+    required this.currentIndex,
+    required this.token,
+  });
 
   @override
   Widget build(BuildContext context) {
     return CurvedNavigationBar(
       index: currentIndex,
-      backgroundColor: Colors.transparent, // Transparent background
-      color: AppColors.secondary, // Background color of the bar
-      buttonBackgroundColor: AppColors.primary, // Color of the central button
-      height: 60.0, // Adjusted height for better icon size
+      backgroundColor: Colors.transparent,
+      color: AppColors.secondary,
+      buttonBackgroundColor: AppColors.primary,
+      height: 60.0,
       onTap: (index) {
-        _navigateToPage(context, index);
+        _navigateToPage(context, index, token); // Pass token here
       },
       items: const [
         Padding(
@@ -46,35 +52,37 @@ class BottomNav extends StatelessWidget {
             color: Colors.white,
             size: 40,
           ),
-        )
+        ),
       ],
     );
   }
 }
 
-//Help bottomnav navigate to pages
-void _navigateToPage(BuildContext context, int index) {
+// Update the navigation function to accept the token
+void _navigateToPage(BuildContext context, int index, String token) {
   switch (index) {
     case 0:
-    Navigator.pushReplacement(
+      Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const RequisitionForm()),
+        MaterialPageRoute(builder: (context) => RequisitionForm(token: token,)),
       );
       break;
     case 1:
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
+        MaterialPageRoute(builder: (context) => HomePage(token: token,)),
       );
       break;
     case 2:
-    Navigator.pushReplacement(
+      Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const OrderPage()),
+        MaterialPageRoute(
+          builder: (context) => OrdersPage(token: token), // Pass token correctly
+        ),
       );
       break;
     default:
-      // Handle default case
+      // Handle default case if necessary
       break;
   }
 }

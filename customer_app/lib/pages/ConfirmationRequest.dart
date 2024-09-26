@@ -5,7 +5,8 @@ import 'package:customer_app/pages/HomePage.dart';
 import 'package:flutter/material.dart';
 
 class ConfirmationRequest extends StatelessWidget {
-  const ConfirmationRequest({super.key});
+  final String token;
+  const ConfirmationRequest({super.key,required this.token});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,8 @@ class ConfirmationRequest extends StatelessWidget {
             const SizedBox(
               height: 50,
             ),
-            const Center(child: Image(image: AssetImage('lib/Assets/photos/Time.png'))),
+            const Center(
+                child: Image(image: AssetImage('lib/Assets/photos/Time.png'))),
             const SizedBox(
               height: 20,
             ),
@@ -36,10 +38,9 @@ class ConfirmationRequest extends StatelessWidget {
               text: 'Cancel Order',
               onTap: () {
                 Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const CancelOrder()),
-                  );
+                  context,
+                  MaterialPageRoute(builder: (context) =>  CancelOrder(token: token,)),
+                );
               },
               backgroundColor: AppColors.secondary,
             ),
@@ -50,10 +51,9 @@ class ConfirmationRequest extends StatelessWidget {
               text: 'Go Back Home',
               onTap: () {
                 Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const HomePage()),
-                  );
+                  context,
+                  MaterialPageRoute(builder: (context) => HomePage(token: token,)),
+                );
               },
             ),
           ],
