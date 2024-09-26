@@ -22,7 +22,7 @@ class CategoryButtons extends StatelessWidget {
         Expanded(
           child: categoryButton(
             label: 'Alarm System',
-            imagePath: 'lib/Assets/photos/alarm.png',
+            imagePath: 'lib/Assets/photos/Alarm.png',
             isSelected: isAlarmSelected,
             onTap: () => onSelectCategory('Alarm'),
           ),
