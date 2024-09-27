@@ -10,7 +10,6 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SignInPage extends StatefulWidget {
- 
   const SignInPage({super.key});
 
   @override
@@ -76,7 +75,10 @@ class _SignInPageState extends State<SignInPage> {
       // Navigate to home page or handle success
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => HomePage(token: token,)),
+        MaterialPageRoute(
+            builder: (context) => HomePage(
+                  token: token,
+                )),
       );
     } catch (e) {
       setState(() {

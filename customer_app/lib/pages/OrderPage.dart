@@ -112,17 +112,33 @@ class _OrdersPageState extends State<OrdersPage> {
                       itemCount: orders.length,
                       itemBuilder: (context, index) {
                         final order = orders[index];
-                        return NewJobcard(
-                            name: order.problemType,
-                            location: order.locationDetails,
-                            jobType: order.urgencyLevel,
-                            status: order.orderStatus);
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RequestDetails(
+                          orderId: order.orderId.toString(),
+                          token: widget.token,
+                        ),
+                      ),
+                    );
+                          },
+                          child: NewJobcard(
+                              name: order.problemType,
+                              location: order.locationDetails,
+                              jobType: order.urgencyLevel,
+                              status: order.orderStatus),
+                        );
+                          
                       },
                     );
                   } else {
                     return const Center(child: Text('No orders available'));
                   }
+                  
                 },
+                
               ),
             ),
           ],

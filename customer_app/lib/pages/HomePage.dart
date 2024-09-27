@@ -247,10 +247,23 @@ class _HomePageState extends State<HomePage> {
                     itemCount: ongoingOrders.length,
                     itemBuilder: (context, index) {
                       final OrderModel order = ongoingOrders[index];
-                      return JobCard(
-                          name: order.problemType,
-                          description: order.orderDetail,
-                          status: order.orderStatus);
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RequestDetails(
+                          orderId: order.orderId.toString(),
+                          token: widget.token,
+                        ),
+                      ),
+                    );
+                        },
+                        child: JobCard(
+                            name: order.problemType,
+                            description: order.orderDetail,
+                            status: order.orderStatus),
+                      );
                     },
                   );
                 }
