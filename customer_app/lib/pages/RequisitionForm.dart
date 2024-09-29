@@ -1,19 +1,18 @@
-import 'dart:io';
-import 'package:customer_app/API/JWT.dart';
 import 'package:customer_app/API/orderAPI.dart';
-import 'package:customer_app/Assets/Model/OrderModel.dart';
 import 'package:customer_app/Assets/components/Divider.dart';
 import 'package:customer_app/Assets/components/button.dart';
 import 'package:customer_app/Assets/components/catergory_buttons.dart';
 import 'package:customer_app/core/configs/theme/app_colors.dart';
 import 'package:customer_app/pages/ConfirmationRequest.dart';
 import 'package:customer_app/pages/HomePage.dart';
+import 'package:customer_app/pages/MapScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 
 class RequisitionForm extends StatefulWidget {
   final String token;
-  const RequisitionForm({Key? key, required this.token}) : super(key: key);
+  const RequisitionForm({super.key, required this.token});
 
   @override
   _RequisitionFormState createState() => _RequisitionFormState();
@@ -30,19 +29,31 @@ class _RequisitionFormState extends State<RequisitionForm> {
   TextEditingController dateController = TextEditingController();
   TextEditingController timeController = TextEditingController();
 
+  bool isFirstBuild = true;
+
   @override
   void initState() {
     super.initState();
-    dateController.text = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    // Do not initialize selectedTime here
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    timeController.text = TimeOfDay.now().format(context);
+    // Initialize only on the first build
+    if (isFirstBuild) {
+      selectedTime = TimeOfDay.now(); // Set the initial time only once
+      isFirstBuild =
+          false; // Set the flag to false after the first initialization
+    }
   }
 
   Future<void> _selectDateTime() async {
+    if (selectedEmergencyLevel == 'EMERGENCY' && selectedDate != null) {
+      // Do not allow changing date and time for emergency
+      return;
+    }
+
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: selectedDate ?? DateTime.now(),
@@ -68,9 +79,18 @@ class _RequisitionFormState extends State<RequisitionForm> {
   }
 
   Future<void> _selectLocation() async {
-    setState(() {
-      selectedLocation = 'Location selected'; // Update with actual location
-    });
+    LatLng? location = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const MapScreen()),
+    );
+
+    // Check if a location was returned
+    if (location != null) {
+      setState(() {
+        selectedLocation =
+            'Location: ${location.latitude}, ${location.longitude}'; // Update with actual location
+      });
+    }
   }
 
   @override
@@ -108,28 +128,11 @@ class _RequisitionFormState extends State<RequisitionForm> {
             ),
             if (selectedCategory != null)
               Text('Selected Category: $selectedCategory',
-                  style: TextStyle(fontSize: 16, color: AppColors.primary)),
+                  style:
+                      const TextStyle(fontSize: 16, color: AppColors.primary)),
             const SizedBox(height: 30),
             const ADivider(),
             const SizedBox(height: 30),
-            _buildSectionTitle('DATE & TIME', Icons.calendar_today, size),
-            const SizedBox(height: 15),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.secondary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                padding: EdgeInsets.symmetric(vertical: 15),
-              ),
-              onPressed: _selectDateTime,
-              child: Text(
-                '${dateController.text} at ${timeController.text}',
-                style: TextStyle(color: Colors.white, fontSize: 16),
-              ),
-            ),
-            const SizedBox(height: 30),
-            const ADivider(),
             _buildSectionTitle('EMERGENCY LEVEL', Icons.warning, size),
             const SizedBox(height: 30),
             Row(
@@ -142,6 +145,26 @@ class _RequisitionFormState extends State<RequisitionForm> {
                         : (level == 'URGENT' ? Colors.orange : Colors.red),
                     size);
               }).toList(),
+            ),
+            const SizedBox(height: 30),
+            const ADivider(),
+            _buildSectionTitle('DATE & TIME', Icons.calendar_today, size),
+            const SizedBox(height: 15),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.secondary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 15),
+              ),
+              onPressed: _selectDateTime,
+              child: Text(
+                dateController.text.isEmpty && timeController.text.isEmpty
+                    ? 'Pick Date and Pick Time'
+                    : '${dateController.text} at ${timeController.text}',
+                style: const TextStyle(color: Colors.white, fontSize: 16),
+              ),
             ),
             const SizedBox(height: 30),
             _buildExpansionTile('PROBLEM DESCRIPTION', Icons.description,
@@ -198,6 +221,25 @@ class _RequisitionFormState extends State<RequisitionForm> {
     );
   }
 
+  bool _validateDateTime(DateTime date, TimeOfDay time) {
+    final currentDateTime = DateTime.now();
+    final selectedDateTime =
+        DateTime(date.year, date.month, date.day, time.hour, time.minute);
+
+    // Check if the selected date and time is within shop hours
+    bool isWithinBusinessHours = false;
+    if (date.weekday >= 1 && date.weekday <= 5) {
+      // Weekdays: 9 AM to 5 PM
+      isWithinBusinessHours =
+          selectedDateTime.hour >= 9 && selectedDateTime.hour < 17;
+    } else {
+      // Weekends: 9 AM to 12 PM
+      isWithinBusinessHours =
+          selectedDateTime.hour >= 9 && selectedDateTime.hour < 12;
+    }
+    return isWithinBusinessHours && selectedDateTime.isAfter(currentDateTime);
+  }
+
   void _handleContinue() async {
     if (selectedDate == null ||
         selectedTime == null ||
@@ -207,6 +249,15 @@ class _RequisitionFormState extends State<RequisitionForm> {
         selectedCategory == null) {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Please fill in all fields!')));
+      return;
+    }
+
+    // Time validation logic based on the selected date and time
+    bool isValidTime = _validateDateTime(selectedDate!, selectedTime!);
+
+    if (!isValidTime) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Selected time is outside of shop hours!')));
       return;
     }
 
@@ -243,45 +294,15 @@ class _RequisitionFormState extends State<RequisitionForm> {
     return Row(
       children: [
         Icon(icon, color: Colors.white),
-        const SizedBox(width: 8),
+        const SizedBox(width: 10),
         Text(
           title,
           style: TextStyle(
-            fontSize: size.width * 0.045,
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+              color: Colors.white,
+              fontSize: size.width * 0.05,
+              fontWeight: FontWeight.bold),
         ),
       ],
-    );
-  }
-
-  Widget _buildEmergencyButton(String label, Color color, Size size) {
-    final isSelected = selectedEmergencyLevel == label;
-    return Flexible(
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-        height: size.height * 0.06, // Set a fixed height for uniformity
-        decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.8) : Colors.grey[300],
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: TextButton(
-          onPressed: () {
-            setState(() {
-              selectedEmergencyLevel = label;
-            });
-          },
-          child: Text(
-            label,
-            style: TextStyle(
-              color: Colors.black, // Change text color to black
-              fontSize: size.width * 0.04,
-            ),
-          ),
-        ),
-      ),
     );
   }
 
@@ -292,19 +313,153 @@ class _RequisitionFormState extends State<RequisitionForm> {
           problemDescription = value;
         });
       },
-      maxLines: 3,
       decoration: InputDecoration(
-        hintText: 'Describe the problem...',
-        hintStyle: TextStyle(color: Colors.black54), // Darker hint text color
+        labelText: 'Describe the problem',
+        fillColor: Colors.white,
+        filled: true,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide:
-              BorderSide(color: Colors.white), // Change border color to white
         ),
-        fillColor: Color.fromARGB(31, 255, 255, 255), // Background color
-        filled: true, // Enable filling
       ),
-      style: TextStyle(color: Colors.black), // Darker input text color
     );
+  }
+
+  Widget _buildEmergencyButton(String label, Color color, Size size) {
+    return TextButton(
+      onPressed: () {
+        setState(() {
+          selectedEmergencyLevel = label;
+
+          final now = DateTime.now();
+
+          if (label == 'EMERGENCY') {
+            if (_isShopOpen(now)) {
+              // Set the date and time to now for emergency and lock the date
+              selectedDate = now;
+              selectedTime = TimeOfDay.fromDateTime(now);
+              dateController.text =
+                  DateFormat('yyyy-MM-dd').format(selectedDate!);
+              timeController.text = selectedTime!.format(context);
+            } else {
+              // Handle case where shop is closed
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                      'The shop is currently closed. Please choose another time.'),
+                ),
+              );
+
+              // Optionally set to next available opening time
+              DateTime nextOpening = _getNextOpeningTime(now);
+              selectedDate = nextOpening;
+              selectedTime = TimeOfDay.fromDateTime(nextOpening);
+              dateController.text =
+                  DateFormat('yyyy-MM-dd').format(selectedDate!);
+              timeController.text = selectedTime!.format(context);
+            }
+          } else if (label == 'URGENT') {
+            if (_isShopOpen(now)) {
+              // Allow the customer to choose the time for the same day
+              showTimePicker(
+                context: context,
+                initialTime: TimeOfDay.fromDateTime(now),
+              ).then((selectedTime) {
+                if (selectedTime != null) {
+                  // Create DateTime object for selected time
+                  DateTime selectedDateTime = DateTime(now.year, now.month,
+                      now.day, selectedTime.hour, selectedTime.minute);
+
+                  if (_isShopOpen(selectedDateTime)) {
+                    // Lock the date
+                    selectedDate = now; // Keep date as today
+                    this.selectedTime = selectedTime; // Update time
+                    timeController.text = selectedTime.format(context);
+                    dateController.text =
+                        DateFormat('yyyy-MM-dd').format(selectedDate!);
+                  } else {
+                    // Show error if time is outside business hours
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content:
+                            Text('Please select a time within business hours.'),
+                      ),
+                    );
+                  }
+                }
+              });
+            } else {
+              // Handle case where shop is closed
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                      'The shop is currently closed. Please choose another time.'),
+                ),
+              );
+
+              // Optionally set to next available opening time
+              DateTime nextOpening = _getNextOpeningTime(now);
+              selectedDate = nextOpening;
+              selectedTime = TimeOfDay.fromDateTime(nextOpening);
+              dateController.text =
+                  DateFormat('yyyy-MM-dd').format(selectedDate!);
+              timeController.text = selectedTime!.format(context);
+            }
+          }
+        });
+      },
+      child: Container(
+        width: size.width * 0.25,
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: selectedEmergencyLevel == label ? color : Colors.grey[300],
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Center(
+          child: Text(
+            label,
+            style: TextStyle(
+              color:
+                  selectedEmergencyLevel == label ? Colors.white : Colors.black,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+// Check if the shop is open based on the current time
+  bool _isShopOpen(DateTime dateTime) {
+    if (dateTime.weekday >= 1 && dateTime.weekday <= 5) {
+      // Weekdays: 9 AM to 5 PM
+      return dateTime.hour >= 9 && dateTime.hour < 17;
+    } else {
+      // Weekends: 9 AM to 12 PM
+      return dateTime.hour >= 9 && dateTime.hour < 12;
+    }
+  }
+
+// Get the next opening time if the shop is closed
+  DateTime _getNextOpeningTime(DateTime current) {
+    DateTime next = current;
+
+    if (current.weekday == 6) {
+      // If it's Saturday, set to next Sunday at 9 AM
+      next = DateTime(current.year, current.month, current.day + 1, 9);
+    } else if (current.weekday == 7) {
+      // If it's Sunday, check if current time is after 12 PM
+      if (current.hour >= 12) {
+        next = DateTime(current.year, current.month, current.day + 1, 9);
+      } else {
+        // Still on the same day, set to today at 9 AM
+        next = DateTime(current.year, current.month, current.day, 9);
+      }
+    } else {
+      // For weekdays (Monday to Friday), check if after 5 PM
+      if (current.hour >= 17) {
+        next = DateTime(current.year, current.month, current.day + 1, 9);
+      }
+    }
+
+    return next;
   }
 }

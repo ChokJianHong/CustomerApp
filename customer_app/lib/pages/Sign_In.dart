@@ -67,7 +67,7 @@ class _SignInPageState extends State<SignInPage> {
       print('Token: $token');
 
       // Store the token securely
-      final storage = const FlutterSecureStorage();
+      const storage = FlutterSecureStorage();
       await storage.write(key: 'userToken', value: token);
 
       // Fetch customer details using the token

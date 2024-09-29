@@ -67,6 +67,8 @@ const {
 const upload = require("../utils/imgUpload");
 const { createRequestForm, updateRequestFormStatus, getAllRequestForms, deleteRequestForm, getRequestFormById, getRequestFormsByTechnician } = require("../controllers/requestController");
 
+const { autocomplete } = require('../controllers/locationController');
+
 // auth routes
 router.post("/login", login);
 router.post("/register-admin", registerAdmin);
@@ -132,6 +134,10 @@ router.get("/inventory", getAllInventoryItems);
 router.get("/inventory/:id", getInventoryItemById);
 router.put("/inventory/:id", updateInventoryItem);
 router.delete("/inventory/:id", deleteInventoryItem);
+
+// Location
+router.get('/location/place-api-autocomplete', autocomplete);
+
 
 
 

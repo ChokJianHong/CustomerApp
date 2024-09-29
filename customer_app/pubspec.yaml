@@ -37,13 +37,20 @@ dependencies:
   cupertino_icons: ^1.0.6
   curved_navigation_bar: ^1.0.6
   table_calendar: ^3.1.2
-  http: ^1.2.2
+  http: 
   email_validator: '^2.1.17'
   flutter_secure_storage:
   provider: ^6.1.2
   dart_jsonwebtoken: ^2.14.0
   jwt_decoder: ^2.0.1
-  google_places_flutter:
+  get:
+  geolocator:
+  geocoding:
+  flutter_google_places:
+  flutter_typeahead:
+  google_maps_flutter: 
+  permission_handler: 
+
 
 dev_dependencies:
   flutter_test:
