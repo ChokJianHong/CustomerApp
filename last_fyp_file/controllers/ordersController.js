@@ -573,7 +573,7 @@ function viewCompletedOrderHistory(req, res) {
 }
 
 
-function viewCusOrdersDetail(req, res) {
+function viewOrdersDetail(req, res) {
   const orderId = req.params.id;
 
   const dbQuery = `
@@ -590,6 +590,8 @@ function viewCusOrdersDetail(req, res) {
       ordertable
     JOIN 
       customer c ON ordertable.customer_id = c.customer_id
+    LEFT JOIN
+      technician t ON ordertable.technician_id = t.technician_id
     WHERE 
       ordertable.order_id = ${orderId}
   `;
@@ -653,5 +655,5 @@ module.exports = {
   createReview,
   getOrderById,
   deleteOrder,
-  viewCusOrdersDetail,
+  viewOrdersDetail,
 };

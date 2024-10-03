@@ -4,29 +4,36 @@ import 'package:flutter/material.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String token;
-  const CustomAppBar({super.key,required this.token});
+  const CustomAppBar({super.key, required this.token});
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-
-
-      leading: GestureDetector(child: const Icon(Icons.settings, color: Colors.white,),onTap: () {
-        Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Setting(token: token,)),
-                  );
-      },),
+      leading: GestureDetector(
+        child: const Icon(
+          Icons.settings,
+          color: Colors.white,
+        ),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => Setting(
+                      token: token,
+                    )),
+          );
+        },
+      ),
       actions: const [
         Padding(
           padding: EdgeInsets.only(right: 16.0),
-          child: Icon(Icons.notifications, color: Colors.white,),
+          child: Icon(
+            Icons.notifications,
+            color: Colors.white,
+          ),
         )
-        ],
+      ],
       backgroundColor: AppColors.secondary,
-      
-
     );
   }
 

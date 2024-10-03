@@ -31,7 +31,7 @@ const {
   completedOrdersCount,
   ongoingOrdersCount,
   viewCompletedOrderHistory,
-  viewCusOrdersDetail,
+  viewOrdersDetail,
   viewRequestDetail,
   assignTechnician,
   getOrderDetail,
@@ -79,7 +79,7 @@ router.get("/customer/:token", getCustomerByToken);
 router.post("/customer/updateProfile/:id",decodeToken,updateCustomer);
 
 // order routes
-router.get( "/orders/details/:id",decodeToken,viewCusOrdersDetail);
+router.get( "/orders/details/:id",decodeToken,viewOrdersDetail);
 router.get("/orders", decodeToken, viewAllOrders);
 router.post("/orders", decodeToken, upload.single("image"), createOrder);
 router.get("/orders/history", decodeToken, viewCompletedOrderHistory);
