@@ -1,17 +1,22 @@
-import 'package:customer_app/Assets/components/SettingItem.dart';
-import 'package:customer_app/Assets/components/button.dart';
-import 'package:customer_app/core/configs/theme/app_colors.dart';
-import 'package:customer_app/pages/Profile.dart';
+
+import 'package:customer_app/assets/components/settingItems.dart';
+import 'package:customer_app/assets/components/textbox.dart';
+import 'package:customer_app/core/app_colors.dart';
+import 'package:customer_app/pages/profile.dart';
 import 'package:flutter/material.dart';
 
 class Setting extends StatelessWidget {
-  const Setting({super.key});
+  final String token;
+  const Setting({super.key, required this.token});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Account Settings', style: TextStyle(color: Colors.white),),
+        title: const Text(
+          'Account Settings',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: AppColors.secondary,
       ),
       backgroundColor: AppColors.primary,
@@ -61,13 +66,18 @@ class Setting extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.all(0),
                 children: [
-                  SettingItem(title: 'Account', onTap: () {
-                    Navigator.push(
+                  SettingItem(
+                    title: 'Account',
+                    onTap: () {
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const Profile()),
+                            builder: (context) => Profile(
+                                  token: token,
+                                )),
                       );
-                  },),
+                    },
+                  ),
                   const SettingItem(title: 'My Addresses'),
                   const SettingItem(title: 'Notification Settings'),
                   const SettingItem(title: 'App Language'),

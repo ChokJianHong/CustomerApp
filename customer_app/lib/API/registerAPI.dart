@@ -28,8 +28,8 @@ class RegisterAPI {
           'phone_number': phoneNumber,
           'location': location,
           'alarm_brand': alarmBrand,
-          'auto_gate_brand': alarmWarranty,
-          'warranty': gateBrand, // Convert DateTime to ISO 8601 string
+          'warranty': alarmWarranty, // Convert DateTime to ISO 8601 string
+          'auto_gate_brand': gateBrand,
         }),
       );
 

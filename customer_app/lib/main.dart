@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:customer_app/pages/Sign_In.dart';
 
 void main() => runApp(const MyApp());
+
 class MyApp extends StatelessWidget {
-  
   const MyApp({super.key});
 
   @override
@@ -29,8 +29,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const SignInPage(
-      ),
+      home: const SignInPage(),
       debugShowCheckedModeBanner: false,
     );
   }

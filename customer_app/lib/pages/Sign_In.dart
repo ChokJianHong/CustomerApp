@@ -1,16 +1,15 @@
-import 'package:customer_app/API/GetCustomerToken.dart';
-import 'package:customer_app/pages/Reqister.dart';
+import 'package:customer_app/API/getCustToken.dart';
+import 'package:customer_app/Assets/components/button.dart';
+import 'package:customer_app/assets/components/textbox.dart';
+import 'package:customer_app/pages/Register.dart';
+import 'package:customer_app/pages/home.dart';
 import 'package:flutter/material.dart';
 import 'package:customer_app/API/SignInAPI.dart';
-import 'package:customer_app/Assets/components/button.dart';
-import 'package:customer_app/Assets/components/text_box.dart';
-import 'package:customer_app/pages/HomePage.dart';
 import 'package:flutter/gestures.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SignInPage extends StatefulWidget {
- 
   const SignInPage({super.key});
 
   @override
@@ -76,7 +75,10 @@ class _SignInPageState extends State<SignInPage> {
       // Navigate to home page or handle success
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => HomePage(token: token,)),
+        MaterialPageRoute(
+            builder: (context) => HomePage(
+                  token: token,
+                )),
       );
     } catch (e) {
       setState(() {

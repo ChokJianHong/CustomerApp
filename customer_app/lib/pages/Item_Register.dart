@@ -1,7 +1,7 @@
-import 'package:customer_app/Assets/components/button.dart';
-import 'package:customer_app/pages/Sign_In.dart';
+import 'package:customer_app/assets/components/textbox.dart';
+import 'package:customer_app/core/app_colors.dart';
+import 'package:customer_app/pages/Sign_in.dart';
 import 'package:flutter/material.dart';
-import 'package:customer_app/core/configs/theme/app_colors.dart';
 import 'package:customer_app/API/registerAPI.dart'; // Ensure you import your API class
 
 class ItemRegister extends StatefulWidget {
@@ -59,6 +59,7 @@ class _ItemRegisterState extends State<ItemRegister> {
       // Store the selected date
       if (isAlarm) {
         _selectedAlarmWarranty = pickedDate;
+      } else {
       }
     }
   }
@@ -70,17 +71,17 @@ class _ItemRegisterState extends State<ItemRegister> {
       });
 
       try {
-        // Collect the values from your text fields
+        // Collect the values from your text fields and date pickers
         String alarmBrand = _alarmBrandController.text;
         String gateBrand = _autoGateBrandController.text;
 
-        // Ensure the alarm warranty date is selected
+        // Check for selected dates
         if (_selectedAlarmWarranty == null) {
-          _showErrorDialog('Please select the alarm warranty date.');
+          _showErrorDialog('Please select both warranty dates.');
           return;
         }
 
-        // Format the warranty date as a string
+        // Format the warranty dates as strings
         String alarmWarranty =
             "${_selectedAlarmWarranty!.year}-${_selectedAlarmWarranty!.month.toString().padLeft(2, '0')}-${_selectedAlarmWarranty!.day.toString().padLeft(2, '0')}";
 
@@ -91,9 +92,9 @@ class _ItemRegisterState extends State<ItemRegister> {
           widget.username,
           widget.phone,
           'Location',
-          alarmBrand, // Alarm Brand
-          gateBrand, // AutoGate Brand
-          alarmWarranty, // Only passing the alarm warranty date
+          alarmBrand,
+          gateBrand,
+          alarmWarranty,
         );
 
         // Handle the response

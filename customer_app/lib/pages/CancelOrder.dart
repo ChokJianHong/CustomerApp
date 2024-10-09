@@ -1,6 +1,6 @@
-import 'package:customer_app/Assets/components/button.dart';
-import 'package:customer_app/core/configs/theme/app_colors.dart';
-import 'package:customer_app/pages/ConfirmationRequest.dart';
+import 'package:customer_app/assets/components/textbox.dart';
+import 'package:customer_app/core/app_colors.dart';
+import 'package:customer_app/pages/Confirmation.dart';
 import 'package:flutter/material.dart';
 
 class CancelOrder extends StatelessWidget {
@@ -55,7 +55,9 @@ class CancelOrder extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => ConfirmationRequest(token: token,)),
+                      builder: (context) => ConfirmationRequest(
+                            token: token, orderId: null,
+                          )),
                 );
               },
             )

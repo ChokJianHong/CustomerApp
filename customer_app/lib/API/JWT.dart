@@ -5,13 +5,13 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 class CustomerIDPage extends StatelessWidget {
   final String token;
 
-  CustomerIDPage({Key? key, required this.token}) : super(key: key);
+  const CustomerIDPage({super.key, required this.token});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Fetch Customer ID"),
+        title: const Text("Fetch Customer ID"),
       ),
       body: Center(
         child: ElevatedButton(
@@ -24,7 +24,7 @@ class CustomerIDPage extends StatelessWidget {
             // Navigate back with the customer ID
             Navigator.pop(context, customerId);
           },
-          child: Text("Get Customer ID"),
+          child: const Text("Get Customer ID"),
         ),
       ),
     );
