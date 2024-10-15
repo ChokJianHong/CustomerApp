@@ -3,6 +3,8 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
 class CaptureImageScreen extends StatefulWidget {
+  const CaptureImageScreen({super.key});
+
   @override
   _CaptureImageScreenState createState() => _CaptureImageScreenState();
 }
@@ -11,8 +13,8 @@ class _CaptureImageScreenState extends State<CaptureImageScreen> {
   File? _image;
 
   Future<void> _captureImage() async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? image = await _picker.pickImage(source: ImageSource.camera);
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.camera);
 
     if (image != null) {
       setState(() {
@@ -25,7 +27,7 @@ class _CaptureImageScreenState extends State<CaptureImageScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Capture Image'),
+        title: const Text('Capture Image'),
       ),
       body: Container(
         // Ensure the body has constraints
@@ -36,9 +38,9 @@ class _CaptureImageScreenState extends State<CaptureImageScreen> {
           children: [
             ElevatedButton(
               onPressed: _captureImage,
-              child: Text('Capture Image'),
+              child: const Text('Capture Image'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             // Use a Container to constrain the size of the image display
             if (_image != null)
               Container(
@@ -55,7 +57,7 @@ class _CaptureImageScreenState extends State<CaptureImageScreen> {
                 ),
               )
             else
-              Text('No image captured.'),
+              const Text('No image captured.'),
           ],
         ),
       ),

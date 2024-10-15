@@ -6,7 +6,7 @@ import 'package:google_maps_webservice/geocoding.dart';
 import 'package:google_maps_webservice/places.dart';
 
 class CurrentLocationScreen extends StatefulWidget {
-  const CurrentLocationScreen({Key? key}) : super(key: key);
+  const CurrentLocationScreen({super.key});
 
   @override
   _CurrentLocationScreenState createState() => _CurrentLocationScreenState();
@@ -53,7 +53,7 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
               decoration: InputDecoration(
                 hintText: 'Search Location',
                 suffixIcon: IconButton(
-                  icon: Icon(Icons.search),
+                  icon: const Icon(Icons.search),
                   onPressed: () {
                     _searchLocation();
                   },
@@ -160,7 +160,7 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
       Marker(
         markerId: const MarkerId('currentLocation'),
         position: newPosition,
-        infoWindow: InfoWindow(title: "Current Location"),
+        infoWindow: const InfoWindow(title: "Current Location"),
       ),
     );
 
