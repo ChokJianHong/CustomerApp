@@ -1,3 +1,4 @@
+import 'package:camera/camera.dart';
 import 'package:customer_app/API/createOrder.dart';
 import 'package:customer_app/Assets/components/Divider.dart';
 import 'package:customer_app/assets/components/categorybuttons.dart';
@@ -6,6 +7,7 @@ import 'package:customer_app/assets/components/sectionbar.dart';
 import 'package:customer_app/assets/components/textbox.dart';
 import 'package:customer_app/core/app_colors.dart';
 import 'package:customer_app/pages/Confirmation.dart';
+import 'package:customer_app/pages/camera.dart';
 import 'package:customer_app/pages/currentPage.dart';
 import 'package:customer_app/pages/home.dart';
 import 'package:flutter/material.dart';
@@ -212,8 +214,18 @@ class _RequisitionFormState extends State<RequisitionForm> {
       width: double.infinity,
       color: AppColors.secondary,
       child: ElevatedButton.icon(
-        onPressed: () {
-          // Implement picture upload functionality here
+        onPressed: () async {
+          // Obtain the list of available cameras on the device.
+          final cameras = await availableCameras();
+          final firstCamera = cameras.first;
+
+          // Use Navigator.push to navigate to the camera screen
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => TakePictureScreen(camera: firstCamera),
+            ),
+          );
         },
         icon: const Icon(Icons.camera),
         style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
@@ -277,6 +289,13 @@ class _RequisitionFormState extends State<RequisitionForm> {
       return;
     }
 
+    // Open camera and capture an image
+    final imagePath = await _takePicture();
+    if (imagePath == null) {
+      // If the user cancels the camera, exit the method
+      return;
+    }
+
     Map<String, dynamic> orderData = {
       'order_date': dateController.text,
       'order_time': timeController.text,
@@ -284,6 +303,7 @@ class _RequisitionFormState extends State<RequisitionForm> {
       'urgency_level': selectedEmergencyLevel,
       'order_detail': problemDescription,
       'problem_type': selectedCategory,
+      'image_path': imagePath, // Include the captured image path
     };
 
     try {
@@ -305,6 +325,37 @@ class _RequisitionFormState extends State<RequisitionForm> {
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('Network error: Unable to create order')));
+    }
+  }
+
+// Method to open the camera and take a picture
+  Future<String?> _takePicture() async {
+    // Assuming you have already set up the camera controller and initialized it
+    try {
+      final cameras = await availableCameras();
+      final firstCamera = cameras.first;
+
+      // Create a camera controller
+      final cameraController = CameraController(
+        firstCamera,
+        ResolutionPreset.medium,
+      );
+
+      // Initialize the camera
+      await cameraController.initialize();
+
+      // Take a picture
+      final image = await cameraController.takePicture();
+
+      // Dispose of the controller
+      await cameraController.dispose();
+
+      return image.path; // Return the path of the captured image
+    } catch (e) {
+      print('Error capturing image: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to capture image.')));
+      return null; // Return null if there's an error
     }
   }
 
