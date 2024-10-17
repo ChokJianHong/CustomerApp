@@ -1,4 +1,3 @@
-
 import 'package:customer_app/assets/components/settingItems.dart';
 import 'package:customer_app/assets/components/textbox.dart';
 import 'package:customer_app/core/app_colors.dart';
@@ -31,7 +30,7 @@ class Setting extends StatelessWidget {
                 CircleAvatar(
                   radius: 40,
                   backgroundImage: AssetImage(
-                      'lib/Assets/photos/smallProfile.png'), // Replace with your image
+                      'lib/Assets/Images/smallProfile.png'), // Replace with your image
                 ),
                 SizedBox(width: 16),
                 Column(

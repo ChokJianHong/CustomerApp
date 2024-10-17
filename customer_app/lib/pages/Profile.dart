@@ -53,10 +53,13 @@ class _ProfileState extends State<Profile> {
       setState(() {
         usernameController.text = customerDetails['data']['name'] ?? '';
         emailController.text = customerDetails['data']['email'] ?? '';
-        phoneNumberController.text = customerDetails['data']['phone_number'] ?? '';
-        alarmWarrantyController.text = customerDetails['data']['warranty'] ?? '';
+        phoneNumberController.text =
+            customerDetails['data']['phone_number'] ?? '';
+        alarmWarrantyController.text =
+            customerDetails['data']['warranty'] ?? '';
         locationController.text = customerDetails['data']['location'] ?? '';
-        autoGateController.text = customerDetails['data']['auto_gate_brand'] ?? '';
+        autoGateController.text =
+            customerDetails['data']['auto_gate_brand'] ?? '';
         alarmController.text = customerDetails['data']['alarm_brand'] ?? '';
       });
 
@@ -179,20 +182,28 @@ class _ProfileState extends State<Profile> {
           child: Column(
             children: [
               const SizedBox(height: 20),
-              Center(child: Image.asset("lib/Assets/photos/Profile.png")),
+              Center(child: Image.asset("lib/Assets/Images/Profile.png")),
               const SizedBox(height: 10),
               const Text(
                 'Profile',
                 style: TextStyle(color: Colors.white, fontSize: 20),
               ),
               const SizedBox(height: 20),
-              ProfileAttribute(title: "Username", controller: usernameController),
-              ProfileAttribute(title: "Email Address", controller: emailController),
-              ProfileAttribute(title: "Phone Number", controller: phoneNumberController),
-              ProfileAttribute(title: "Location", controller: locationController),
-              ProfileAttribute(title: "Alarm Brand", controller: alarmController),
-              ProfileAttribute(title: "AutoGate Brand", controller: autoGateController),
-              ProfileAttribute(title: "Alarm Warranty Date", controller: alarmWarrantyController),
+              ProfileAttribute(
+                  title: "Username", controller: usernameController),
+              ProfileAttribute(
+                  title: "Email Address", controller: emailController),
+              ProfileAttribute(
+                  title: "Phone Number", controller: phoneNumberController),
+              ProfileAttribute(
+                  title: "Location", controller: locationController),
+              ProfileAttribute(
+                  title: "Alarm Brand", controller: alarmController),
+              ProfileAttribute(
+                  title: "AutoGate Brand", controller: autoGateController),
+              ProfileAttribute(
+                  title: "Alarm Warranty Date",
+                  controller: alarmWarrantyController),
               MyButton(text: 'Save', onTap: _updateProfile),
             ],
           ),

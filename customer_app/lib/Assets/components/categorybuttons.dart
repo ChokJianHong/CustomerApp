@@ -21,7 +21,7 @@ class _CategoryButtonsState extends State<CategoryButtons> {
         Expanded(
           child: categoryButton(
             label: 'Alarm System',
-            imagePath: 'lib/Assets/photos/Alarm.png',
+            imagePath: 'lib/Assets/Images/Alarm.png',
             isSelected: selectedCategory == 'Alarm',
             onTap: () {
               setState(() {
@@ -36,7 +36,7 @@ class _CategoryButtonsState extends State<CategoryButtons> {
         Expanded(
           child: categoryButton(
             label: 'AutoGate System',
-            imagePath: 'lib/Assets/photos/Autogate.png',
+            imagePath: 'lib/Assets/Images/Autogate.png',
             isSelected: selectedCategory == 'Autogate',
             onTap: () {
               setState(() {
