@@ -280,15 +280,6 @@ class _RequisitionFormState extends State<RequisitionForm> {
       return;
     }
 
-    // Time validation logic based on the selected date and time
-    bool isValidTime = _validateDateTime(selectedDate!, selectedTime!);
-
-    if (!isValidTime) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Selected time is outside of shop hours!')));
-      return;
-    }
-
     // Open camera and capture an image
     final imagePath = await _takePicture();
     if (imagePath == null) {
