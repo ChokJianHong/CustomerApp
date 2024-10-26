@@ -110,7 +110,7 @@ class _HomePageState extends State<HomePage> {
                     borderRadius: BorderRadius.circular(
                         10), // Apply border radius to the image as well
                     child: Image.asset(
-                      'lib/Assets/Images/banner.png',
+                      'lib/assets/images/banner.png',
                       fit: BoxFit
                           .contain, // Ensure the entire image fits within the container
                     ),

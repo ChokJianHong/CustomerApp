@@ -30,7 +30,7 @@ class Setting extends StatelessWidget {
                 CircleAvatar(
                   radius: 40,
                   backgroundImage: AssetImage(
-                      'lib/Assets/Images/smallProfile.png'), // Replace with your image
+                      'lib/assets/images/smallProfile.png'), // Replace with your image
                 ),
                 SizedBox(width: 16),
                 Column(

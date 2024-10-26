@@ -21,7 +21,7 @@ class OrderAPI {
       );
 
       if (response.statusCode == 201) {
-        return {'success': true, 'message': 'Order created successfully'};
+        return {'success': true, 'message': 'success'};
       } else {
         return {'success': false, 'message': 'Failed to create order'};
       }

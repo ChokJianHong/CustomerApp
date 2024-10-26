@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
-import 'package:customer_app/API/cameraTaken.dart';
 import 'package:customer_app/API/createOrder.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:customer_app/Assets/components/Divider.dart';
@@ -15,8 +14,9 @@ import 'package:customer_app/pages/Confirmation.dart';
 import 'package:customer_app/pages/currentPage.dart';
 import 'package:customer_app/pages/home.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:http_parser/http_parser.dart'; // For specifying file type
 
 class RequisitionForm extends StatefulWidget {
   final String token;
@@ -108,6 +108,56 @@ class _RequisitionFormState extends State<RequisitionForm> {
     }
   }
 
+  Future<Map<String, dynamic>> _uploadImageAndData(
+      Map<String, String> orderData) async {
+    if (_image == null) {
+      throw Exception('No image selected');
+    }
+
+    try {
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('http://10.0.2.2:5005/dashboarddatabase/orders'),
+      );
+
+      // Add authorization headers if needed
+      request.headers['Authorization'] = widget.token;
+
+      // Add the image file to the request
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'image',
+          _image!.path,
+          contentType: MediaType('image', 'jpeg'),
+        ),
+      );
+
+      // Add the rest of the order data
+      orderData.forEach((key, value) {
+        request.fields[key] = value;
+      });
+
+      // Send the request
+      var response = await request.send();
+
+      // Read the server's response
+      var responseData = await http.Response.fromStream(response);
+      var responseBody = jsonDecode(responseData.body);
+
+      if (response.statusCode == 201) {
+        // Return the parsed response
+        print(responseBody);
+        return responseBody;
+      } else {
+        print('Upload failed with status: ${response.statusCode}');
+        print('Response body: ${responseData.body}');
+        throw Exception('Upload failed');
+      }
+    } catch (e) {
+      print('Error uploading image and data: $e');
+      throw Exception('Upload failed');
+    }
+  }
 
   Future<void> _selectLocation() async {
     // Navigate to the location selection page and wait for the result
@@ -224,7 +274,7 @@ class _RequisitionFormState extends State<RequisitionForm> {
                   children: [
                     _image != null
                         ? Image.file(_image!)
-                        : Placeholder(
+                        : const Placeholder(
                             fallbackHeight: 200.0,
                             fallbackWidth: double.infinity,
                           ),
@@ -233,12 +283,12 @@ class _RequisitionFormState extends State<RequisitionForm> {
                       children: [
                         ElevatedButton(
                           onPressed: _pickImageFromGallery,
-                          child: Text('Select Image'),
+                          child: const Text('Select Image'),
                         ),
-                        SizedBox(width: 20),
+                        const SizedBox(width: 20),
                         ElevatedButton(
                           onPressed: _captureImageWithCamera,
-                          child: Text('Take Picture'),
+                          child: const Text('Take Picture'),
                         ),
                       ],
                     )
@@ -273,26 +323,8 @@ class _RequisitionFormState extends State<RequisitionForm> {
     );
   }
 
-  bool _validateDateTime(DateTime date, TimeOfDay time) {
-    final currentDateTime = DateTime.now();
-    final selectedDateTime =
-        DateTime(date.year, date.month, date.day, time.hour, time.minute);
-
-    // Check if the selected date and time is within shop hours
-    bool isWithinBusinessHours = false;
-    if (date.weekday >= 1 && date.weekday <= 5) {
-      // Weekdays: 9 AM to 5 PM
-      isWithinBusinessHours =
-          selectedDateTime.hour >= 9 && selectedDateTime.hour < 17;
-    } else {
-      // Weekends: 9 AM to 12 PM
-      isWithinBusinessHours =
-          selectedDateTime.hour >= 9 && selectedDateTime.hour < 12;
-    }
-    return isWithinBusinessHours && selectedDateTime.isAfter(currentDateTime);
-  }
-
   void _handleContinue() async {
+    // Check if all required fields are filled
     if (selectedDate == null ||
         selectedTime == null ||
         selectedLocation == null ||
@@ -304,36 +336,33 @@ class _RequisitionFormState extends State<RequisitionForm> {
       return;
     }
 
-    // Open camera and capture an image
-    final imagePath = await _takePicture();
-    if (imagePath == null) {
-      // If the user cancels the camera, exit the method
+    // Check if an image has been selected
+    if (_image == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please select or take a picture!')));
       return;
     }
 
-
-
-    Map<String, dynamic> orderData = {
+    // Prepare order data
+    Map<String, String> orderData = {
       'order_date': dateController.text,
       'order_time': timeController.text,
-      'location_detail': selectedLocation,
-      'urgency_level': selectedEmergencyLevel,
-      'order_detail': problemDescription,
-      'problem_type': selectedCategory,
-      'order_img': uploadedImageUrl, // Include the uploaded image URL
+      'location_detail': selectedLocation!,
+      'urgency_level': selectedEmergencyLevel!,
+      'order_detail': problemDescription!,
+      'problem_type': selectedCategory!,
     };
 
     try {
-      final result =
-          await OrderAPI.createOrder(token: widget.token, orderData: orderData);
-      if (result['status'] == 'success') {
+      // Send data and image together
+      final result = await _uploadImageAndData(orderData);
+      print(result);
+      if (result['message'] == 'success') {
         Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ConfirmationRequest(
-                      token: widget.token,
-                      orderId: null,
-                    ))); // Navigate to confirmation page
+          context,
+          MaterialPageRoute(
+              builder: (context) => HomePage(token: widget.token)),
+        ); // Navigate to confirmation page
       } else {
         String errorMessage = result['message'] ?? 'An error occurred';
         ScaffoldMessenger.of(context)
@@ -526,7 +555,7 @@ class _RequisitionFormState extends State<RequisitionForm> {
         next = DateTime(current.year, current.month, current.day + 1, 9);
         // If the next day is a weekend, move to the following Monday at 9 AM
         if (next.weekday == DateTime.saturday) {
-          next = next.add(Duration(days: 2));
+          next = next.add(const Duration(days: 2));
         }
       } else if (current.hour < 9) {
         // If before 9 AM on a weekday, set to today at 9 AM
