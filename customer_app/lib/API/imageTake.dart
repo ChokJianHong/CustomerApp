@@ -8,8 +8,7 @@ class MyApp extends StatelessWidget {
   final CameraDescription camera;
   final String token;
 
-  const MyApp({Key? key, required this.camera, required this.token})
-      : super(key: key);
+  const MyApp({super.key, required this.camera, required this.token});
 
   @override
   Widget build(BuildContext context) {

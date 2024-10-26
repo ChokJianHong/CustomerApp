@@ -1,6 +1,10 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:camera/camera.dart';
+import 'package:customer_app/API/cameraTaken.dart';
 import 'package:customer_app/API/createOrder.dart';
-import 'package:customer_app/API/imageTake.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:customer_app/Assets/components/Divider.dart';
 import 'package:customer_app/assets/components/categorybuttons.dart';
 import 'package:customer_app/assets/components/expansion.dart';
@@ -12,6 +16,7 @@ import 'package:customer_app/pages/currentPage.dart';
 import 'package:customer_app/pages/home.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
 class RequisitionForm extends StatefulWidget {
   final String token;
@@ -28,6 +33,8 @@ class _RequisitionFormState extends State<RequisitionForm> {
   String? selectedEmergencyLevel;
   String? problemDescription;
   String? selectedCategory;
+  final ImagePicker _picker = ImagePicker();
+  File? _image;
 
   TextEditingController dateController = TextEditingController();
   TextEditingController timeController = TextEditingController();
@@ -80,6 +87,27 @@ class _RequisitionFormState extends State<RequisitionForm> {
       }
     }
   }
+
+  // Function to pick an image from the gallery
+  Future<void> _pickImageFromGallery() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+    }
+  }
+
+  // Function to capture an image with the camera
+  Future<void> _captureImageWithCamera() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+    }
+  }
+
 
   Future<void> _selectLocation() async {
     // Navigate to the location selection page and wait for the result
@@ -192,8 +220,30 @@ class _RequisitionFormState extends State<RequisitionForm> {
                 const SizedBox(height: 30),
                 CustomExpansionTile("Problem Description", Icons.description,
                     _buildDescriptionField()),
-                CustomExpansionTile('PICTURE OF PROBLEM', Icons.camera_alt,
-                    _buildPictureButton()),
+                Column(
+                  children: [
+                    _image != null
+                        ? Image.file(_image!)
+                        : Placeholder(
+                            fallbackHeight: 200.0,
+                            fallbackWidth: double.infinity,
+                          ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          onPressed: _pickImageFromGallery,
+                          child: Text('Select Image'),
+                        ),
+                        SizedBox(width: 20),
+                        ElevatedButton(
+                          onPressed: _captureImageWithCamera,
+                          child: Text('Take Picture'),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
                 CustomExpansionTile(
                     'LOCATION', Icons.location_on, _buildLocationButton()),
                 const SizedBox(height: 40),
@@ -205,33 +255,6 @@ class _RequisitionFormState extends State<RequisitionForm> {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildPictureButton() {
-    return Container(
-      width: double.infinity,
-      color: AppColors.secondary,
-      child: ElevatedButton.icon(
-        onPressed: () async {
-          // Obtain the list of available cameras on the device.
-          final cameras = await availableCameras();
-          final firstCamera = cameras.first;
-
-          // Use Navigator.push to navigate to the camera screen
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  TakePictureScreen1(camera: firstCamera, token: widget.token),
-            ),
-          );
-        },
-        icon: const Icon(Icons.camera),
-        style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-        label:
-            const Text('Insert Picture', style: TextStyle(color: Colors.white)),
       ),
     );
   }
@@ -288,6 +311,8 @@ class _RequisitionFormState extends State<RequisitionForm> {
       return;
     }
 
+
+
     Map<String, dynamic> orderData = {
       'order_date': dateController.text,
       'order_time': timeController.text,
@@ -295,7 +320,7 @@ class _RequisitionFormState extends State<RequisitionForm> {
       'urgency_level': selectedEmergencyLevel,
       'order_detail': problemDescription,
       'problem_type': selectedCategory,
-      'image_path': imagePath, // Include the captured image path
+      'order_img': uploadedImageUrl, // Include the uploaded image URL
     };
 
     try {
@@ -480,7 +505,8 @@ class _RequisitionFormState extends State<RequisitionForm> {
 
 // Check if the shop is open based on the current time
   bool _isShopOpen(DateTime dateTime) {
-    if (dateTime.weekday >= 1 && dateTime.weekday <= 5) {
+    if (dateTime.weekday >= DateTime.monday &&
+        dateTime.weekday <= DateTime.friday) {
       // Weekdays: 9 AM to 5 PM
       return dateTime.hour >= 9 && dateTime.hour < 17;
     } else {
@@ -491,23 +517,36 @@ class _RequisitionFormState extends State<RequisitionForm> {
 
 // Get the next opening time if the shop is closed
   DateTime _getNextOpeningTime(DateTime current) {
-    DateTime next = current;
+    DateTime next;
 
-    if (current.weekday == 6) {
-      // If it's Saturday, set to next Sunday at 9 AM
-      next = DateTime(current.year, current.month, current.day + 1, 9);
-    } else if (current.weekday == 7) {
-      // If it's Sunday, check if current time is after 12 PM
-      if (current.hour >= 12) {
-        next = DateTime(current.year, current.month, current.day + 1, 9);
-      } else {
-        // Still on the same day, set to today at 9 AM
-        next = DateTime(current.year, current.month, current.day, 9);
-      }
-    } else {
-      // For weekdays (Monday to Friday), check if after 5 PM
+    if (current.weekday >= DateTime.monday &&
+        current.weekday <= DateTime.friday) {
+      // Weekdays: if it's after 5 PM, set to next day at 9 AM
       if (current.hour >= 17) {
         next = DateTime(current.year, current.month, current.day + 1, 9);
+        // If the next day is a weekend, move to the following Monday at 9 AM
+        if (next.weekday == DateTime.saturday) {
+          next = next.add(Duration(days: 2));
+        }
+      } else if (current.hour < 9) {
+        // If before 9 AM on a weekday, set to today at 9 AM
+        next = DateTime(current.year, current.month, current.day, 9);
+      } else {
+        // Shop is open within weekday hours
+        next = current;
+      }
+    } else {
+      // Weekends: if it's after 12 PM, set to next weekday at 9 AM
+      if (current.hour >= 12 || current.weekday == DateTime.sunday) {
+        int daysToMonday = (8 - current.weekday) % 7;
+        next = DateTime(
+            current.year, current.month, current.day + daysToMonday, 9);
+      } else if (current.hour < 9) {
+        // If before 9 AM on a weekend, set to today at 9 AM
+        next = DateTime(current.year, current.month, current.day, 9);
+      } else {
+        // Shop is open within weekend hours
+        next = current;
       }
     }
 

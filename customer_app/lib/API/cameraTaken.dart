@@ -9,7 +9,8 @@ import 'package:path/path.dart' as path;
 class DisplayPictureScreen extends StatefulWidget {
   final String token; // Accept the token here
 
-  const DisplayPictureScreen({Key? key, required this.token, required String imagePath}) : super(key: key);
+  const DisplayPictureScreen(String imagePath,
+      {super.key, required this.token});
 
   @override
   _DisplayPictureScreenState createState() => _DisplayPictureScreenState();
@@ -34,7 +35,7 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
   Future<void> _uploadPicture() async {
     if (_imageFile == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please select an image first.')),
+        const SnackBar(content: Text('Please select an image first.')),
       );
       return;
     }
@@ -100,7 +101,7 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
             ),
             const SizedBox(height: 20),
             if (_isUploading)
-              CircularProgressIndicator() // Show loading indicator
+              const CircularProgressIndicator() // Show loading indicator
             else
               ElevatedButton(
                 onPressed: _uploadPicture, // Trigger the upload

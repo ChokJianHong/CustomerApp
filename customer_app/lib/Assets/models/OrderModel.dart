@@ -6,7 +6,7 @@ class OrderModel {
   final String orderTime;
   final String orderStatus;
   final String orderDetail;
-  final String orderImg;
+  final String? orderImg;
   final String? orderDoneImg;
   final String urgencyLevel;
   final String problemType;
