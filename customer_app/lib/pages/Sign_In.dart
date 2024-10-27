@@ -113,7 +113,7 @@ class _SignInPageState extends State<SignInPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Image.asset('lib/Assets/Images/signinlock.png'),
+                Image.asset('lib/assets/images/signinlock.png'),
                 const SizedBox(height: 20),
                 const Text('Welcome Back!',
                     style: TextStyle(

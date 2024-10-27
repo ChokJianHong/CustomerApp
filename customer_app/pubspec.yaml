@@ -80,14 +80,14 @@ flutter:
   uses-material-design: true
 
   assets:
-    - lib/Assets/Images/signinlock.png
-    - lib/Assets/Images/arrowRight.png
-    - lib/Assets/Images/Autogate.png
-    - lib/Assets/Images/Alarm.png
-    - lib/Assets/Images/banner.png
-    - lib/Assets/Images/Profile.png
-    - lib/Assets/Images/smallProfile.png
-    - lib/Assets/Images/Time.png
+    - lib/assets/images/signinlock.png
+    - lib/assets/images/arrowRight.png
+    - lib/assets/images/Autogate.png
+    - lib/assets/images/Alarm.png
+    - lib/assets/images/banner.png
+    - lib/assets/images/Profile.png
+    - lib/assets/images/smallProfile.png
+    - lib/assets/images/Time.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
