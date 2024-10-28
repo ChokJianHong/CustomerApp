@@ -15,9 +15,11 @@ import 'package:intl/intl.dart';
 
 class RequisitionForm extends StatefulWidget {
   final String token;
-  const RequisitionForm({super.key, required this.token});
+  final String? orderId;
+  const RequisitionForm({super.key, required this.token, this.orderId});
 
   @override
+  // ignore: library_private_types_in_public_api
   _RequisitionFormState createState() => _RequisitionFormState();
 }
 
@@ -301,17 +303,24 @@ class _RequisitionFormState extends State<RequisitionForm> {
       final result =
           await OrderAPI.createOrder(token: widget.token, orderData: orderData);
       if (result['status'] == 'success') {
-        Navigator.push(
+        Navigator.pushReplacement(
             context,
             MaterialPageRoute(
                 builder: (context) => ConfirmationRequest(
                       token: widget.token,
-                      orderId: null,
+                      orderId: widget.orderId ?? '',
                     ))); // Navigate to confirmation page
       } else {
         String errorMessage = result['message'] ?? 'An error occurred';
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('Error: $errorMessage')));
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ConfirmationRequest(
+                      token: widget.token,
+                      orderId: widget.orderId ?? '',
+                    )));
       }
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
