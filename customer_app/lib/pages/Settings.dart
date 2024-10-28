@@ -1,6 +1,7 @@
 import 'package:customer_app/assets/components/settingItems.dart';
 import 'package:customer_app/assets/components/textbox.dart';
 import 'package:customer_app/core/app_colors.dart';
+import 'package:customer_app/pages/Sign_In.dart';
 import 'package:customer_app/pages/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -29,7 +30,8 @@ class _SettingState extends State<Setting> {
 
     try {
       // Fetch customer details using the token
-      final customerDetails = await CustomerToken().getCustomerByToken(widget.token);
+      final customerDetails =
+          await CustomerToken().getCustomerByToken(widget.token);
       print('Customer details: $customerDetails'); // Debugging line
 
       // Decode the token to extract customer ID, if needed
@@ -136,7 +138,16 @@ class _SettingState extends State<Setting> {
             ),
           ),
 
-          MyButton(text: 'Sign Out', onTap: () {}),
+          MyButton(
+              text: 'Sign Out',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SignInPage(),
+                  ),
+                );
+              }),
         ],
       ),
     );

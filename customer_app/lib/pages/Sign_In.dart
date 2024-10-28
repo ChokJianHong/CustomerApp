@@ -1,6 +1,7 @@
 import 'package:customer_app/API/getCustToken.dart';
 import 'package:customer_app/Assets/components/button.dart';
 import 'package:customer_app/assets/components/textbox.dart';
+import 'package:customer_app/core/app_colors.dart';
 import 'package:customer_app/pages/Register.dart';
 import 'package:customer_app/pages/home.dart';
 import 'package:flutter/material.dart';
@@ -133,53 +134,24 @@ class _SignInPageState extends State<SignInPage> {
                   obscureText: true,
                 ),
                 const SizedBox(height: 10),
+                Container(
+                  alignment: Alignment.centerRight, // Aligns to the right
+                  child: Text(
+                    "Forgot Password?",
+                    style: TextStyle(color: Colors.grey[400], fontSize: 14),
+                  ),
+                ),
                 if (errorMessage != null)
                   Text(errorMessage!,
                       style: const TextStyle(color: Colors.red)),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 isLoading
                     ? const CircularProgressIndicator()
-                    : MyButton(text: "Sign In", onTap: _signIn),
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    const Expanded(
-                      child: Divider(
-                          thickness: 1, color: Colors.white, endIndent: 10),
-                    ),
-                    Text("or continue with",
-                        style:
-                            TextStyle(color: Colors.grey[400], fontSize: 14)),
-                    const Expanded(
-                      child: Divider(
-                          thickness: 1, color: Colors.white, endIndent: 10),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.account_circle),
-                      color: Colors.white,
-                      iconSize: 50,
-                      onPressed: () {
-                        // Handle Google login
-                      },
-                    ),
-                    const SizedBox(width: 30),
-                    IconButton(
-                      icon: const Icon(
-                          Icons.settings), // Substitute with your second icon
-                      color: Colors.white,
-                      iconSize: 50,
-                      onPressed: () {
-                        // Handle second login
-                      },
-                    ),
-                  ],
-                ),
+                    : MyButton(
+                        text: "Sign In",
+                        onTap: _signIn,
+                        backgroundColor: AppColors.secondary,
+                      ),
                 const SizedBox(height: 20),
                 RichText(
                   text: TextSpan(

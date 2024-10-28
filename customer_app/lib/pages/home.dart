@@ -20,8 +20,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 1;
-  final CustomerOrder customerOrder =
-      CustomerOrder(); // Instantiate the service
+  final CustomerOrder customerOrder = CustomerOrder();
   late String customerId;
   late Future<List<OrderModel>> _latestOrderFuture;
 
@@ -33,19 +32,12 @@ class _HomePageState extends State<HomePage> {
 
   String formatDateTime(String utcDateTime) {
     try {
-      // Parse the UTC date string into a DateTime object
       DateTime parsedDate = DateTime.parse(utcDateTime);
-
-      // Convert the UTC date to local time
       DateTime localDate = parsedDate.toLocal();
-
-      // Format the local date into a desired string format
-      return DateFormat('yyyy-MM-dd HH:mm:ss')
-          .format(localDate); // Adjust format as needed
+      return DateFormat('yyyy-MM-dd HH:mm:ss').format(localDate);
     } catch (e) {
-      // Handle potential parsing errors
       print('Error parsing date: $e');
-      return 'Invalid date'; // Return a default value or error message
+      return 'Invalid date';
     }
   }
 
@@ -54,22 +46,18 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     try {
       Map<String, dynamic> decodedToken = JwtDecoder.decode(widget.token);
-      customerId = decodedToken['userId'].toString(); // Adjust key as needed
-      print('Customer ID: $customerId');
+      customerId = decodedToken['userId'].toString();
     } catch (error) {
       print('Error decoding token: $error');
-      customerId = 'default'; // Set a default value
+      customerId = 'default';
     }
-
-    // Fetch orders using the customer ID
     _latestOrderFuture = customerId.isNotEmpty
         ? customerOrder.getCustomerOrders(widget.token, customerId)
-        : Future.value([]); // Initialize with empty list
+        : Future.value([]);
   }
 
   @override
   Widget build(BuildContext context) {
-    // Use MediaQuery to get screen size
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -82,37 +70,31 @@ class _HomePageState extends State<HomePage> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              SizedBox(
-                  height: size.height * 0.02), // Adjust size proportionally
-              _buildServiceHours(size),
-              SizedBox(
-                  height: size.height * 0.02), // Adjust spacing proportionally
-              _buildCurrentOrders(size),
+              SizedBox(height: size.height * 0.02),
+              _buildServiceHours(),
+              SizedBox(height: size.height * 0.02),
+              _buildCurrentOrders(),
               SizedBox(height: size.height * 0.02),
               Center(
                 child: Container(
-                  width: size.width * 0.9, // Take 90% of the screen width
-                  height:
-                      size.height * 0.2, // Limit height to 20% of screen height
+                  width: size.width * 0.9,
+                  height: size.height * 0.2,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(
-                        10), // Optional: Add border radius for styling
+                    borderRadius: BorderRadius.circular(10),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.2),
                         spreadRadius: 1,
                         blurRadius: 10,
-                        offset: const Offset(0, 4), // Shadow position
+                        offset: const Offset(0, 4),
                       ),
                     ],
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(
-                        10), // Apply border radius to the image as well
+                    borderRadius: BorderRadius.circular(10),
                     child: Image.asset(
                       'lib/assets/images/banner.png',
-                      fit: BoxFit
-                          .contain, // Ensure the entire image fits within the container
+                      fit: BoxFit.contain,
                     ),
                   ),
                 ),
@@ -130,7 +112,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   // Build Service Hours Section
-  Widget _buildServiceHours(Size size) {
+  Widget _buildServiceHours() {
     return Card(
       color: AppColors.secondary,
       shape: RoundedRectangleBorder(
@@ -151,25 +133,14 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Dynamically size the columns
-                _buildServiceDayColumn(
-                  'Monday - Friday',
-                  '9:00 A.M. to 5:00 P.M.',
-                  size.width / 3,
-                ),
-                _buildServiceDayColumn(
-                  'Saturday - Sunday',
-                  '9:00 A.M. to 12:00 P.M.',
-                  size.width / 3,
-                ),
-                _buildServiceDayColumn(
-                  'Public Holiday',
-                  'OFF',
-                  size.width / 3,
-                ),
+                _buildServiceDayColumn('Monday - Friday', '9:00 A.M. to 5:00 P.M.'),
+                const SizedBox(height: 10),
+                _buildServiceDayColumn('Saturday - Sunday', '9:00 A.M. to 12:00 P.M.'),
+                const SizedBox(height: 10),
+                _buildServiceDayColumn('Public Holiday', 'OFF'),
               ],
             ),
           ],
@@ -179,33 +150,28 @@ class _HomePageState extends State<HomePage> {
   }
 
   // Service Day Column Helper
-  Widget _buildServiceDayColumn(String day, String time, double width) {
-    return Flexible(
-      child: SizedBox(
-        width: width,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              day,
-              style: const TextStyle(color: Colors.white, fontSize: 14),
-              overflow: TextOverflow.ellipsis, // Prevent overflow
-              maxLines: 1, // Limit to one line
-            ),
-            Text(
-              time,
-              style: const TextStyle(color: Colors.white, fontSize: 14),
-              overflow: TextOverflow.ellipsis, // Prevent overflow
-              maxLines: 1, // Limit to one line
-            ),
-          ],
+  Widget _buildServiceDayColumn(String day, String time) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          day,
+          style: const TextStyle(color: Colors.white, fontSize: 14),
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
         ),
-      ),
+        Text(
+          time,
+          style: const TextStyle(color: Colors.white, fontSize: 14),
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
+        ),
+      ],
     );
   }
 
   // Build Current Orders Section
-  Widget _buildCurrentOrders(Size size) {
+  Widget _buildCurrentOrders() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -262,60 +228,16 @@ class _HomePageState extends State<HomePage> {
                         );
                       },
                       child: JobCard(
-                          name: order.problemType,
-                          description: order.orderDetail,
-                          status: order.orderStatus),
+                        name: order.problemType,
+                        description: order.orderDetail,
+                        status: order.orderStatus,
+                      ),
                     );
                   },
                 );
               }
-              return const SizedBox(); // Return an empty box if no data
+              return const SizedBox();
             },
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Build Order Card Widget
-  Widget _buildOrderCard(
-      String service, String person, String dateTime, Size size) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                service,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                person,
-                style: const TextStyle(fontSize: 16),
-              ),
-            ],
-          ),
-          SizedBox(
-            width: size.width * 0.4, // Adjust width dynamically for date text
-            child: Text(
-              dateTime,
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
-              textAlign: TextAlign.right,
-            ),
           ),
         ],
       ),
