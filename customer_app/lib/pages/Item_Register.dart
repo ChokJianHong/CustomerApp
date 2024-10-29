@@ -101,9 +101,9 @@ class _ItemRegisterState extends State<ItemRegister> {
           widget.phone,
           'Location',
           alarmBrand,
-          gateBrand,
           alarmWarranty,
           autogateWarranty,
+          gateBrand,
         );
 
         // Handle the response

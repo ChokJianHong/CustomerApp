@@ -13,26 +13,39 @@ class RegisterAPI {
       String location,
       String alarmBrand,
       String alarmWarranty,
+      String autogateWarranty,
       String gateBrand) async {
     try {
+      // Construct the URL
+      final url = Uri.parse('$baseUrl/dashboarddatabase/customer/register');
+
+      // Create the request body
+      final body = jsonEncode({
+        'email': email,
+        'password': password,
+        'name': name,
+        'phone_number': phoneNumber,
+        'location': location,
+        'alarm_brand': alarmBrand,
+        'alarm_warranty': alarmWarranty, // Corrected key here
+        'auto_gate_warranty': autogateWarranty,
+        'auto_gate_brand': gateBrand,
+      });
+
+      // Debugging: print the URL and body
+      print('Sending POST request to: $url');
+      print('Request body: $body');
+
+      // Make the POST request
       final response = await http.post(
-        Uri.parse(
-            '$baseUrl/dashboarddatabase/customer/register'), // Assuming your Node.js register route is '/register'
+        url,
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: jsonEncode({
-          'email': email,
-          'password': password,
-          'name': name,
-          'phone_number': phoneNumber,
-          'location': location,
-          'alarm_brand': alarmBrand,
-          'warranty': alarmWarranty, // Convert DateTime to ISO 8601 string
-          'auto_gate_brand': gateBrand,
-        }),
+        body: body,
       );
 
+      // Handle response
       if (response.statusCode == 201) {
         return jsonDecode(response.body);
       } else if (response.statusCode == 400) {
