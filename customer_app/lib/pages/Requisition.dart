@@ -274,17 +274,30 @@ class _RequisitionFormState extends State<RequisitionForm> {
                             fallbackHeight: 200.0,
                             fallbackWidth: double.infinity,
                           ),
+                    const SizedBox(
+                      height: 20,
+                    ),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.secondary),
                           onPressed: _pickImageFromGallery,
-                          child: const Text('Select Image'),
+                          child: const Text(
+                            'Select Image',
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                         const SizedBox(width: 20),
                         ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.secondary),
                           onPressed: _captureImageWithCamera,
-                          child: const Text('Take Picture'),
+                          child: const Text(
+                            'Take Picture',
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                       ],
                     )
