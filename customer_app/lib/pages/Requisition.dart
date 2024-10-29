@@ -266,6 +266,12 @@ class _RequisitionFormState extends State<RequisitionForm> {
                 const SizedBox(height: 30),
                 CustomExpansionTile("Problem Description", Icons.description,
                     _buildDescriptionField()),
+                const ADivider(),
+                SectionTitle(
+                    title: 'Camera', icon: Icons.camera_outlined, size: size),
+                const SizedBox(
+                  height: 20,
+                ),
                 Column(
                   children: [
                     _image != null
@@ -307,6 +313,7 @@ class _RequisitionFormState extends State<RequisitionForm> {
                     'LOCATION', Icons.location_on, _buildLocationButton()),
                 const SizedBox(height: 40),
                 MyButton(
+                  backgroundColor: AppColors.secondary,
                   text: 'Continue',
                   onTap: () => _handleContinue(),
                 ),
