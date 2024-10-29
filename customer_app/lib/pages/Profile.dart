@@ -24,6 +24,8 @@ class _ProfileState extends State<Profile> {
   final TextEditingController alarmController = TextEditingController();
   final TextEditingController alarmWarrantyController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
+  final TextEditingController autoGateWarantyController =
+      TextEditingController();
   String? customerId;
 
   @override
@@ -56,11 +58,13 @@ class _ProfileState extends State<Profile> {
         phoneNumberController.text =
             customerDetails['data']['phone_number'] ?? '';
         alarmWarrantyController.text =
-            customerDetails['data']['warranty'] ?? '';
+            customerDetails['data']['alarm_warranty'] ?? '';
         locationController.text = customerDetails['data']['location'] ?? '';
         autoGateController.text =
             customerDetails['data']['auto_gate_brand'] ?? '';
         alarmController.text = customerDetails['data']['alarm_brand'] ?? '';
+        autoGateWarantyController.text =
+            customerDetails['data']['auto_gate_warranty'] ?? '';
       });
 
       return customerDetails;
@@ -76,10 +80,11 @@ class _ProfileState extends State<Profile> {
     final String name = usernameController.text;
     final String location = locationController.text;
     final String email = emailController.text;
-    final String warranty = alarmWarrantyController.text;
+    final String alarmWarranty = alarmWarrantyController.text;
     final String autoGate = autoGateController.text;
     final String alarm = alarmController.text;
     final String phone = phoneNumberController.text;
+    final String autogateWarranty = autoGateWarantyController.text;
 
     if (customerId == null) {
       _showErrorDialog('Customer ID is not available. Please try again later.');
@@ -98,7 +103,8 @@ class _ProfileState extends State<Profile> {
         alarm,
         autoGate,
         phone,
-        warranty,
+        alarmWarranty,
+        autogateWarranty,
       );
 
       print('Update response: $response'); // Debugging line
@@ -191,20 +197,34 @@ class _ProfileState extends State<Profile> {
               const SizedBox(height: 20),
               ProfileAttribute(
                   title: "Username", controller: usernameController),
+              const SizedBox(height: 20),
               ProfileAttribute(
                   title: "Email Address", controller: emailController),
+              const SizedBox(height: 20),
               ProfileAttribute(
                   title: "Phone Number", controller: phoneNumberController),
+              const SizedBox(height: 20),
               ProfileAttribute(
                   title: "Location", controller: locationController),
+              const SizedBox(height: 20),
               ProfileAttribute(
                   title: "Alarm Brand", controller: alarmController),
-              ProfileAttribute(
-                  title: "AutoGate Brand", controller: autoGateController),
+              const SizedBox(height: 20),
               ProfileAttribute(
                   title: "Alarm Warranty Date",
                   controller: alarmWarrantyController),
-              MyButton(text: 'Save', onTap: _updateProfile),
+              const SizedBox(height: 40),
+              ProfileAttribute(
+                  title: "AutoGate Brand", controller: autoGateController),
+              const SizedBox(height: 20),
+              ProfileAttribute(
+                  title: "Auto Gate Warranty Date",
+                  controller: autoGateWarantyController),
+              const SizedBox(height: 40),
+              MyButton(
+                  text: 'Save',
+                  backgroundColor: AppColors.secondary,
+                  onTap: _updateProfile),
             ],
           ),
         ),

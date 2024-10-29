@@ -55,9 +55,13 @@ class _OrdersPageState extends State<OrdersPage> {
   }
 
   // Function to fetch orders based on the selected filter
-  Future<List<OrderModel>> _fetchOrders() {
-    return CustomerOrder()
+  Future<List<OrderModel>> _fetchOrders() async {
+    final orders = await CustomerOrder()
         .getCustomerOrders(widget.token, customerId, status: _selectedStatus);
+
+    // Sort orders by date in descending order (newest first)
+    orders.sort((a, b) => b.orderDate.compareTo(a.orderDate));
+    return orders;
   }
 
   @override

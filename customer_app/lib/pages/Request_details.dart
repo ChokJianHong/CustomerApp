@@ -21,7 +21,7 @@ class RequestDetails extends StatefulWidget {
 class _RequestDetailsState extends State<RequestDetails> {
   int _currentIndex = 2;
   late Future<Map<String, dynamic>> _orderDetailFuture;
-  Future<Map<String, dynamic>>? _technicianDetailFuture; // Change to nullable
+  Future<Map<String, dynamic>>? _technicianDetailFuture;
 
   void _onTapTapped(int index) {
     setState(() {
@@ -32,8 +32,7 @@ class _RequestDetailsState extends State<RequestDetails> {
   @override
   void initState() {
     super.initState();
-    _orderDetailFuture =
-        _fetchOrderDetails(widget.token, widget.orderId); // Fetch data on init
+    _orderDetailFuture = _fetchOrderDetails(widget.token, widget.orderId);
   }
 
   String formatDateTime(String utcDateTime) {
@@ -52,7 +51,7 @@ class _RequestDetailsState extends State<RequestDetails> {
     try {
       final orderDetails = await OrderDetails().getOrderDetail(token, orderId);
       if (orderDetails['success']) {
-        return orderDetails; // Return the entire response
+        return orderDetails;
       } else {
         if (mounted) {
           _showErrorDialog(orderDetails['error']);
@@ -148,7 +147,7 @@ class _RequestDetailsState extends State<RequestDetails> {
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
-                  Navigator.of(context).pop(); // Go back to the previous screen
+                  Navigator.of(context).pop();
                 },
                 child: const Text('OK'),
               ),
@@ -171,21 +170,15 @@ class _RequestDetailsState extends State<RequestDetails> {
           future: _orderDetailFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                  child: CircularProgressIndicator()); // Show a loading indicator
+              return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (snapshot.hasData) {
-              final orderDetails =
-                  snapshot.data!['result']; // Access the result map
-        
-              // Get technician ID from order details
-              final technicianId =
-                  orderDetails['TechnicianID'].toString(); // Convert to String
-        
-              // Fetch technician details if not already fetched
+              final orderDetails = snapshot.data!['result'];
+              final technicianId = orderDetails['TechnicianID'].toString();
+
               _technicianDetailFuture ??= _fetchTechnicianDetails(technicianId);
-        
+
               return Padding(
                 padding: const EdgeInsets.all(16),
                 child: Card(
@@ -211,18 +204,15 @@ class _RequestDetailsState extends State<RequestDetails> {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                                color: Colors.grey,
-                                width: 1), // Add border color and width
+                            border: Border.all(color: Colors.grey, width: 1),
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: TextField(
-                              maxLines: null, // Allow multiple lines
+                              maxLines: null,
                               decoration: InputDecoration(
                                 hintText: '${orderDetails['orderDetail']}',
-                                border:
-                                    InputBorder.none, // Remove TextField border
+                                border: InputBorder.none,
                               ),
                               style: const TextStyle(fontSize: 18),
                             ),
@@ -245,31 +235,32 @@ class _RequestDetailsState extends State<RequestDetails> {
                           builder: (context, techSnapshot) {
                             if (techSnapshot.connectionState ==
                                 ConnectionState.waiting) {
-                              return const CircularProgressIndicator(); // Loading indicator for technician details
+                              return const CircularProgressIndicator();
                             } else if (techSnapshot.hasError) {
                               return Text('Error: ${techSnapshot.error}');
                             } else if (techSnapshot.hasData) {
-                              final technicianDetails =
-                                  techSnapshot.data!['technician']
-                                      [0]; // Access the first technician
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(height: 10),
-                                  Text(
-                                      "Technician: ${technicianDetails['name'] ?? 'Not provided'}"),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                      "Estimated Time: ${orderDetails['TechnicianETA'] ?? 'Not provided'}"),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                      "Contact Number: ${technicianDetails['phone_number'] ?? 'Not provided'}"),
-                                  const SizedBox(height: 10),
-                                ],
-                              ); // Display technician name and phone number
+                              final technicianList =
+                                  techSnapshot.data!['technician'] ?? [];
+                              
+                              if (technicianList.isNotEmpty) {
+                                final technicianDetails = technicianList[0];
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 10),
+                                    Text("Technician: ${technicianDetails['name'] ?? 'Not provided'}"),
+                                    const SizedBox(height: 10),
+                                    Text("Estimated Time: ${orderDetails['TechnicianETA'] ?? 'Not provided'}"),
+                                    const SizedBox(height: 10),
+                                    Text("Contact Number: ${technicianDetails['phone_number'] ?? 'Not provided'}"),
+                                    const SizedBox(height: 10),
+                                  ],
+                                );
+                              } else {
+                                return const Text('Request is still Pending');
+                              }
                             } else {
-                              return const Text(
-                                  'No technician details available');
+                              return const Text('No technician details available');
                             }
                           },
                         ),

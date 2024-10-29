@@ -41,7 +41,8 @@ class CustomerToken {
     String alarmBrand,
     String autogateBrand,
     String phoneNumber,
-    String warranty,
+    String alarmWarranty,
+    String autogateWarranty
   ) async {
     try {
       final response = await http
@@ -59,7 +60,8 @@ class CustomerToken {
               'alarm_brand': alarmBrand,
               'autogate_brand': autogateBrand,
               'phone_number': phoneNumber,
-              'warranty': warranty,
+              'alarm_waranty': alarmWarranty,
+              'auto_gate_warranty': autogateWarranty,
             }),
           )
           .timeout(const Duration(seconds: 10));

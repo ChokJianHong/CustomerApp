@@ -60,6 +60,12 @@ class _SettingState extends State<Setting> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
         title: const Text(
           'Account Settings',
           style: TextStyle(color: Colors.white),
@@ -110,36 +116,45 @@ class _SettingState extends State<Setting> {
 
           // Settings List
           Expanded(
-            child: Container(
-              color: AppColors.secondary,
-              child: ListView(
-                padding: const EdgeInsets.all(0),
-                children: [
-                  SettingItem(
-                    title: 'Account',
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Profile(
-                            token: widget.token,
-                          ),
-                        ),
-                      );
-                    },
+            child: ListView(
+              padding: EdgeInsets.zero, // Remove padding to prevent extra space
+              children: [
+                Container(
+                  color: AppColors.secondary,
+                  child: Column(
+                    children: [
+                      SettingItem(
+                        title: 'Account',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Profile(
+                                token: widget.token,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      const SettingItem(title: 'My Addresses'),
+                      const SettingItem(title: 'Notification Settings'),
+                      const SettingItem(title: 'App Language'),
+                      const SettingItem(title: 'Help Center'),
+                      const SettingItem(title: 'About'),
+                    ],
                   ),
-                  const SettingItem(title: 'My Addresses'),
-                  const SettingItem(title: 'Notification Settings'),
-                  const SettingItem(title: 'App Language'),
-                  const SettingItem(title: 'Help Center'),
-                  const SettingItem(title: 'About'),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
 
-          MyButton(
+          // Sign Out Button
+          Padding(
+            padding: const EdgeInsets.only(
+                bottom: 16.0), // Adds space around the button
+            child: MyButton(
               text: 'Sign Out',
+              backgroundColor: AppColors.secondary,
               onTap: () {
                 Navigator.push(
                   context,
@@ -147,7 +162,12 @@ class _SettingState extends State<Setting> {
                     builder: (context) => const SignInPage(),
                   ),
                 );
-              }),
+              },
+            ),
+          ),
+          const SizedBox(
+            height: 30,
+          ),
         ],
       ),
     );

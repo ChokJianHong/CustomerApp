@@ -16,7 +16,7 @@ import 'package:http_parser/http_parser.dart'; // For specifying file type
 
 class RequisitionForm extends StatefulWidget {
   final String token;
-  const RequisitionForm({super.key, required this.token});
+  const RequisitionForm({super.key, required this.token, String? orderId});
 
   @override
   _RequisitionFormState createState() => _RequisitionFormState();
