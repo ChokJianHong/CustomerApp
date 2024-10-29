@@ -1,25 +1,24 @@
-import 'package:camera/camera.dart';
-import 'package:customer_app/API/createOrder.dart';
+import 'dart:convert';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 import 'package:customer_app/Assets/components/Divider.dart';
 import 'package:customer_app/assets/components/categorybuttons.dart';
 import 'package:customer_app/assets/components/expansion.dart';
 import 'package:customer_app/assets/components/sectionbar.dart';
 import 'package:customer_app/assets/components/textbox.dart';
 import 'package:customer_app/core/app_colors.dart';
-import 'package:customer_app/pages/Confirmation.dart';
-import 'package:customer_app/pages/camera.dart';
 import 'package:customer_app/pages/currentPage.dart';
 import 'package:customer_app/pages/home.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:http_parser/http_parser.dart'; // For specifying file type
 
 class RequisitionForm extends StatefulWidget {
   final String token;
-  final String? orderId;
-  const RequisitionForm({super.key, required this.token, this.orderId});
+  const RequisitionForm({super.key, required this.token});
 
   @override
-  // ignore: library_private_types_in_public_api
   _RequisitionFormState createState() => _RequisitionFormState();
 }
 
@@ -30,6 +29,8 @@ class _RequisitionFormState extends State<RequisitionForm> {
   String? selectedEmergencyLevel;
   String? problemDescription;
   String? selectedCategory;
+  final ImagePicker _picker = ImagePicker();
+  File? _image;
 
   TextEditingController dateController = TextEditingController();
   TextEditingController timeController = TextEditingController();
@@ -80,6 +81,77 @@ class _RequisitionFormState extends State<RequisitionForm> {
           timeController.text = selectedTime!.format(context);
         });
       }
+    }
+  }
+
+  // Function to pick an image from the gallery
+  Future<void> _pickImageFromGallery() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+    }
+  }
+
+  // Function to capture an image with the camera
+  Future<void> _captureImageWithCamera() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+    }
+  }
+
+  Future<Map<String, dynamic>> _uploadImageAndData(
+      Map<String, String> orderData) async {
+    if (_image == null) {
+      throw Exception('No image selected');
+    }
+
+    try {
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('http://10.0.2.2:5005/dashboarddatabase/orders'),
+      );
+
+      // Add authorization headers if needed
+      request.headers['Authorization'] = widget.token;
+
+      // Add the image file to the request
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'image',
+          _image!.path,
+          contentType: MediaType('image', 'jpeg'),
+        ),
+      );
+
+      // Add the rest of the order data
+      orderData.forEach((key, value) {
+        request.fields[key] = value;
+      });
+
+      // Send the request
+      var response = await request.send();
+
+      // Read the server's response
+      var responseData = await http.Response.fromStream(response);
+      var responseBody = jsonDecode(responseData.body);
+
+      if (response.statusCode == 201) {
+        // Return the parsed response
+        print(responseBody);
+        return responseBody;
+      } else {
+        print('Upload failed with status: ${response.statusCode}');
+        print('Response body: ${responseData.body}');
+        throw Exception('Upload failed');
+      }
+    } catch (e) {
+      print('Error uploading image and data: $e');
+      throw Exception('Upload failed');
     }
   }
 
@@ -194,8 +266,30 @@ class _RequisitionFormState extends State<RequisitionForm> {
                 const SizedBox(height: 30),
                 CustomExpansionTile("Problem Description", Icons.description,
                     _buildDescriptionField()),
-                CustomExpansionTile('PICTURE OF PROBLEM', Icons.camera_alt,
-                    _buildPictureButton()),
+                Column(
+                  children: [
+                    _image != null
+                        ? Image.file(_image!)
+                        : const Placeholder(
+                            fallbackHeight: 200.0,
+                            fallbackWidth: double.infinity,
+                          ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          onPressed: _pickImageFromGallery,
+                          child: const Text('Select Image'),
+                        ),
+                        const SizedBox(width: 20),
+                        ElevatedButton(
+                          onPressed: _captureImageWithCamera,
+                          child: const Text('Take Picture'),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
                 CustomExpansionTile(
                     'LOCATION', Icons.location_on, _buildLocationButton()),
                 const SizedBox(height: 40),
@@ -207,32 +301,6 @@ class _RequisitionFormState extends State<RequisitionForm> {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildPictureButton() {
-    return Container(
-      width: double.infinity,
-      color: AppColors.secondary,
-      child: ElevatedButton.icon(
-        onPressed: () async {
-          // Obtain the list of available cameras on the device.
-          final cameras = await availableCameras();
-          final firstCamera = cameras.first;
-
-          // Use Navigator.push to navigate to the camera screen
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => TakePictureScreen(camera: firstCamera),
-            ),
-          );
-        },
-        icon: const Icon(Icons.camera),
-        style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-        label:
-            const Text('Insert Picture', style: TextStyle(color: Colors.white)),
       ),
     );
   }
@@ -251,26 +319,8 @@ class _RequisitionFormState extends State<RequisitionForm> {
     );
   }
 
-  bool _validateDateTime(DateTime date, TimeOfDay time) {
-    final currentDateTime = DateTime.now();
-    final selectedDateTime =
-        DateTime(date.year, date.month, date.day, time.hour, time.minute);
-
-    // Check if the selected date and time is within shop hours
-    bool isWithinBusinessHours = false;
-    if (date.weekday >= 1 && date.weekday <= 5) {
-      // Weekdays: 9 AM to 5 PM
-      isWithinBusinessHours =
-          selectedDateTime.hour >= 9 && selectedDateTime.hour < 17;
-    } else {
-      // Weekends: 9 AM to 12 PM
-      isWithinBusinessHours =
-          selectedDateTime.hour >= 9 && selectedDateTime.hour < 12;
-    }
-    return isWithinBusinessHours && selectedDateTime.isAfter(currentDateTime);
-  }
-
   void _handleContinue() async {
+    // Check if all required fields are filled
     if (selectedDate == null ||
         selectedTime == null ||
         selectedLocation == null ||
@@ -282,80 +332,41 @@ class _RequisitionFormState extends State<RequisitionForm> {
       return;
     }
 
-    // Open camera and capture an image
-    final imagePath = await _takePicture();
-    if (imagePath == null) {
-      // If the user cancels the camera, exit the method
+    // Check if an image has been selected
+    if (_image == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please select or take a picture!')));
       return;
     }
 
-    Map<String, dynamic> orderData = {
+    // Prepare order data
+    Map<String, String> orderData = {
       'order_date': dateController.text,
       'order_time': timeController.text,
-      'location_detail': selectedLocation,
-      'urgency_level': selectedEmergencyLevel,
-      'order_detail': problemDescription,
-      'problem_type': selectedCategory,
-      'image_path': imagePath, // Include the captured image path
+      'location_detail': selectedLocation!,
+      'urgency_level': selectedEmergencyLevel!,
+      'order_detail': problemDescription!,
+      'problem_type': selectedCategory!,
     };
 
     try {
-      final result =
-          await OrderAPI.createOrder(token: widget.token, orderData: orderData);
-      if (result['status'] == 'success') {
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ConfirmationRequest(
-                      token: widget.token,
-                      orderId: widget.orderId ?? '',
-                    ))); // Navigate to confirmation page
+      // Send data and image together
+      final result = await _uploadImageAndData(orderData);
+      print(result);
+      if (result['message'] == 'success') {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => HomePage(token: widget.token)),
+        ); // Navigate to confirmation page
       } else {
         String errorMessage = result['message'] ?? 'An error occurred';
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('Error: $errorMessage')));
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ConfirmationRequest(
-                      token: widget.token,
-                      orderId: widget.orderId ?? '',
-                    )));
       }
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('Network error: Unable to create order')));
-    }
-  }
-
-// Method to open the camera and take a picture
-  Future<String?> _takePicture() async {
-    // Assuming you have already set up the camera controller and initialized it
-    try {
-      final cameras = await availableCameras();
-      final firstCamera = cameras.first;
-
-      // Create a camera controller
-      final cameraController = CameraController(
-        firstCamera,
-        ResolutionPreset.medium,
-      );
-
-      // Initialize the camera
-      await cameraController.initialize();
-
-      // Take a picture
-      final image = await cameraController.takePicture();
-
-      // Dispose of the controller
-      await cameraController.dispose();
-
-      return image.path; // Return the path of the captured image
-    } catch (e) {
-      print('Error capturing image: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to capture image.')));
-      return null; // Return null if there's an error
     }
   }
 
@@ -488,7 +499,8 @@ class _RequisitionFormState extends State<RequisitionForm> {
 
 // Check if the shop is open based on the current time
   bool _isShopOpen(DateTime dateTime) {
-    if (dateTime.weekday >= 1 && dateTime.weekday <= 5) {
+    if (dateTime.weekday >= DateTime.monday &&
+        dateTime.weekday <= DateTime.friday) {
       // Weekdays: 9 AM to 5 PM
       return dateTime.hour >= 9 && dateTime.hour < 17;
     } else {
@@ -499,23 +511,36 @@ class _RequisitionFormState extends State<RequisitionForm> {
 
 // Get the next opening time if the shop is closed
   DateTime _getNextOpeningTime(DateTime current) {
-    DateTime next = current;
+    DateTime next;
 
-    if (current.weekday == 6) {
-      // If it's Saturday, set to next Sunday at 9 AM
-      next = DateTime(current.year, current.month, current.day + 1, 9);
-    } else if (current.weekday == 7) {
-      // If it's Sunday, check if current time is after 12 PM
-      if (current.hour >= 12) {
-        next = DateTime(current.year, current.month, current.day + 1, 9);
-      } else {
-        // Still on the same day, set to today at 9 AM
-        next = DateTime(current.year, current.month, current.day, 9);
-      }
-    } else {
-      // For weekdays (Monday to Friday), check if after 5 PM
+    if (current.weekday >= DateTime.monday &&
+        current.weekday <= DateTime.friday) {
+      // Weekdays: if it's after 5 PM, set to next day at 9 AM
       if (current.hour >= 17) {
         next = DateTime(current.year, current.month, current.day + 1, 9);
+        // If the next day is a weekend, move to the following Monday at 9 AM
+        if (next.weekday == DateTime.saturday) {
+          next = next.add(const Duration(days: 2));
+        }
+      } else if (current.hour < 9) {
+        // If before 9 AM on a weekday, set to today at 9 AM
+        next = DateTime(current.year, current.month, current.day, 9);
+      } else {
+        // Shop is open within weekday hours
+        next = current;
+      }
+    } else {
+      // Weekends: if it's after 12 PM, set to next weekday at 9 AM
+      if (current.hour >= 12 || current.weekday == DateTime.sunday) {
+        int daysToMonday = (8 - current.weekday) % 7;
+        next = DateTime(
+            current.year, current.month, current.day + daysToMonday, 9);
+      } else if (current.hour < 9) {
+        // If before 9 AM on a weekend, set to today at 9 AM
+        next = DateTime(current.year, current.month, current.day, 9);
+      } else {
+        // Shop is open within weekend hours
+        next = current;
       }
     }
 
