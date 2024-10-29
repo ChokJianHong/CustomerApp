@@ -8,12 +8,14 @@ class BottomNav extends StatelessWidget {
   final Function(int) onTap;
   final int currentIndex;
   final String token;
+  final String? orderId; // Make orderId nullable
 
   const BottomNav({
     super.key,
     required this.onTap,
     required this.currentIndex,
     required this.token,
+    this.orderId, // Make orderId optional
   });
 
   @override
@@ -21,24 +23,24 @@ class BottomNav extends StatelessWidget {
     return BottomNavigationBar(
       currentIndex: currentIndex,
       onTap: (index) => _navigateToPage(context, index, token), // Handle tap
-      backgroundColor: Colors.white, // Clean background
-      selectedItemColor: AppColors.primary, // Professional highlight color
-      unselectedItemColor: Colors.grey, // Subtle unselected color
+      backgroundColor: AppColors.secondary, // Clean background
+      selectedItemColor: Colors.white, // Professional highlight color
+      unselectedItemColor: const Color(0xFF8977C5), // Subtle unselected color
       showSelectedLabels: true, // Show labels for clarity
       showUnselectedLabels: false, // Hide labels for unselected items
       type: BottomNavigationBarType.fixed, // Ensures all icons are visible
       items: const [
         BottomNavigationBarItem(
-          icon: Icon(Icons.favorite),
-          label: 'Favorites',
+          icon: Icon(Icons.assignment_add),
+          label: 'Request Form',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.home),
           label: 'Home',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.settings),
-          label: 'Settings',
+          icon: Icon(Icons.format_list_bulleted),
+          label: 'Order List',
         ),
       ],
     );
@@ -50,7 +52,10 @@ class BottomNav extends StatelessWidget {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => RequisitionForm(token: token),
+            builder: (context) => RequisitionForm(
+              token: token,
+              orderId: orderId, // Pass orderId, even if it’s null
+            ),
           ),
         );
         break;

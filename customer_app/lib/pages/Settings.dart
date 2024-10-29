@@ -1,12 +1,60 @@
 import 'package:customer_app/assets/components/settingItems.dart';
 import 'package:customer_app/assets/components/textbox.dart';
 import 'package:customer_app/core/app_colors.dart';
+import 'package:customer_app/pages/Sign_In.dart';
 import 'package:customer_app/pages/profile.dart';
 import 'package:flutter/material.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:customer_app/API/getCustToken.dart';
 
-class Setting extends StatelessWidget {
+class Setting extends StatefulWidget {
   final String token;
   const Setting({super.key, required this.token});
+
+  @override
+  State<Setting> createState() => _SettingState();
+}
+
+class _SettingState extends State<Setting> {
+  String customerName = "Loading...";
+  String customerEmail = "Loading...";
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCustomerDetails();
+  }
+
+  Future<void> _fetchCustomerDetails() async {
+    print('Token: ${widget.token}'); // Debugging line
+
+    try {
+      // Fetch customer details using the token
+      final customerDetails =
+          await CustomerToken().getCustomerByToken(widget.token);
+      print('Customer details: $customerDetails'); // Debugging line
+
+      // Decode the token to extract customer ID, if needed
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(widget.token);
+      print('Decoded Token: $decodedToken'); // Debugging line
+
+      if (!decodedToken.containsKey('userId')) {
+        throw Exception('Token does not contain userId');
+      }
+
+      // Set state to update the UI with the customer's name and email
+      setState(() {
+        customerName = customerDetails['data']['name'] ?? 'Unknown Name';
+        customerEmail = customerDetails['data']['email'] ?? 'Unknown Email';
+      });
+    } catch (error) {
+      print('Error fetching customer details: $error');
+      setState(() {
+        customerName = 'Error loading name';
+        customerEmail = 'Error loading email';
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,29 +73,31 @@ class Setting extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
             color: AppColors.primary,
-            child: const Row(
+            child: Row(
               children: [
-                CircleAvatar(
+                const CircleAvatar(
                   radius: 40,
                   backgroundImage: AssetImage(
                       'lib/assets/images/smallProfile.png'), // Replace with your image
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Display fetched name
                     Text(
-                      'Lisa',
-                      style: TextStyle(
+                      customerName,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
+                    // Display fetched email
                     Text(
-                      'lisa123@gmail.com',
-                      style: TextStyle(
+                      customerEmail,
+                      style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 16,
                       ),
@@ -71,9 +121,10 @@ class Setting extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => Profile(
-                                  token: token,
-                                )),
+                          builder: (context) => Profile(
+                            token: widget.token,
+                          ),
+                        ),
                       );
                     },
                   ),
@@ -87,7 +138,16 @@ class Setting extends StatelessWidget {
             ),
           ),
 
-          MyButton(text: 'Sign Out', onTap: () {}),
+          MyButton(
+              text: 'Sign Out',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SignInPage(),
+                  ),
+                );
+              }),
         ],
       ),
     );

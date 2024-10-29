@@ -184,9 +184,9 @@ class _ProfileState extends State<Profile> {
               const SizedBox(height: 20),
               Center(child: Image.asset("lib/assets/images/Profile.png")),
               const SizedBox(height: 10),
-              const Text(
-                'Profile',
-                style: TextStyle(color: Colors.white, fontSize: 20),
+              Text(
+                usernameController.text,
+                style: const TextStyle(color: Colors.white, fontSize: 20),
               ),
               const SizedBox(height: 20),
               ProfileAttribute(

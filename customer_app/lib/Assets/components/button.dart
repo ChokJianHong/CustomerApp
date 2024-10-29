@@ -31,22 +31,23 @@ class MyTextField extends StatelessWidget {
     return TextField(
       controller: controller,
       obscureText: obscureText,
+      style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         // Border when not selected
         enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.tertiary,
+          borderSide: const BorderSide(
+            color: Color(0xFF9597A3),
           ),
           borderRadius: BorderRadius.circular(12),
         ),
         // Border when selected
         focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.tertiary,
+          borderSide: const BorderSide(
+            color: Color(0xFF9597A3),
           ),
           borderRadius: BorderRadius.circular(12),
         ),
-        fillColor: Colors.white,
+        fillColor: const Color(0xFF322C43),
         filled: true,
         hintText: hintText,
         hintStyle: const TextStyle(color: Color(0xFF848484)),

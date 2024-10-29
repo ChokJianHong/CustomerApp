@@ -1,10 +1,12 @@
 import 'package:customer_app/API/cancelCustOrder.dart';
 import 'package:customer_app/API/getOrderDetails.dart';
+import 'package:customer_app/API/get_technician.dart';
 import 'package:customer_app/Assets/components/Divider.dart';
 import 'package:customer_app/assets/components/appbar.dart';
 import 'package:customer_app/assets/components/navbar.dart';
 import 'package:customer_app/core/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class RequestDetails extends StatefulWidget {
   final String token;
@@ -19,6 +21,7 @@ class RequestDetails extends StatefulWidget {
 class _RequestDetailsState extends State<RequestDetails> {
   int _currentIndex = 2;
   late Future<Map<String, dynamic>> _orderDetailFuture;
+  Future<Map<String, dynamic>>? _technicianDetailFuture; // Change to nullable
 
   void _onTapTapped(int index) {
     setState(() {
@@ -31,6 +34,17 @@ class _RequestDetailsState extends State<RequestDetails> {
     super.initState();
     _orderDetailFuture =
         _fetchOrderDetails(widget.token, widget.orderId); // Fetch data on init
+  }
+
+  String formatDateTime(String utcDateTime) {
+    try {
+      DateTime parsedDate = DateTime.parse(utcDateTime);
+      DateTime localDate = parsedDate.toLocal();
+      return DateFormat('yyyy-MM-dd').format(localDate);
+    } catch (e) {
+      print('Error parsing date: $e');
+      return 'Invalid date';
+    }
   }
 
   Future<Map<String, dynamic>> _fetchOrderDetails(
@@ -50,6 +64,18 @@ class _RequestDetailsState extends State<RequestDetails> {
         _showErrorDialog('Error fetching order details: $error');
       }
       throw Exception('Failed to fetch order details');
+    }
+  }
+
+  Future<Map<String, dynamic>> _fetchTechnicianDetails(
+      String technicianId) async {
+    try {
+      return await TechnicianService.getTechnician(widget.token, technicianId);
+    } catch (error) {
+      if (mounted) {
+        _showErrorDialog('Error fetching technician details: $error');
+      }
+      throw Exception('Failed to fetch technician details');
     }
   }
 
@@ -152,6 +178,13 @@ class _RequestDetailsState extends State<RequestDetails> {
             final orderDetails =
                 snapshot.data!['result']; // Access the result map
 
+            // Get technician ID from order details
+            final technicianId =
+                orderDetails['TechnicianID'].toString(); // Convert to String
+
+            // Fetch technician details if not already fetched
+            _technicianDetailFuture ??= _fetchTechnicianDetails(technicianId);
+
             return Padding(
               padding: const EdgeInsets.all(16),
               child: Card(
@@ -164,7 +197,8 @@ class _RequestDetailsState extends State<RequestDetails> {
                       Text(
                           "Problem Type: ${orderDetails['ProblemType'] ?? 'Not provided'}"),
                       const SizedBox(height: 20),
-                      Text("Date and Time: ${orderDetails['orderDate']}"),
+                      Text(
+                          "Date and Time: ${formatDateTime(orderDetails['orderDate'])} ${orderDetails['orderTime']}"),
                       const SizedBox(height: 20),
                       Text("Priority: ${orderDetails['priority']}"),
                       const SizedBox(height: 20),
@@ -176,6 +210,9 @@ class _RequestDetailsState extends State<RequestDetails> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                              color: Colors.grey,
+                              width: 1), // Add border color and width
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -183,7 +220,8 @@ class _RequestDetailsState extends State<RequestDetails> {
                             maxLines: null, // Allow multiple lines
                             decoration: InputDecoration(
                               hintText: '${orderDetails['orderDetail']}',
-                              border: InputBorder.none, // Remove border
+                              border:
+                                  InputBorder.none, // Remove TextField border
                             ),
                             style: const TextStyle(fontSize: 18),
                           ),
@@ -200,15 +238,40 @@ class _RequestDetailsState extends State<RequestDetails> {
                         ],
                       ),
                       const ADivider(),
-                      Text(
-                          "Technician: ${orderDetails['technicianName'] ?? 'Not provided'}"),
                       const SizedBox(height: 10),
-                      Text(
-                          "Estimated Time: ${orderDetails['estimatedTime'] ?? 'Not provided'}"),
-                      const SizedBox(height: 10),
-                      Text(
-                          "Contact Number: ${orderDetails['contactNumber'] ?? 'Not provided'}"),
-                      const SizedBox(height: 10),
+                      FutureBuilder<Map<String, dynamic>>(
+                        future: _technicianDetailFuture,
+                        builder: (context, techSnapshot) {
+                          if (techSnapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const CircularProgressIndicator(); // Loading indicator for technician details
+                          } else if (techSnapshot.hasError) {
+                            return Text('Error: ${techSnapshot.error}');
+                          } else if (techSnapshot.hasData) {
+                            final technicianDetails =
+                                techSnapshot.data!['technician']
+                                    [0]; // Access the first technician
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 10),
+                                Text(
+                                    "Technician: ${technicianDetails['name'] ?? 'Not provided'}"),
+                                const SizedBox(height: 10),
+                                Text(
+                                    "Estimated Time: ${orderDetails['TechnicianETA'] ?? 'Not provided'}"),
+                                const SizedBox(height: 10),
+                                Text(
+                                    "Contact Number: ${technicianDetails['phone_number'] ?? 'Not provided'}"),
+                                const SizedBox(height: 10),
+                              ],
+                            ); // Display technician name and phone number
+                          } else {
+                            return const Text(
+                                'No technician details available');
+                          }
+                        },
+                      ),
                     ],
                   ),
                 ),
