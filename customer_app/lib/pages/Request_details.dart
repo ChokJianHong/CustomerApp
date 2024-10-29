@@ -166,121 +166,123 @@ class _RequestDetailsState extends State<RequestDetails> {
       appBar: CustomAppBar(
         token: widget.token,
       ),
-      body: FutureBuilder<Map<String, dynamic>>(
-        future: _orderDetailFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-                child: CircularProgressIndicator()); // Show a loading indicator
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (snapshot.hasData) {
-            final orderDetails =
-                snapshot.data!['result']; // Access the result map
-
-            // Get technician ID from order details
-            final technicianId =
-                orderDetails['TechnicianID'].toString(); // Convert to String
-
-            // Fetch technician details if not already fetched
-            _technicianDetailFuture ??= _fetchTechnicianDetails(technicianId);
-
-            return Padding(
-              padding: const EdgeInsets.all(16),
-              child: Card(
-                color: Colors.white,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                          "Problem Type: ${orderDetails['ProblemType'] ?? 'Not provided'}"),
-                      const SizedBox(height: 20),
-                      Text(
-                          "Date and Time: ${formatDateTime(orderDetails['orderDate'])} ${orderDetails['orderTime']}"),
-                      const SizedBox(height: 20),
-                      Text("Priority: ${orderDetails['priority']}"),
-                      const SizedBox(height: 20),
-                      const Text("Problem Description"),
-                      const SizedBox(height: 10),
-                      Container(
-                        width: double.infinity,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                              color: Colors.grey,
-                              width: 1), // Add border color and width
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextField(
-                            maxLines: null, // Allow multiple lines
-                            decoration: InputDecoration(
-                              hintText: '${orderDetails['orderDetail']}',
-                              border:
-                                  InputBorder.none, // Remove TextField border
+      body: SingleChildScrollView(
+        child: FutureBuilder<Map<String, dynamic>>(
+          future: _orderDetailFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                  child: CircularProgressIndicator()); // Show a loading indicator
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (snapshot.hasData) {
+              final orderDetails =
+                  snapshot.data!['result']; // Access the result map
+        
+              // Get technician ID from order details
+              final technicianId =
+                  orderDetails['TechnicianID'].toString(); // Convert to String
+        
+              // Fetch technician details if not already fetched
+              _technicianDetailFuture ??= _fetchTechnicianDetails(technicianId);
+        
+              return Padding(
+                padding: const EdgeInsets.all(16),
+                child: Card(
+                  color: Colors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                            "Problem Type: ${orderDetails['ProblemType'] ?? 'Not provided'}"),
+                        const SizedBox(height: 20),
+                        Text(
+                            "Date and Time: ${formatDateTime(orderDetails['orderDate'])} ${orderDetails['orderTime']}"),
+                        const SizedBox(height: 20),
+                        Text("Priority: ${orderDetails['priority']}"),
+                        const SizedBox(height: 20),
+                        const Text("Problem Description"),
+                        const SizedBox(height: 10),
+                        Container(
+                          width: double.infinity,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                                color: Colors.grey,
+                                width: 1), // Add border color and width
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextField(
+                              maxLines: null, // Allow multiple lines
+                              decoration: InputDecoration(
+                                hintText: '${orderDetails['orderDetail']}',
+                                border:
+                                    InputBorder.none, // Remove TextField border
+                              ),
+                              style: const TextStyle(fontSize: 18),
                             ),
-                            style: const TextStyle(fontSize: 18),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                              child: Text(
-                                  "Picture: ${orderDetails['orderImage']}")),
-                          const Text("View"),
-                        ],
-                      ),
-                      const ADivider(),
-                      const SizedBox(height: 10),
-                      FutureBuilder<Map<String, dynamic>>(
-                        future: _technicianDetailFuture,
-                        builder: (context, techSnapshot) {
-                          if (techSnapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const CircularProgressIndicator(); // Loading indicator for technician details
-                          } else if (techSnapshot.hasError) {
-                            return Text('Error: ${techSnapshot.error}');
-                          } else if (techSnapshot.hasData) {
-                            final technicianDetails =
-                                techSnapshot.data!['technician']
-                                    [0]; // Access the first technician
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 10),
-                                Text(
-                                    "Technician: ${technicianDetails['name'] ?? 'Not provided'}"),
-                                const SizedBox(height: 10),
-                                Text(
-                                    "Estimated Time: ${orderDetails['TechnicianETA'] ?? 'Not provided'}"),
-                                const SizedBox(height: 10),
-                                Text(
-                                    "Contact Number: ${technicianDetails['phone_number'] ?? 'Not provided'}"),
-                                const SizedBox(height: 10),
-                              ],
-                            ); // Display technician name and phone number
-                          } else {
-                            return const Text(
-                                'No technician details available');
-                          }
-                        },
-                      ),
-                    ],
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                                child: Text(
+                                    "Picture: ${orderDetails['orderImage']}")),
+                            const Text("View"),
+                          ],
+                        ),
+                        const ADivider(),
+                        const SizedBox(height: 10),
+                        FutureBuilder<Map<String, dynamic>>(
+                          future: _technicianDetailFuture,
+                          builder: (context, techSnapshot) {
+                            if (techSnapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const CircularProgressIndicator(); // Loading indicator for technician details
+                            } else if (techSnapshot.hasError) {
+                              return Text('Error: ${techSnapshot.error}');
+                            } else if (techSnapshot.hasData) {
+                              final technicianDetails =
+                                  techSnapshot.data!['technician']
+                                      [0]; // Access the first technician
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 10),
+                                  Text(
+                                      "Technician: ${technicianDetails['name'] ?? 'Not provided'}"),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                      "Estimated Time: ${orderDetails['TechnicianETA'] ?? 'Not provided'}"),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                      "Contact Number: ${technicianDetails['phone_number'] ?? 'Not provided'}"),
+                                  const SizedBox(height: 10),
+                                ],
+                              ); // Display technician name and phone number
+                            } else {
+                              return const Text(
+                                  'No technician details available');
+                            }
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            );
-          } else {
-            return const Center(child: Text('No data available'));
-          }
-        },
+              );
+            } else {
+              return const Center(child: Text('No data available'));
+            }
+          },
+        ),
       ),
       bottomNavigationBar: BottomNav(
         onTap: _onTapTapped,
