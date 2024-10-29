@@ -13,6 +13,7 @@ class RegisterAPI {
       String location,
       String alarmBrand,
       String alarmWarranty,
+      String autogateWarranty,
       String gateBrand) async {
     try {
       final response = await http.post(
@@ -28,7 +29,8 @@ class RegisterAPI {
           'phone_number': phoneNumber,
           'location': location,
           'alarm_brand': alarmBrand,
-          'warranty': alarmWarranty, // Convert DateTime to ISO 8601 string
+          'alarm_waranty': alarmWarranty, 
+          'auto_gate_warranty':autogateWarranty,
           'auto_gate_brand': gateBrand,
         }),
       );

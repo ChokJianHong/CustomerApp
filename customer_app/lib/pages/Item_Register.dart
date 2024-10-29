@@ -85,7 +85,8 @@ class _ItemRegisterState extends State<ItemRegister> {
         // Format the warranty dates as strings
         String alarmWarranty =
             "${_selectedAlarmWarranty!.year}-${_selectedAlarmWarranty!.month.toString().padLeft(2, '0')}-${_selectedAlarmWarranty!.day.toString().padLeft(2, '0')}";
-
+        String autogateWarranty =
+            "${_selectedAlarmWarranty!.year}-${_selectedAlarmWarranty!.month.toString().padLeft(2, '0')}-${_selectedAlarmWarranty!.day.toString().padLeft(2, '0')}";
         // Call the register function with the collected values
         final response = await RegisterAPI().registerCustomer(
           widget.email,
@@ -96,6 +97,7 @@ class _ItemRegisterState extends State<ItemRegister> {
           alarmBrand,
           gateBrand,
           alarmWarranty,
+          autogateWarranty,
         );
 
         // Handle the response

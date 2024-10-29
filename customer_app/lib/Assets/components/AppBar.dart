@@ -40,18 +40,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             );
           },
         ),
-        Padding(
-          padding: const EdgeInsets.only(right: 16.0),
-          child: GestureDetector(
-            onTap: () {
-              // Add profile-related action here (e.g., open profile page)
-            },
-            child: const CircleAvatar(
-              backgroundColor: Colors.white,
-              child: Icon(Icons.person, color: AppColors.secondary),
-            ),
-          ),
-        ),
       ],
     );
   }
