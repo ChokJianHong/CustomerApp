@@ -15,6 +15,7 @@ class CurrentLocationScreen extends StatefulWidget {
 class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
   late GoogleMapController googleMapController;
   late TextEditingController searchController = TextEditingController();
+  List<PlacesSearchResult> placeSuggestions = [];
 
   static const CameraPosition initialCameraPosition = CameraPosition(
     target: LatLng(37.42796133580664, -122.085749655962),
@@ -25,6 +26,7 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
   StreamSubscription<Position>? positionStreamSubscription;
   LatLng? selectedPosition;
   String? selectedAddress;
+  bool isLoading = false;
 
   final GoogleMapsPlaces _places = GoogleMapsPlaces(
       apiKey:
@@ -45,34 +47,77 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
       ),
       body: Column(
         children: [
-          // Search Bar
+          // Search Bar with rounded style
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: searchController,
-              decoration: InputDecoration(
-                hintText: 'Search Location',
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.search),
-                  onPressed: () {
-                    _searchLocation();
+            child: Material(
+              elevation: 5,
+              shadowColor: Colors.grey,
+              borderRadius: BorderRadius.circular(10),
+              child: TextField(
+                controller: searchController,
+                decoration: InputDecoration(
+                  hintText: 'Search Location',
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 8.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none,
+                  ),
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.search),
+                    onPressed: _searchLocation,
+                  ),
+                ),
+                onChanged: _getSuggestions,
+              ),
+            ),
+          ),
+          // Suggestions List
+          if (placeSuggestions.isNotEmpty)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              height: 100,
+              child: Material(
+                elevation: 3,
+                borderRadius: BorderRadius.circular(10),
+                child: ListView.builder(
+                  itemCount: placeSuggestions.length.clamp(0, 2),
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(placeSuggestions[index].name),
+                      subtitle:
+                          Text(placeSuggestions[index].formattedAddress ?? ''),
+                      onTap: () {
+                        _selectSuggestion(placeSuggestions[index]);
+                      },
+                    );
                   },
                 ),
               ),
-              onChanged: (value) {
-                // Optionally: Call a function to display location suggestions
-              },
             ),
-          ),
+          // Map Display
           Expanded(
-            child: GoogleMap(
-              initialCameraPosition: initialCameraPosition,
-              markers: markers,
-              zoomControlsEnabled: false,
-              mapType: MapType.normal,
-              onMapCreated: (GoogleMapController controller) {
-                googleMapController = controller;
-              },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Stack(
+                children: [
+                  GoogleMap(
+                    initialCameraPosition: initialCameraPosition,
+                    markers: markers,
+                    zoomControlsEnabled: false,
+                    mapType: MapType.normal,
+                    onMapCreated: (GoogleMapController controller) {
+                      googleMapController = controller;
+                    },
+                  ),
+                  if (isLoading)
+                    const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                ],
+              ),
             ),
           ),
         ],
@@ -81,17 +126,16 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           FloatingActionButton.extended(
-            onPressed: () async {
-              _startLocationUpdates();
-            },
+            onPressed: _startLocationUpdates,
             label: const Text("Current Location"),
             icon: const Icon(Icons.location_history),
+            backgroundColor: Colors.blueAccent,
+            heroTag: 'currentLocationFAB',
           ),
           const SizedBox(height: 10),
           FloatingActionButton.extended(
             onPressed: () {
               if (selectedPosition != null && selectedAddress != null) {
-                // Return the selected location to the previous page
                 Navigator.pop(context, {
                   'latitude': selectedPosition!.latitude,
                   'longitude': selectedPosition!.longitude,
@@ -105,6 +149,8 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
             },
             label: const Text("Confirm Location"),
             icon: const Icon(Icons.check),
+            backgroundColor: Colors.green,
+            heroTag: 'confirmLocationFAB',
           ),
         ],
       ),
@@ -112,13 +158,13 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
   }
 
   Future<void> _startLocationUpdates() async {
+    setState(() => isLoading = true);
     Position position = await _determinePosition();
+    setState(() => isLoading = false);
 
-    // Initially update the marker and search bar to current location and address
     _updateLocationMarker(position);
     await _getAddressFromCoordinates(position.latitude, position.longitude);
 
-    // Listen for location updates
     positionStreamSubscription =
         Geolocator.getPositionStream().listen((Position updatedPosition) {
       _updateLocationMarker(updatedPosition);
@@ -152,10 +198,8 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
   void _updateLocationMarker(Position position) {
     LatLng newPosition = LatLng(position.latitude, position.longitude);
 
-    // Clear existing markers
     markers.clear();
 
-    // Add the updated marker
     markers.add(
       Marker(
         markerId: const MarkerId('currentLocation'),
@@ -166,11 +210,9 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
 
     selectedPosition = newPosition;
 
-    // Animate camera to the new location
     googleMapController
         .animateCamera(CameraUpdate.newLatLngZoom(newPosition, 14));
 
-    // Refresh the UI
     setState(() {});
   }
 
@@ -199,7 +241,6 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
         LatLng newPosition = LatLng(
             result.geometry!.location.lat, result.geometry!.location.lng);
 
-        // Update the marker and animate to the searched location
         setState(() {
           markers.clear();
           markers.add(Marker(
@@ -213,5 +254,39 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
         });
       }
     }
+  }
+
+  Future<void> _getSuggestions(String input) async {
+    if (input.isEmpty) return;
+    PlacesSearchResponse response = await _places.searchByText(input);
+
+    setState(() {
+      placeSuggestions = response.results;
+    });
+  }
+
+  void _selectSuggestion(PlacesSearchResult result) {
+    LatLng newPosition = LatLng(
+      result.geometry!.location.lat,
+      result.geometry!.location.lng,
+    );
+
+    setState(() {
+      markers.clear();
+      markers.add(Marker(
+        markerId: MarkerId(result.placeId),
+        position: newPosition,
+        infoWindow: InfoWindow(title: result.name),
+      ));
+      searchController.text = result.formattedAddress ?? '';
+      placeSuggestions = [];
+
+      // Update selectedPosition and selectedAddress
+      selectedPosition = newPosition; // Set the selected position
+      selectedAddress = result.formattedAddress; // Set the selected address
+    });
+
+    googleMapController
+        .animateCamera(CameraUpdate.newLatLngZoom(newPosition, 14));
   }
 }
