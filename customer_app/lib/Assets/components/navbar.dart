@@ -52,10 +52,7 @@ class BottomNav extends StatelessWidget {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => RequisitionForm(
-              token: token,
-              orderId: orderId, // Pass orderId, even if it’s null
-            ),
+            builder: (context) => RequisitionForm(token: token),
           ),
         );
         break;
