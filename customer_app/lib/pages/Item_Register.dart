@@ -264,6 +264,7 @@ class _ItemRegisterState extends State<ItemRegister> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         TextFormField(
+                          style: const TextStyle(color: Colors.white),
                           controller: _autoGateBrandController,
                           decoration: InputDecoration(
                             hintText: 'AutoGate Brand',
