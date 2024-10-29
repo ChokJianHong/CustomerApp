@@ -9,10 +9,10 @@ class ConfirmationRequest extends StatelessWidget {
   final String orderId;
 
   const ConfirmationRequest({
-    Key? key,
+    super.key,
     required this.token,
     required this.orderId,
-  }) : super(key: key);
+  });
 
   Future<void> _cancelOrder(BuildContext context) async {
     final api = GetCancelOrder();

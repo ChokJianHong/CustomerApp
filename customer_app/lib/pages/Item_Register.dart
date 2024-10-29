@@ -33,6 +33,7 @@ class _ItemRegisterState extends State<ItemRegister> {
   final TextEditingController _autogateWarrantyController =
       TextEditingController();
   DateTime? _selectedAlarmWarranty;
+  DateTime? _selectedAutogateWarranty; // New variable for AutoGate warranty
   bool _isSubmitting = false; // Track submission state
 
   @override
@@ -58,10 +59,13 @@ class _ItemRegisterState extends State<ItemRegister> {
           "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
       controller.text = formattedDate; // Update the TextField
 
-      // Store the selected date
+      // Store the selected date in the appropriate variable
       if (isAlarm) {
-        _selectedAlarmWarranty = pickedDate;
-      } else {}
+        _selectedAlarmWarranty = pickedDate; // Correctly assigning for Alarm
+      } else {
+        _selectedAutogateWarranty =
+            pickedDate; // Correctly assigning for AutoGate
+      }
     }
   }
 
@@ -77,7 +81,8 @@ class _ItemRegisterState extends State<ItemRegister> {
         String gateBrand = _autoGateBrandController.text;
 
         // Check for selected dates
-        if (_selectedAlarmWarranty == null) {
+        if (_selectedAlarmWarranty == null ||
+            _selectedAutogateWarranty == null) {
           _showErrorDialog('Please select both warranty dates.');
           return;
         }
@@ -86,7 +91,8 @@ class _ItemRegisterState extends State<ItemRegister> {
         String alarmWarranty =
             "${_selectedAlarmWarranty!.year}-${_selectedAlarmWarranty!.month.toString().padLeft(2, '0')}-${_selectedAlarmWarranty!.day.toString().padLeft(2, '0')}";
         String autogateWarranty =
-            "${_selectedAlarmWarranty!.year}-${_selectedAlarmWarranty!.month.toString().padLeft(2, '0')}-${_selectedAlarmWarranty!.day.toString().padLeft(2, '0')}";
+            "${_selectedAutogateWarranty!.year}-${_selectedAutogateWarranty!.month.toString().padLeft(2, '0')}-${_selectedAutogateWarranty!.day.toString().padLeft(2, '0')}"; // Use the correct variable
+
         // Call the register function with the collected values
         final response = await RegisterAPI().registerCustomer(
           widget.email,
@@ -279,11 +285,17 @@ class _ItemRegisterState extends State<ItemRegister> {
                               ),
                             ),
                           ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter the AutoGate brand';
+                            }
+                            return null; // Return null if valid
+                          },
                         ),
                         const SizedBox(height: 20),
                         TextFormField(
                           style: const TextStyle(color: Colors.white),
-                          controller: _alarmWarrantyController,
+                          controller: _autogateWarrantyController,
                           readOnly: true,
                           decoration: InputDecoration(
                             hintText: 'AutoGate Warranty Date',
@@ -303,12 +315,12 @@ class _ItemRegisterState extends State<ItemRegister> {
                                 color: Colors.white,
                               ),
                               onPressed: () => _selectDate(
-                                  context, _autogateWarrantyController, true),
+                                  context, _autogateWarrantyController, false),
                             ),
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please select the auto gate warranty date';
+                              return 'Please select the AutoGate warranty date';
                             }
                             return null; // Return null if valid
                           },
@@ -318,14 +330,21 @@ class _ItemRegisterState extends State<ItemRegister> {
                   ),
                 ),
                 const SizedBox(height: 30),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Center(
-                    child: MyButton(
-                      backgroundColor: AppColors.secondary,
-                      text: _isSubmitting ? "Submitting..." : "Submit",
-                      onTap: _isSubmitting ? null : _onSubmit,
+                Center(
+                  child: ElevatedButton(
+                    onPressed: _isSubmitting ? null : _onSubmit,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.lightpurple,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 32,
+                      ),
                     ),
+                    child: _isSubmitting
+                        ? const CircularProgressIndicator(
+                            color: Colors.white,
+                          )
+                        : const Text('Register'),
                   ),
                 ),
               ],
