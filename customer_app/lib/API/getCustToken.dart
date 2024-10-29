@@ -33,22 +33,20 @@ class CustomerToken {
   }
 
   Future<Map<String, dynamic>> updateCustomerProfile(
-    String token,
-    String customerId, // Add customerId as a parameter
-    String name,
-    String email,
-    String location,
-    String alarmBrand,
-    String autogateBrand,
-    String phoneNumber,
-    String alarmWarranty,
-    String autogateWarranty
-  ) async {
+      String token,
+      String customerId, // Add customerId as a parameter
+      String name,
+      String email,
+      String location,
+      String alarmBrand,
+      String autogateBrand,
+      String phoneNumber,
+      String alarmWarranty,
+      String autogateWarranty) async {
     try {
       final response = await http
-          .post(
-            Uri.parse(
-                '$baseUrl/dashboarddatabase/customer/updateProfile/$customerId'),
+          .put(
+            Uri.parse('$baseUrl/dashboarddatabase/admin/customers/$customerId'),
             headers: {
               'Content-Type': 'application/json; charset=UTF-8',
               'Authorization': token,
