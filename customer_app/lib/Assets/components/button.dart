@@ -1,4 +1,3 @@
-import 'package:customer_app/core/app_colors.dart';
 import 'package:flutter/material.dart';
 
 /* TEXT FIELD 
