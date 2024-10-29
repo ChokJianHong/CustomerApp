@@ -113,7 +113,7 @@ class _RequisitionFormState extends State<RequisitionForm> {
     try {
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse('http://10.0.2.2:5005/dashboarddatabase/orders'),
+        Uri.parse('http://82.112.238.13:5005/dashboarddatabase/orders'),
       );
 
       // Add authorization headers if needed
