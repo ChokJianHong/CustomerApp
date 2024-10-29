@@ -30,7 +30,8 @@ class _ItemRegisterState extends State<ItemRegister> {
       TextEditingController();
   final TextEditingController _alarmWarrantyController =
       TextEditingController();
-
+  final TextEditingController _autogateWarrantyController =
+      TextEditingController();
   DateTime? _selectedAlarmWarranty;
   bool _isSubmitting = false; // Track submission state
 
@@ -39,6 +40,7 @@ class _ItemRegisterState extends State<ItemRegister> {
     _alarmBrandController.dispose();
     _autoGateBrandController.dispose();
     _alarmWarrantyController.dispose();
+    _autogateWarrantyController.dispose();
     super.dispose();
   }
 
@@ -59,8 +61,7 @@ class _ItemRegisterState extends State<ItemRegister> {
       // Store the selected date
       if (isAlarm) {
         _selectedAlarmWarranty = pickedDate;
-      } else {
-      }
+      } else {}
     }
   }
 
@@ -182,13 +183,19 @@ class _ItemRegisterState extends State<ItemRegister> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         TextFormField(
+                          style: const TextStyle(color: Colors.white),
                           controller: _alarmBrandController,
                           decoration: InputDecoration(
                             hintText: 'Alarm Brand',
+                            hintStyle:
+                                const TextStyle(color: Color(0xFF848484)),
                             filled: true,
+                            fillColor: const Color(0xFF322C43),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide.none,
+                              borderSide: const BorderSide(
+                                color: Color(0xFF9597A3),
+                              ),
                             ),
                           ),
                           validator: (value) {
@@ -200,17 +207,26 @@ class _ItemRegisterState extends State<ItemRegister> {
                         ),
                         const SizedBox(height: 20),
                         TextFormField(
+                          style: const TextStyle(color: Colors.white),
                           controller: _alarmWarrantyController,
                           readOnly: true,
                           decoration: InputDecoration(
                             hintText: 'Alarm Warranty Date',
+                            hintStyle:
+                                const TextStyle(color: Color(0xFF848484)),
                             filled: true,
+                            fillColor: const Color(0xFF322C43),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide.none,
+                              borderSide: const BorderSide(
+                                color: Color(0xFF9597A3),
+                              ),
                             ),
                             suffixIcon: IconButton(
-                              icon: const Icon(Icons.calendar_today),
+                              icon: const Icon(
+                                Icons.calendar_today,
+                                color: Colors.white,
+                              ),
                               onPressed: () => _selectDate(
                                   context, _alarmWarrantyController, true),
                             ),
@@ -249,14 +265,51 @@ class _ItemRegisterState extends State<ItemRegister> {
                           controller: _autoGateBrandController,
                           decoration: InputDecoration(
                             hintText: 'AutoGate Brand',
+                            hintStyle:
+                                const TextStyle(color: Color(0xFF848484)),
                             filled: true,
+                            fillColor: const Color(0xFF322C43),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide.none,
+                              borderSide: const BorderSide(
+                                color: Color(0xFF9597A3),
+                              ),
                             ),
                           ),
                         ),
                         const SizedBox(height: 20),
+                        TextFormField(
+                          style: const TextStyle(color: Colors.white),
+                          controller: _alarmWarrantyController,
+                          readOnly: true,
+                          decoration: InputDecoration(
+                            hintText: 'AutoGate Warranty Date',
+                            hintStyle:
+                                const TextStyle(color: Color(0xFF848484)),
+                            filled: true,
+                            fillColor: const Color(0xFF322C43),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: const BorderSide(
+                                color: Color(0xFF9597A3),
+                              ),
+                            ),
+                            suffixIcon: IconButton(
+                              icon: const Icon(
+                                Icons.calendar_today,
+                                color: Colors.white,
+                              ),
+                              onPressed: () => _selectDate(
+                                  context, _autogateWarrantyController, true),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please select the auto gate warranty date';
+                            }
+                            return null; // Return null if valid
+                          },
+                        ),
                       ],
                     ),
                   ),
@@ -266,6 +319,7 @@ class _ItemRegisterState extends State<ItemRegister> {
                   padding: const EdgeInsets.all(16.0),
                   child: Center(
                     child: MyButton(
+                      backgroundColor: AppColors.secondary,
                       text: _isSubmitting ? "Submitting..." : "Submit",
                       onTap: _isSubmitting ? null : _onSubmit,
                     ),

@@ -98,13 +98,18 @@ class _RegisterState extends State<Register> {
                 const SizedBox(height: 20),
                 // Username
                 TextFormField(
+                  style: const TextStyle(color: Colors.white),
                   controller: _usernameController,
                   decoration: InputDecoration(
                     hintText: 'Username',
+                    hintStyle: const TextStyle(color: Color(0xFF848484)),
                     filled: true,
+                    fillColor: const Color(0xFF322C43),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none,
+                      borderSide: const BorderSide(
+                        color: Color(0xFF9597A3),
+                      ),
                     ),
                   ),
                   validator: (value) {
@@ -117,13 +122,18 @@ class _RegisterState extends State<Register> {
                 const SizedBox(height: 20),
                 // Email
                 TextFormField(
+                  style: const TextStyle(color: Colors.white),
                   controller: _emailController,
                   decoration: InputDecoration(
                     hintText: 'Email Address',
+                    hintStyle: const TextStyle(color: Color(0xFF848484)),
                     filled: true,
+                    fillColor: const Color(0xFF322C43),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none,
+                      borderSide: const BorderSide(
+                        color: Color(0xFF9597A3),
+                      ),
                     ),
                   ),
                   validator: _validateEmail,
@@ -131,13 +141,18 @@ class _RegisterState extends State<Register> {
                 const SizedBox(height: 20),
                 // Phone Number
                 TextFormField(
+                  style: const TextStyle(color: Colors.white),
                   controller: _phoneController,
                   decoration: InputDecoration(
                     hintText: 'Phone Number',
+                    hintStyle: const TextStyle(color: Color(0xFF848484)),
                     filled: true,
+                    fillColor: const Color(0xFF322C43),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none,
+                      borderSide: const BorderSide(
+                        color: Color(0xFF9597A3),
+                      ),
                     ),
                   ),
                   validator: _validatePhone,
@@ -145,13 +160,18 @@ class _RegisterState extends State<Register> {
                 const SizedBox(height: 20),
                 // Password
                 TextFormField(
+                  style: const TextStyle(color: Colors.white),
                   controller: _passwordController,
                   decoration: InputDecoration(
                     hintText: 'Password',
+                    hintStyle: const TextStyle(color: Color(0xFF848484)),
                     filled: true,
+                    fillColor: const Color(0xFF322C43),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none,
+                      borderSide: const BorderSide(
+                        color: Color(0xFF9597A3),
+                      ),
                     ),
                   ),
                   obscureText: true,
@@ -160,23 +180,29 @@ class _RegisterState extends State<Register> {
                 const SizedBox(height: 20),
                 // Confirm Password
                 TextFormField(
+                  style: const TextStyle(color: Colors.white),
                   controller: _confirmPasswordController,
                   decoration: InputDecoration(
                     hintText: 'Confirm Password',
+                    hintStyle: const TextStyle(color: Color(0xFF848484)),
                     filled: true,
+                    fillColor: const Color(0xFF322C43),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none,
+                      borderSide: const BorderSide(
+                        color: Color(0xFF9597A3),
+                      ),
                     ),
                   ),
                   obscureText: true,
                   validator: _validateConfirmPassword,
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 60),
                 _isLoading
                     ? const CircularProgressIndicator() // Show loader when registering
                     : MyButton(
                         text: 'Continue',
+                        backgroundColor: AppColors.secondary,
                         onTap: () async {
                           if (_formKey.currentState?.validate() == true) {
                             setState(() {
@@ -202,53 +228,6 @@ class _RegisterState extends State<Register> {
                           }
                         },
                       ),
-                const SizedBox(height: 20),
-                // Or continue with
-                Row(
-                  children: [
-                    const Expanded(
-                      child: Divider(
-                        thickness: 1,
-                        color: Colors.white,
-                        endIndent: 10,
-                      ),
-                    ),
-                    Text(
-                      "or continue with  ",
-                      style: TextStyle(color: Colors.grey[400], fontSize: 14),
-                    ),
-                    const Expanded(
-                      child: Divider(
-                        thickness: 1,
-                        color: Colors.white,
-                        endIndent: 10,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.account_circle),
-                      color: Colors.white,
-                      iconSize: 50,
-                      onPressed: () {
-                        // Handle Google login
-                      },
-                    ),
-                    const SizedBox(width: 30),
-                    IconButton(
-                      icon: const Icon(Icons.settings),
-                      color: Colors.white,
-                      iconSize: 50,
-                      onPressed: () {
-                        // Handle other login options
-                      },
-                    ),
-                  ],
-                ),
               ],
             ),
           ),
