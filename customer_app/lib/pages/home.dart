@@ -115,7 +115,7 @@ class _HomePageState extends State<HomePage> {
   // Build Service Hours Section
   Widget _buildServiceHours() {
     return Card(
-      color: AppColors.secondary,
+      color: AppColors.deeppurple,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
@@ -137,9 +137,11 @@ class _HomePageState extends State<HomePage> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildServiceDayColumn('Monday - Friday', '9:00 A.M. to 5:00 P.M.'),
+                _buildServiceDayColumn(
+                    'Monday - Friday', '9:00 A.M. to 5:00 P.M.'),
                 const SizedBox(height: 10),
-                _buildServiceDayColumn('Saturday - Sunday', '9:00 A.M. to 12:00 P.M.'),
+                _buildServiceDayColumn(
+                    'Saturday - Sunday', '9:00 A.M. to 12:00 P.M.'),
                 const SizedBox(height: 10),
                 _buildServiceDayColumn('Public Holiday', 'OFF'),
               ],

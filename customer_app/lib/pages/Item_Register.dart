@@ -180,26 +180,25 @@ class _ItemRegisterState extends State<ItemRegister> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.lightpurple,
+                      color: Colors.white,
                     ),
                   ),
                 ),
                 Card(
-                  color: AppColors.secondary,
+                  color: AppColors.deeppurple,
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         TextFormField(
-                          style: const TextStyle(color: Colors.white),
                           controller: _alarmBrandController,
                           decoration: InputDecoration(
                             hintText: 'Alarm Brand',
                             hintStyle:
                                 const TextStyle(color: Color(0xFF848484)),
                             filled: true,
-                            fillColor: const Color(0xFF322C43),
+                            fillColor: AppColors.lightgrey,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: const BorderSide(
@@ -216,7 +215,6 @@ class _ItemRegisterState extends State<ItemRegister> {
                         ),
                         const SizedBox(height: 20),
                         TextFormField(
-                          style: const TextStyle(color: Colors.white),
                           controller: _alarmWarrantyController,
                           readOnly: true,
                           decoration: InputDecoration(
@@ -224,7 +222,7 @@ class _ItemRegisterState extends State<ItemRegister> {
                             hintStyle:
                                 const TextStyle(color: Color(0xFF848484)),
                             filled: true,
-                            fillColor: const Color(0xFF322C43),
+                            fillColor: AppColors.lightgrey,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: const BorderSide(
@@ -234,7 +232,7 @@ class _ItemRegisterState extends State<ItemRegister> {
                             suffixIcon: IconButton(
                               icon: const Icon(
                                 Icons.calendar_today,
-                                color: Colors.white,
+                                color: AppColors.deeppurple,
                               ),
                               onPressed: () => _selectDate(
                                   context, _alarmWarrantyController, true),
@@ -264,21 +262,20 @@ class _ItemRegisterState extends State<ItemRegister> {
                   ),
                 ),
                 Card(
-                  color: AppColors.secondary,
+                  color: AppColors.deeppurple,
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         TextFormField(
-                          style: const TextStyle(color: Colors.white),
                           controller: _autoGateBrandController,
                           decoration: InputDecoration(
                             hintText: 'AutoGate Brand',
                             hintStyle:
                                 const TextStyle(color: Color(0xFF848484)),
                             filled: true,
-                            fillColor: const Color(0xFF322C43),
+                            fillColor: AppColors.lightgrey,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: const BorderSide(
@@ -295,7 +292,6 @@ class _ItemRegisterState extends State<ItemRegister> {
                         ),
                         const SizedBox(height: 20),
                         TextFormField(
-                          style: const TextStyle(color: Colors.white),
                           controller: _autogateWarrantyController,
                           readOnly: true,
                           decoration: InputDecoration(
@@ -303,7 +299,7 @@ class _ItemRegisterState extends State<ItemRegister> {
                             hintStyle:
                                 const TextStyle(color: Color(0xFF848484)),
                             filled: true,
-                            fillColor: const Color(0xFF322C43),
+                            fillColor: AppColors.lightgrey,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: const BorderSide(
@@ -313,7 +309,7 @@ class _ItemRegisterState extends State<ItemRegister> {
                             suffixIcon: IconButton(
                               icon: const Icon(
                                 Icons.calendar_today,
-                                color: Colors.white,
+                                color: AppColors.deeppurple,
                               ),
                               onPressed: () => _selectDate(
                                   context, _autogateWarrantyController, false),

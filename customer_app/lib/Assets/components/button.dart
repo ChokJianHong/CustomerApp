@@ -1,3 +1,4 @@
+import 'package:customer_app/core/app_colors.dart';
 import 'package:flutter/material.dart';
 
 /* TEXT FIELD 
@@ -31,7 +32,7 @@ class MyTextField extends StatelessWidget {
     return TextField(
       controller: controller,
       obscureText: obscureText,
-      style: const TextStyle(color: Colors.white),
+      
       decoration: InputDecoration(
         // Border when not selected
         enabledBorder: OutlineInputBorder(
@@ -47,7 +48,7 @@ class MyTextField extends StatelessWidget {
           ),
           borderRadius: BorderRadius.circular(12),
         ),
-        fillColor: const Color(0xFF322C43),
+        fillColor: AppColors.lightgrey,
         filled: true,
         hintText: hintText,
         hintStyle: const TextStyle(color: Color(0xFF848484)),

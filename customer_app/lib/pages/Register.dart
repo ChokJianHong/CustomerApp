@@ -104,7 +104,7 @@ class _RegisterState extends State<Register> {
                 const Text(
                   "Let's Create Your Account",
                   style: TextStyle(
-                    color: AppColors.lightpurple,
+                    color: Colors.white,
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
@@ -137,7 +137,7 @@ class _RegisterState extends State<Register> {
                     ? const CircularProgressIndicator()
                     : MyButton(
                         text: 'Continue',
-                        backgroundColor: AppColors.secondary,
+                        backgroundColor: AppColors.deeppurple,
                         onTap: _onContinue,
                       ),
               ],
@@ -152,16 +152,15 @@ class _RegisterState extends State<Register> {
       TextEditingController controller, String hintText, String emptyError,
       {String? Function(String?)? validator, bool obscureText = false}) {
     return TextFormField(
-      style: const TextStyle(color: Colors.white),
       controller: controller,
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: const TextStyle(color: Color(0xFF848484)),
         filled: true,
-        fillColor: const Color(0xFF322C43),
+        fillColor: AppColors.lightgrey,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFF9597A3)),
+          borderSide: const BorderSide(color: AppColors.lightpurple),
         ),
       ),
       validator: validator ??
@@ -172,13 +171,12 @@ class _RegisterState extends State<Register> {
 
   Widget _buildSearchField() {
     return TextFormField(
-      style: const TextStyle(color: Colors.white),
       controller: searchController,
       decoration: InputDecoration(
         hintText: 'Search Location',
         hintStyle: const TextStyle(color: Color(0xFF848484)),
         filled: true,
-        fillColor: const Color(0xFF322C43),
+        fillColor: AppColors.lightgrey,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: const BorderSide(color: Color(0xFF9597A3)),

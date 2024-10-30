@@ -103,10 +103,10 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
+    Theme.of(context);
 
     return Scaffold(
-      backgroundColor: theme.primaryColor,
+      backgroundColor: AppColors.darkblue,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
@@ -150,7 +150,7 @@ class _SignInPageState extends State<SignInPage> {
                     : MyButton(
                         text: "Sign In",
                         onTap: _signIn,
-                        backgroundColor: AppColors.secondary,
+                        backgroundColor: AppColors.lightpurple,
                       ),
                 const SizedBox(height: 20),
                 RichText(

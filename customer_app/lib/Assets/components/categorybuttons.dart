@@ -68,7 +68,7 @@ Widget categoryButton({
       curve: Curves.easeInOut, // Smooth animation curve
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: isSelected ? AppColors.secondary : Colors.white,
+        color: isSelected ? AppColors.deeppurple : Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: isSelected
             ? [const BoxShadow(color: AppColors.secondary, blurRadius: 10)]

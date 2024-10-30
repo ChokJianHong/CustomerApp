@@ -9,7 +9,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: AppColors.secondary,
+      backgroundColor: AppColors.deeppurple,
       elevation: 5, // Subtle shadow for better elevation
       leading: IconButton(
         icon: const Icon(Icons.settings, color: Colors.white),

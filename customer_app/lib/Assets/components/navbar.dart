@@ -23,8 +23,8 @@ class BottomNav extends StatelessWidget {
     return BottomNavigationBar(
       currentIndex: currentIndex,
       onTap: (index) => _navigateToPage(context, index, token), // Handle tap
-      backgroundColor: AppColors.secondary, // Clean background
-      selectedItemColor: Colors.white, // Professional highlight color
+      backgroundColor: AppColors.deeppurple, // Clean background
+      selectedItemColor: AppColors.lightgrey, // Professional highlight color
       unselectedItemColor: const Color(0xFF8977C5), // Subtle unselected color
       showSelectedLabels: true, // Show labels for clarity
       showUnselectedLabels: false, // Hide labels for unselected items
