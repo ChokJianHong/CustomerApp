@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:customer_app/API/getCustToken.dart';
+import 'package:customer_app/pages/Confirmation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:customer_app/Assets/components/Divider.dart';
 import 'package:customer_app/assets/components/categorybuttons.dart';
@@ -12,11 +14,13 @@ import 'package:customer_app/pages/home.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:http_parser/http_parser.dart'; // For specifying file type
+import 'package:http_parser/http_parser.dart';
+import 'package:jwt_decoder/jwt_decoder.dart'; // For specifying file type
 
 class RequisitionForm extends StatefulWidget {
   final String token;
-  const RequisitionForm({super.key, required this.token, String? orderId});
+  final String? orderId;
+  const RequisitionForm({super.key, required this.token, this.orderId});
 
   @override
   _RequisitionFormState createState() => _RequisitionFormState();
@@ -29,6 +33,8 @@ class _RequisitionFormState extends State<RequisitionForm> {
   String? selectedEmergencyLevel;
   String? problemDescription;
   String? selectedCategory;
+  String customerLocation = "Loading..."; // Default text while loading
+  bool isLocationFetched = false;
   final ImagePicker _picker = ImagePicker();
   File? _image;
 
@@ -40,7 +46,64 @@ class _RequisitionFormState extends State<RequisitionForm> {
   @override
   void initState() {
     super.initState();
-    // Do not initialize selectedTime here
+    _fetchAndSetCustomerLocation();
+  }
+
+  Future<void> _fetchAndSetCustomerLocation() async {
+    try {
+      // Fetch the customer location using the token
+      String location = await fetchCustomerLocationFromAPI(widget.token);
+      setState(() {
+        customerLocation = location; // Update the state variable
+      });
+    } catch (error) {
+      print('Error fetching customer location: $error');
+      _showErrorDialog('Error fetching customer location: $error');
+    }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<String> fetchCustomerLocationFromAPI(String token) async {
+    try {
+      // Retrieve customer details using the token
+      final customerDetails = await CustomerToken().getCustomerByToken(token);
+      print('Customer details: $customerDetails');
+
+      // Decode the token to extract customer ID
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+      print('Decoded Token: $decodedToken');
+
+      if (!decodedToken.containsKey('userId')) {
+        throw Exception('Token does not contain userId');
+      }
+
+      // Extract location directly from customer details
+      String location = customerDetails['data']['location'] ?? '';
+      print('Customer Location: $location'); // Debugging line
+
+      return location; // Return the location
+    } catch (error) {
+      throw Exception('Failed to fetch customer location');
+    }
   }
 
   @override
@@ -162,6 +225,13 @@ class _RequisitionFormState extends State<RequisitionForm> {
       MaterialPageRoute(builder: (context) => const CurrentLocationScreen()),
     );
 
+    // If a new location is selected, update the state
+    if (result != null && result is String) {
+      setState(() {
+        customerLocation = result; // Update the customerLocation
+      });
+    }
+
     // Check if the result is not null and is a Map
     if (result != null && result is Map<String, dynamic>) {
       setState(() {
@@ -169,10 +239,7 @@ class _RequisitionFormState extends State<RequisitionForm> {
         selectedLocation = result['address']; // Assuming you want the address
         double latitude = result['latitude'];
         double longitude = result['longitude'];
-
-        // You can use latitude and longitude as needed
-        print(
-            'Selected Location: $selectedLocation, Lat: $latitude, Lon: $longitude');
+        customerLocation = result['address'];
       });
     }
   }
@@ -329,9 +396,12 @@ class _RequisitionFormState extends State<RequisitionForm> {
     return ElevatedButton.icon(
       onPressed: _selectLocation,
       icon: const Icon(Icons.map),
-      label: Text(selectedLocation ?? 'Select Location'),
+      label: Text(customerLocation.isNotEmpty
+          ? customerLocation
+          : 'Select Location'), // Display the current or prompt to select
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.secondary,
+        textStyle: const TextStyle(color: Colors.white),
+        backgroundColor: AppColors.secondary, // Your color
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -377,7 +447,8 @@ class _RequisitionFormState extends State<RequisitionForm> {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => HomePage(token: widget.token)),
+              builder: (context) => ConfirmationRequest(
+                  token: widget.token, orderId: widget.orderId)),
         ); // Navigate to confirmation page
       } else {
         String errorMessage = result['message'] ?? 'An error occurred';

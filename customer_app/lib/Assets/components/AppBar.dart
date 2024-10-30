@@ -11,10 +11,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: AppColors.secondary,
       elevation: 5, // Subtle shadow for better elevation
-      title: const Text(
-        "App Title", // Add app title or logo here
-        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-      ),
       leading: IconButton(
         icon: const Icon(Icons.settings, color: Colors.white),
         onPressed: () {
@@ -25,12 +21,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         },
       ),
       actions: [
-        IconButton(
-          icon: const Icon(Icons.search, color: Colors.white),
-          onPressed: () {
-            // Add search functionality here
-          },
-        ),
         IconButton(
           icon: const Icon(Icons.notifications, color: Colors.white),
           onPressed: () {

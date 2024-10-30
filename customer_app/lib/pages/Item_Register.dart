@@ -9,6 +9,7 @@ class ItemRegister extends StatefulWidget {
   final String email;
   final String phone;
   final String password;
+  final String location;
 
   const ItemRegister({
     super.key,
@@ -16,7 +17,7 @@ class ItemRegister extends StatefulWidget {
     required this.email,
     required this.phone,
     required this.password,
-    required String location,
+    required this.location,
   });
 
   @override
@@ -99,7 +100,7 @@ class _ItemRegisterState extends State<ItemRegister> {
           widget.password,
           widget.username,
           widget.phone,
-          'Location',
+          widget.location,
           alarmBrand,
           alarmWarranty,
           autogateWarranty,

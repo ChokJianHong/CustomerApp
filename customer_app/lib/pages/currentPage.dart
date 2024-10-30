@@ -290,3 +290,4 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
         .animateCamera(CameraUpdate.newLatLngZoom(newPosition, 14));
   }
 }
+

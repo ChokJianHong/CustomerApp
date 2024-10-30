@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 class ConfirmationRequest extends StatelessWidget {
   final String token;
-  final String orderId;
+  final String? orderId;
 
   const ConfirmationRequest({
     super.key,
@@ -18,8 +18,8 @@ class ConfirmationRequest extends StatelessWidget {
     final api = GetCancelOrder();
     try {
       // Call the API without the cancel details
-      final response = await api.cancelOrder(token, orderId, "");
-      
+      final response = await api.cancelOrder(token, orderId!, "");
+
       if (response['status'] == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Order cancelled successfully.')),
@@ -30,7 +30,8 @@ class ConfirmationRequest extends StatelessWidget {
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(response['message'] ?? 'Failed to cancel order')),
+          SnackBar(
+              content: Text(response['message'] ?? 'Failed to cancel order')),
         );
       }
     } catch (error) {

@@ -29,4 +29,18 @@ class OrderAPI {
       return {'success': false, 'message': 'Error: $err'};
     }
   }
+
+  Future<String> fetchCustomerLocationFromAPI() async {
+    final response = await http.get(Uri.parse(
+        'http://82.112.238.13:5005/dashboarddatabase/:id/location')); // Adjust the ID as needed
+
+    if (response.statusCode == 200) {
+      // If the server returns a 200 OK response, parse the JSON
+      final data = jsonDecode(response.body);
+      return data['location']; // Return the location from the response
+    } else {
+      // If the server did not return a 200 OK response, throw an exception
+      throw Exception('Failed to load customer location');
+    }
+  }
 }
