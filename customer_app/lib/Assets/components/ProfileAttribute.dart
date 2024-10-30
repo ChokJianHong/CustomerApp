@@ -23,11 +23,11 @@ class _ProfileAttributeState extends State<ProfileAttribute> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: AppColors.secondary,
+      color: AppColors.deeppurple,
       child: ExpansionTile(
         title: Text(
           widget.title,
-          style: const TextStyle(color: Colors.white, fontSize: 18),
+          style: const TextStyle(color: AppColors.lightgrey, fontSize: 18),
         ),
         trailing: Icon(
           _isExpanded

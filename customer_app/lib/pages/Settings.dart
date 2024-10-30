@@ -70,7 +70,7 @@ class _SettingState extends State<Setting> {
           'Account Settings',
           style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: AppColors.secondary,
+        backgroundColor: AppColors.deeppurple,
       ),
       backgroundColor: AppColors.primary,
       body: Column(
@@ -120,7 +120,7 @@ class _SettingState extends State<Setting> {
               padding: EdgeInsets.zero, // Remove padding to prevent extra space
               children: [
                 Container(
-                  color: AppColors.secondary,
+                  color: AppColors.deeppurple,
                   child: Column(
                     children: [
                       SettingItem(
@@ -154,7 +154,7 @@ class _SettingState extends State<Setting> {
                 bottom: 16.0), // Adds space around the button
             child: MyButton(
               text: 'Sign Out',
-              backgroundColor: AppColors.secondary,
+              backgroundColor: AppColors.lightpurple,
               onTap: () {
                 Navigator.push(
                   context,

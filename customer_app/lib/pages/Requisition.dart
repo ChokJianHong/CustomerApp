@@ -271,6 +271,7 @@ class _RequisitionFormState extends State<RequisitionForm> {
               children: [
                 SectionTitle(
                     title: 'CATEGORIES', icon: Icons.category, size: size),
+                const ADivider(),
                 const SizedBox(height: 15),
                 CategoryButtons(
                   onCategorySelected: (category) {
@@ -284,11 +285,10 @@ class _RequisitionFormState extends State<RequisitionForm> {
                       style: const TextStyle(
                           fontSize: 16, color: AppColors.primary)),
                 const SizedBox(height: 30),
-                const ADivider(),
-                const SizedBox(height: 30),
                 SectionTitle(
                     title: "EMERGENCY LEVEL", icon: Icons.warning, size: size),
-                const SizedBox(height: 30),
+                const ADivider(),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: ['STANDARD', 'URGENT', 'EMERGENCY'].map((level) {
@@ -301,12 +301,14 @@ class _RequisitionFormState extends State<RequisitionForm> {
                   }).toList(),
                 ),
                 const SizedBox(height: 30),
-                const ADivider(),
                 SectionTitle(
                     title: "DATE & TIME",
                     icon: Icons.calendar_today,
                     size: size),
-                const SizedBox(height: 15),
+                const ADivider(),
+                const SizedBox(
+                  height: 15,
+                ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.lightpurple,
@@ -334,9 +336,9 @@ class _RequisitionFormState extends State<RequisitionForm> {
                 const SizedBox(height: 30),
                 CustomExpansionTile("Problem Description", Icons.description,
                     _buildDescriptionField()),
-                const ADivider(),
                 SectionTitle(
                     title: 'Camera', icon: Icons.camera_outlined, size: size),
+                const ADivider(),
                 const SizedBox(
                   height: 20,
                 ),
@@ -376,6 +378,9 @@ class _RequisitionFormState extends State<RequisitionForm> {
                       ],
                     )
                   ],
+                ),
+                const SizedBox(
+                  height: 20,
                 ),
                 CustomExpansionTile(
                     'LOCATION', Icons.location_on, _buildLocationButton()),

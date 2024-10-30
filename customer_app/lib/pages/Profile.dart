@@ -223,7 +223,7 @@ class _ProfileState extends State<Profile> {
               const SizedBox(height: 40),
               MyButton(
                   text: 'Save',
-                  backgroundColor: AppColors.secondary,
+                  backgroundColor: AppColors.lightpurple,
                   onTap: _updateProfile),
             ],
           ),

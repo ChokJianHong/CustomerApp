@@ -25,7 +25,7 @@ class NewJobcard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.secondary,
+        color: AppColors.deeppurple,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -43,7 +43,7 @@ class NewJobcard extends StatelessWidget {
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18,
-              color: Colors.grey,
+              color: AppColors.lightgrey,
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -53,7 +53,7 @@ class NewJobcard extends StatelessWidget {
             location,
             style: const TextStyle(
               fontSize: 14,
-              color: Colors.grey,
+              color: AppColors.lightgrey,
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
