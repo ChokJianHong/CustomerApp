@@ -213,7 +213,7 @@ class _ProfileState extends State<Profile> {
               ProfileAttribute(
                   title: "Alarm Warranty Date",
                   controller: alarmWarrantyController),
-              const SizedBox(height: 40),
+              const SizedBox(height: 20),
               ProfileAttribute(
                   title: "AutoGate Brand", controller: autoGateController),
               const SizedBox(height: 20),
@@ -223,7 +223,7 @@ class _ProfileState extends State<Profile> {
               const SizedBox(height: 40),
               MyButton(
                   text: 'Save',
-                  backgroundColor: AppColors.lightpurple,
+                  backgroundColor: AppColors.orange,
                   onTap: _updateProfile),
             ],
           ),

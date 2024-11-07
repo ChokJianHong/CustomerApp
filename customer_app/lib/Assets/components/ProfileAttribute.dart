@@ -23,7 +23,7 @@ class _ProfileAttributeState extends State<ProfileAttribute> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: AppColors.deeppurple,
+      color: AppColors.darkTeal,
       child: ExpansionTile(
         title: Text(
           widget.title,

@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
 
-
 class CustomExpansionTile extends StatelessWidget {
   final String title;
   final IconData icon;
   final Widget child;
+  final Color iconColor;
+  final Color textColor;
 
-  // Constructor using positional parameters
-  const CustomExpansionTile(this.title, this.icon, this.child, {super.key});
+  // Updated constructor with optional parameters for icon and text color
+  const CustomExpansionTile(
+    this.title,
+    this.icon,
+    this.child, {
+    super.key,
+    this.iconColor = Colors.white, // Default color to white if not provided
+    this.textColor = Colors.white, // Default color to white if not provided
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -16,18 +24,21 @@ class CustomExpansionTile extends StatelessWidget {
         children: [
           Icon(
             icon,
-            color: Colors.white, // Set the icon color to white
+            color: iconColor, // Use iconColor parameter
           ),
           const SizedBox(width: 10),
           Text(
             title,
-            style: const TextStyle(
-              color: Colors.white, // Set the text color to white
+            style: TextStyle(
+              color: textColor, // Use textColor parameter
             ),
           ),
         ],
       ),
-      children: [child, const SizedBox(height: 30)],
+      children: [
+        child,
+        const SizedBox(height: 30),
+      ],
     );
   }
 }

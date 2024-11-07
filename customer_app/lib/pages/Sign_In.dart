@@ -150,7 +150,7 @@ class _SignInPageState extends State<SignInPage> {
                     : MyButton(
                         text: "Sign In",
                         onTap: _signIn,
-                        backgroundColor: AppColors.lightpurple,
+                        backgroundColor: AppColors.orange,
                       ),
                 const SizedBox(height: 20),
                 RichText(

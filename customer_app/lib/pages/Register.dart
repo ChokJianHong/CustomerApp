@@ -137,7 +137,7 @@ class _RegisterState extends State<Register> {
                     ? const CircularProgressIndicator()
                     : MyButton(
                         text: 'Continue',
-                        backgroundColor: AppColors.deeppurple,
+                        backgroundColor: AppColors.orange,
                         onTap: _onContinue,
                       ),
               ],
@@ -160,7 +160,7 @@ class _RegisterState extends State<Register> {
         fillColor: AppColors.lightgrey,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.lightpurple),
+          borderSide: const BorderSide(color: AppColors.orange),
         ),
       ),
       validator: validator ??

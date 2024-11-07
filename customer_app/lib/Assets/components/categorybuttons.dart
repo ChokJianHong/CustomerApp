@@ -68,13 +68,13 @@ Widget categoryButton({
       curve: Curves.easeInOut, // Smooth animation curve
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: isSelected ? AppColors.deeppurple : Colors.white,
+        color: isSelected ? AppColors.darkTeal : AppColors.lightgrey,
         borderRadius: BorderRadius.circular(12),
         boxShadow: isSelected
-            ? [const BoxShadow(color: AppColors.secondary, blurRadius: 10)]
+            ? [const BoxShadow(color: AppColors.darkGreen, blurRadius: 10)]
             : [],
         border: Border.all(
-          color: isSelected ? Colors.blueAccent : Colors.transparent,
+          color: isSelected ? AppColors.cyan : Colors.transparent,
           width: 2,
         ),
       ),

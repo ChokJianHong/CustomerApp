@@ -311,7 +311,7 @@ class _RequisitionFormState extends State<RequisitionForm> {
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.lightpurple,
+                    backgroundColor: AppColors.orange,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -358,7 +358,7 @@ class _RequisitionFormState extends State<RequisitionForm> {
                       children: [
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.lightpurple),
+                              backgroundColor: AppColors.orange),
                           onPressed: _pickImageFromGallery,
                           child: const Text(
                             'Select Image',
@@ -368,7 +368,7 @@ class _RequisitionFormState extends State<RequisitionForm> {
                         const SizedBox(width: 20),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.lightpurple),
+                              backgroundColor: AppColors.orange),
                           onPressed: _captureImageWithCamera,
                           child: const Text(
                             'Take Picture',
@@ -383,10 +383,14 @@ class _RequisitionFormState extends State<RequisitionForm> {
                   height: 20,
                 ),
                 CustomExpansionTile(
-                    'LOCATION', Icons.location_on, _buildLocationButton()),
+                    'LOCATION',
+                    iconColor: AppColors.lightgrey,
+                    textColor: AppColors.lightgrey,
+                    Icons.location_on,
+                    _buildLocationButton()),
                 const SizedBox(height: 40),
                 MyButton(
-                  backgroundColor: AppColors.lightpurple,
+                  backgroundColor: AppColors.orange,
                   text: 'Continue',
                   onTap: () => _handleContinue(),
                 ),
@@ -407,7 +411,7 @@ class _RequisitionFormState extends State<RequisitionForm> {
           : 'Select Location'), // Display the current or prompt to select
       style: ElevatedButton.styleFrom(
         textStyle: const TextStyle(color: Colors.white),
-        backgroundColor: AppColors.lightpurple, // Your color
+        backgroundColor: AppColors.orange, // Your color
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),

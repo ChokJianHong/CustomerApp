@@ -173,6 +173,9 @@ class _ItemRegisterState extends State<ItemRegister> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(
+                  height: 40,
+                ),
                 const Padding(
                   padding: EdgeInsets.only(left: 10),
                   child: Text(
@@ -185,7 +188,7 @@ class _ItemRegisterState extends State<ItemRegister> {
                   ),
                 ),
                 Card(
-                  color: AppColors.deeppurple,
+                  color: AppColors.darkTeal,
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
@@ -232,7 +235,7 @@ class _ItemRegisterState extends State<ItemRegister> {
                             suffixIcon: IconButton(
                               icon: const Icon(
                                 Icons.calendar_today,
-                                color: AppColors.deeppurple,
+                                color: AppColors.orange,
                               ),
                               onPressed: () => _selectDate(
                                   context, _alarmWarrantyController, true),
@@ -257,12 +260,12 @@ class _ItemRegisterState extends State<ItemRegister> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.lightpurple,
+                      color: AppColors.lightgrey,
                     ),
                   ),
                 ),
                 Card(
-                  color: AppColors.deeppurple,
+                  color: AppColors.darkTeal,
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
@@ -309,7 +312,7 @@ class _ItemRegisterState extends State<ItemRegister> {
                             suffixIcon: IconButton(
                               icon: const Icon(
                                 Icons.calendar_today,
-                                color: AppColors.deeppurple,
+                                color: AppColors.orange,
                               ),
                               onPressed: () => _selectDate(
                                   context, _autogateWarrantyController, false),
@@ -326,12 +329,12 @@ class _ItemRegisterState extends State<ItemRegister> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 50),
                 Center(
                   child: ElevatedButton(
                     onPressed: _isSubmitting ? null : _onSubmit,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.lightpurple,
+                      backgroundColor: AppColors.orange,
                       padding: const EdgeInsets.symmetric(
                         vertical: 12,
                         horizontal: 32,
@@ -341,7 +344,10 @@ class _ItemRegisterState extends State<ItemRegister> {
                         ? const CircularProgressIndicator(
                             color: Colors.white,
                           )
-                        : const Text('Register'),
+                        : const Text(
+                            'Register',
+                            style: TextStyle(color: Colors.white),
+                          ),
                   ),
                 ),
               ],

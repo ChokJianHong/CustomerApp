@@ -115,7 +115,7 @@ class _HomePageState extends State<HomePage> {
   // Build Service Hours Section
   Widget _buildServiceHours() {
     return Card(
-      color: AppColors.deeppurple,
+      color: AppColors.lightTeal,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
@@ -128,7 +128,7 @@ class _HomePageState extends State<HomePage> {
             const Text(
               'Service Hours',
               style: TextStyle(
-                color: Colors.white,
+                color: AppColors.darkGreen,
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
@@ -184,7 +184,7 @@ class _HomePageState extends State<HomePage> {
           const Text(
             'Current Orders',
             style: TextStyle(
-              color: Colors.white,
+              color: AppColors.darkGreen,
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
