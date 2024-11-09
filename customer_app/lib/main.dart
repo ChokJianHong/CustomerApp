@@ -7,7 +7,6 @@ import 'API/firebase_api.dart';
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  await FirebaseApi().initNotifications();
   runApp(const MyApp());
 }
 

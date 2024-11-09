@@ -1,3 +1,4 @@
+import 'package:customer_app/API/firebase_api.dart';
 import 'package:customer_app/API/getCustOrder.dart';
 import 'package:customer_app/assets/components/appbar.dart';
 import 'package:customer_app/assets/components/jobcard.dart';
@@ -21,6 +22,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 1;
   final CustomerOrder customerOrder = CustomerOrder();
+  final FirebaseApi firebaseapi = FirebaseApi();
   late String customerId;
   late Future<List<OrderModel>> _latestOrderFuture;
 
@@ -54,6 +56,7 @@ class _HomePageState extends State<HomePage> {
     _latestOrderFuture = customerId.isNotEmpty
         ? customerOrder.getCustomerOrders(widget.token, customerId)
         : Future.value([]);
+        firebaseapi.initNotifications(widget.token, customerId);   
   }
 
   @override
