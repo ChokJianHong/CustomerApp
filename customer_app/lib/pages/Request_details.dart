@@ -222,10 +222,21 @@ class _RequestDetailsState extends State<RequestDetails> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Expanded(
-                                child: Text(
-                                    "Picture: ${orderDetails['orderImage']}")),
-                            const Text("View"),
+                            // Display image from the constructed URL
+                            if (orderDetails['orderImage'] != null)
+                              Image.network(
+                                'http://82.112.238.13:5005/${orderDetails['orderImage']}',
+                                width: 200,
+                                height: 200,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Text("Image not available");
+                                },
+                              )
+                            else
+                              Text(
+                                  "No Image Available"), // Placeholder text if no image URL
+
+                            // Expanded widget for text and button
                           ],
                         ),
                         const ADivider(),
@@ -241,18 +252,21 @@ class _RequestDetailsState extends State<RequestDetails> {
                             } else if (techSnapshot.hasData) {
                               final technicianList =
                                   techSnapshot.data!['technician'] ?? [];
-                              
+
                               if (technicianList.isNotEmpty) {
                                 final technicianDetails = technicianList[0];
                                 return Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     const SizedBox(height: 10),
-                                    Text("Technician: ${technicianDetails['name'] ?? 'Not provided'}"),
+                                    Text(
+                                        "Technician: ${technicianDetails['name'] ?? 'Not provided'}"),
                                     const SizedBox(height: 10),
-                                    Text("Estimated Time: ${orderDetails['TechnicianETA'] ?? 'Not provided'}"),
+                                    Text(
+                                        "Estimated Time: ${orderDetails['TechnicianETA'] ?? 'Not provided'}"),
                                     const SizedBox(height: 10),
-                                    Text("Contact Number: ${technicianDetails['phone_number'] ?? 'Not provided'}"),
+                                    Text(
+                                        "Contact Number: ${technicianDetails['phone_number'] ?? 'Not provided'}"),
                                     const SizedBox(height: 10),
                                   ],
                                 );
@@ -260,7 +274,8 @@ class _RequestDetailsState extends State<RequestDetails> {
                                 return const Text('Request is still Pending');
                               }
                             } else {
-                              return const Text('No technician details available');
+                              return const Text(
+                                  'No technician details available');
                             }
                           },
                         ),
