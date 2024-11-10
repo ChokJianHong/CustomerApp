@@ -2,8 +2,9 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ForgotPasswordService {
-  // URL to your backend API
-  static const String apiUrl = 'http://82.112.238.13:5005';
+  // Default backend API URL
+  static const String apiUrl =
+      'http://82.112.238.13:5005/dashboarddatabase/forgot-password';
 
   Future<Map<String, dynamic>> forgotPassword(
       String email, String userType) async {
@@ -16,10 +17,9 @@ class ForgotPasswordService {
 
       // Send the POST request
       final response = await http.post(
-        Uri.parse(apiUrl),
+        Uri.parse(apiUrl), // Use the default URL for forgot-password
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
-          'userType': 'customer',
         },
         body: json.encode(requestBody),
       );
