@@ -150,7 +150,8 @@ class _SignInPageState extends State<SignInPage> {
 
                 try {
                   final response = await http.post(
-                    Uri.parse('http://localhost:5005/forgotPassword'),
+                    Uri.parse(
+                        'http://82.112.238.13:5005/dashboarddatabase/forgot-password'),
                     headers: {'Content-Type': 'application/json'},
                     body: json.encode({
                       'email': email,
@@ -161,13 +162,13 @@ class _SignInPageState extends State<SignInPage> {
                   final responseData = json.decode(response.body);
                   if (response.statusCode == 200) {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content:
-                            Text(responseData['message'] ?? 'Password reset email sent!')));
+                        content: Text(responseData['message'] ??
+                            'Password reset email sent!')));
                     Navigator.pop(context); // Close the dialog
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content:
-                            Text(responseData['message'] ?? 'Failed to send reset email')));
+                        content: Text(responseData['message'] ??
+                            'Failed to send reset email')));
                   }
                 } catch (error) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -224,7 +225,8 @@ class _SignInPageState extends State<SignInPage> {
                 Container(
                   alignment: Alignment.centerRight, // Aligns to the right
                   child: TextButton(
-                    onPressed: _forgotPassword, // Trigger forgot password dialog
+                    onPressed:
+                        _forgotPassword, // Trigger forgot password dialog
                     child: Text(
                       "Forgot Password?",
                       style: TextStyle(color: Colors.grey[400], fontSize: 14),
