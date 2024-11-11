@@ -1,3 +1,4 @@
+import 'package:customer_app/API/banner.dart';
 import 'package:customer_app/API/firebase_api.dart';
 import 'package:customer_app/API/getCustOrder.dart';
 import 'package:customer_app/assets/components/appbar.dart';
@@ -6,6 +7,7 @@ import 'package:customer_app/assets/components/navbar.dart';
 import 'package:customer_app/assets/models/OrderModel.dart';
 import 'package:customer_app/core/app_colors.dart';
 import 'package:customer_app/pages/Request_details.dart';
+
 import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:intl/intl.dart';
@@ -26,6 +28,7 @@ class _HomePageState extends State<HomePage> {
   final FirebaseApi firebaseapi = FirebaseApi();
   late String customerId;
   late Future<List<OrderModel>> _latestOrderFuture;
+  late Future<List<String>> _bannerImagesFuture;
 
   void _onTapTapped(int index) {
     setState(() {
@@ -58,6 +61,26 @@ class _HomePageState extends State<HomePage> {
         ? customerOrder.getCustomerOrders(widget.token, customerId)
         : Future.value([]);
     firebaseapi.initNotifications(widget.token, customerId);
+
+    _bannerImagesFuture = fetchBannerImages(widget.token);
+  }
+
+  Future<List<String>> fetchBannerImages(String token) async {
+    try {
+      List<Map<String, dynamic>> banners =
+          await BannerService.fetchBanners(token);
+      return banners.map((banner) => banner['banner_img'] as String).toList();
+    } catch (e) {
+      print("Error fetching banners: $e");
+      return [];
+    }
+  }
+
+  Future<Image> _loadImage(String imageUrl) async {
+    final image = Image.network(imageUrl);
+    await precacheImage(
+        image.image, context); // Cache the image to retrieve its size
+    return image;
   }
 
   @override
@@ -97,30 +120,71 @@ class _HomePageState extends State<HomePage> {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: CarouselSlider(
-                      options: CarouselOptions(
-                        autoPlay: true, // Enable auto-play
-                        enlargeCenterPage: true, // Enlarge the center image
-                        aspectRatio:
-                            2.0, // Adjust the aspect ratio of the carousel
-                        viewportFraction:
-                            1.0, // This ensures images fill the entire container
-                      ),
-                      items: [
-                        // Add images as list of items
-                        'lib/assets/images/banner.png',
-                        'lib/assets/images/banner.png', 
-                        'lib/assets/images/banner.png', // Add more image paths here
-                      ].map((imagePath) {
-                        return Builder(
-                          builder: (BuildContext context) {
-                            return Image.asset(
-                              imagePath,
-                              fit: BoxFit.contain,
-                            );
-                          },
-                        );
-                      }).toList(),
+                    child: FutureBuilder<List<String>>(
+                      future: _bannerImagesFuture,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        } else if (snapshot.hasError) {
+                          return Center(
+                              child: Text('Error: ${snapshot.error}'));
+                        } else if (snapshot.hasData &&
+                            snapshot.data!.isNotEmpty) {
+                          List<String> bannerUrls = snapshot.data!;
+
+                          return CarouselSlider(
+                            options: CarouselOptions(
+                              autoPlay: true, // Enable auto-play
+                              enlargeCenterPage:
+                                  true, // Enlarge the center image
+                              aspectRatio:
+                                  1.0, // Directly use the aspect ratio value
+                              viewportFraction:
+                                  1.0, // Ensure images fill the entire container
+                            ),
+                            items: bannerUrls.map((imageUrl) {
+                              return Builder(
+                                builder: (BuildContext context) {
+                                  return FutureBuilder<Image>(
+                                    future: _loadImage(imageUrl),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return const Center(
+                                            child: CircularProgressIndicator());
+                                      } else if (snapshot.hasError) {
+                                        return Center(
+                                            child: Text(
+                                                'Error: ${snapshot.error}'));
+                                      } else if (snapshot.hasData) {
+                                        return SizedBox(
+                                          width:
+                                              MediaQuery.of(context).size.width,
+                                          height: size.height * 0.2,
+                                          child: Image.network(
+                                            imageUrl,
+                                            fit: BoxFit.contain,
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            height: size.height * 0.2,
+                                          ),
+                                        );
+                                      }
+                                      return const SizedBox();
+                                    },
+                                  );
+                                },
+                              );
+                            }).toList(),
+                          );
+                        } else {
+                          return const Center(
+                              child: Text('No banners available.'));
+                        }
+                      },
                     ),
                   ),
                 ),
@@ -237,31 +301,33 @@ class _HomePageState extends State<HomePage> {
                   );
                 }
 
-                return ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: ongoingOrders.length,
-                  itemBuilder: (context, index) {
-                    final OrderModel order = ongoingOrders[index];
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => RequestDetails(
-                              orderId: order.orderId.toString(),
-                              token: widget.token,
+                return SizedBox(
+                  height: 300,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: ongoingOrders.length,
+                    itemBuilder: (context, index) {
+                      final OrderModel order = ongoingOrders[index];
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => RequestDetails(
+                                orderId: order.orderId.toString(),
+                                token: widget.token,
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                      child: JobCard(
-                        name: order.problemType,
-                        description: order.orderDetail,
-                        status: order.orderStatus,
-                      ),
-                    );
-                  },
+                          );
+                        },
+                        child: JobCard(
+                          name: order.problemType,
+                          description: order.orderDetail,
+                          status: order.orderStatus,
+                        ),
+                      );
+                    },
+                  ),
                 );
               }
               return const SizedBox();
