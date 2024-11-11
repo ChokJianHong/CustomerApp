@@ -2,9 +2,11 @@ import 'package:customer_app/API/cancelCustOrder.dart';
 import 'package:customer_app/API/getOrderDetails.dart';
 import 'package:customer_app/API/get_technician.dart';
 import 'package:customer_app/Assets/components/Divider.dart';
+import 'package:customer_app/Assets/components/textbox.dart';
 import 'package:customer_app/assets/components/appbar.dart';
 import 'package:customer_app/assets/components/navbar.dart';
 import 'package:customer_app/core/app_colors.dart';
+import 'package:customer_app/pages/home.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -19,15 +21,8 @@ class RequestDetails extends StatefulWidget {
 }
 
 class _RequestDetailsState extends State<RequestDetails> {
-  int _currentIndex = 2;
   late Future<Map<String, dynamic>> _orderDetailFuture;
   Future<Map<String, dynamic>>? _technicianDetailFuture;
-
-  void _onTapTapped(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-  }
 
   @override
   void initState() {
@@ -162,8 +157,17 @@ class _RequestDetailsState extends State<RequestDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.primary,
-      appBar: CustomAppBar(
-        token: widget.token,
+      appBar: AppBar(
+        backgroundColor: AppColors.primary,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => HomePage(token: widget.token)),
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         child: FutureBuilder<Map<String, dynamic>>(
@@ -179,109 +183,284 @@ class _RequestDetailsState extends State<RequestDetails> {
 
               _technicianDetailFuture ??= _fetchTechnicianDetails(technicianId);
 
+              String brand = 'Unknown brand';
+              String warranty = 'Warranty not available';
+              if (orderDetails['ProblemType'] == 'autogate') {
+                brand = orderDetails['customer']['autogateBrand'] ??
+                    'Unknown Brand';
+                warranty = orderDetails['customer']['autogateWarranty'] ??
+                    'No warranty';
+              } else if (orderDetails['ProblemType'] == 'alarm') {
+                brand =
+                    orderDetails['customer']['alarmBrand'] ?? 'Unknown Brand';
+                warranty =
+                    orderDetails['customer']['alarmWarranty'] ?? 'No warranty';
+              }
+
               return Padding(
                 padding: const EdgeInsets.all(16),
-                child: Card(
-                  color: Colors.white,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                            "Problem Type: ${orderDetails['ProblemType'] ?? 'Not provided'}"),
-                        const SizedBox(height: 20),
-                        Text(
-                            "Date and Time: ${formatDateTime(orderDetails['orderDate'])} ${orderDetails['orderTime']}"),
-                        const SizedBox(height: 20),
-                        Text("Priority: ${orderDetails['priority']}"),
-                        const SizedBox(height: 20),
-                        const Text("Problem Description"),
-                        const SizedBox(height: 10),
-                        Container(
-                          width: double.infinity,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: Colors.grey, width: 1),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: TextField(
-                              maxLines: null,
-                              decoration: InputDecoration(
-                                hintText: '${orderDetails['orderDetail']}',
-                                border: InputBorder.none,
-                              ),
-                              style: const TextStyle(fontSize: 18),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            // Display image from the constructed URL
-                            if (orderDetails['orderImage'] != null)
-                              Image.network(
-                                'http://82.112.238.13:5005/${orderDetails['orderImage']}',
-                                width: 200,
+                        if (orderDetails['orderImage'] != null)
+                          Flexible(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(
+                                  15.0), // Set the border radius
+                              child: Image.network(
+                                'http://82.112.238.13:5005/${orderDetails['orderImage']}?timestamp=${DateTime.now().millisecondsSinceEpoch}',
+                                width: double.infinity,
                                 height: 200,
+                                fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) {
-                                  return Text("Image not available");
+                                  return const Text("Image not available");
                                 },
-                              )
-                            else
-                              Text(
-                                  "No Image Available"), // Placeholder text if no image URL
-
-                            // Expanded widget for text and button
-                          ],
-                        ),
-                        const ADivider(),
-                        const SizedBox(height: 10),
-                        FutureBuilder<Map<String, dynamic>>(
-                          future: _technicianDetailFuture,
-                          builder: (context, techSnapshot) {
-                            if (techSnapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const CircularProgressIndicator();
-                            } else if (techSnapshot.hasError) {
-                              return Text('Error: ${techSnapshot.error}');
-                            } else if (techSnapshot.hasData) {
-                              final technicianList =
-                                  techSnapshot.data!['technician'] ?? [];
-
-                              if (technicianList.isNotEmpty) {
-                                final technicianDetails = technicianList[0];
-                                return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const SizedBox(height: 10),
-                                    Text(
-                                        "Technician: ${technicianDetails['name'] ?? 'Not provided'}"),
-                                    const SizedBox(height: 10),
-                                    Text(
-                                        "Estimated Time: ${orderDetails['TechnicianETA'] ?? 'Not provided'}"),
-                                    const SizedBox(height: 10),
-                                    Text(
-                                        "Contact Number: ${technicianDetails['phone_number'] ?? 'Not provided'}"),
-                                    const SizedBox(height: 10),
-                                  ],
-                                );
-                              } else {
-                                return const Text('Request is still Pending');
-                              }
-                            } else {
-                              return const Text(
-                                  'No technician details available');
-                            }
-                          },
-                        ),
+                              ),
+                            ),
+                          )
+                        else
+                          const Text("No Image Available"),
                       ],
                     ),
-                  ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Address',
+                            style: TextStyle(
+                                color: AppColors.darkGreen,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            orderDetails['locationDetail'] ?? 'Not provided',
+                            style: const TextStyle(
+                                color: AppColors.lightgrey, fontSize: 15),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Brand',
+                                    style: TextStyle(
+                                        color: AppColors.darkGreen,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    brand,
+                                    style: const TextStyle(
+                                      color: AppColors.lightgrey,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  const Text(
+                                    'Date',
+                                    style: TextStyle(
+                                        color: AppColors.darkGreen,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    formatDateTime(orderDetails['orderDate']),
+                                    style: const TextStyle(
+                                      color: AppColors.lightgrey,
+                                      fontSize: 15,
+                                    ),
+                                  )
+                                ],
+                              ),
+                              const SizedBox(
+                                width: 100,
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Warranty',
+                                    style: TextStyle(
+                                        color: AppColors.darkGreen,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    formatDateTime(warranty),
+                                    style: const TextStyle(
+                                      color: AppColors.lightgrey,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  const Text(
+                                    'Time',
+                                    style: TextStyle(
+                                        color: AppColors.darkGreen,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    orderDetails['orderTime'],
+                                    style: const TextStyle(
+                                      color: AppColors.lightgrey,
+                                      fontSize: 15,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          const Text(
+                            "Problem Description",
+                            style: TextStyle(
+                                fontSize: 20, color: AppColors.darkGreen),
+                          ),
+                          Text(
+                            orderDetails['orderDetail'],
+                            style: const TextStyle(
+                                color: AppColors.lightgrey, fontSize: 15),
+                          ),
+                          const SizedBox(height: 20),
+                          const ADivider(),
+                          const SizedBox(height: 10),
+                          Placeholder(
+                            fallbackHeight: 200.0,
+                            fallbackWidth: double.infinity,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                // Display image from the constructed URL
+                                if (orderDetails['orderDoneImage'] != null)
+                                  Image.network(
+                                    'http://82.112.238.13:5005/${orderDetails['orderDoneImage']}',
+                                    width: 200,
+                                    height: 200,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return const Text("Image not available");
+                                    },
+                                  )
+                                else
+                                  const Text(
+                                      "Currently Not Complete"), // Placeholder text if no image URL
+
+                                // Expanded widget for text and button
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          FutureBuilder<Map<String, dynamic>>(
+                            future: _technicianDetailFuture,
+                            builder: (context, techSnapshot) {
+                              if (techSnapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const CircularProgressIndicator();
+                              } else if (techSnapshot.hasError) {
+                                return Text('Error: ${techSnapshot.error}');
+                              } else if (techSnapshot.hasData) {
+                                final technicianList =
+                                    techSnapshot.data!['technician'] ?? [];
+
+                                if (technicianList.isNotEmpty) {
+                                  final technicianDetails = technicianList[0];
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(height: 10),
+                                      const Text(
+                                        'Technician',
+                                        style: TextStyle(
+                                            color: AppColors.darkGreen,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Text(
+                                        technicianDetails['name'] ??
+                                            'Not provided',
+                                        style: const TextStyle(
+                                          color: AppColors.lightgrey,
+                                          fontSize: 15,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      const Text(
+                                        'Estimated',
+                                        style: TextStyle(
+                                            color: AppColors.darkGreen,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Text(
+                                        formatDateTime(
+                                            orderDetails['TechnicianETA'] ??
+                                                'No ETA available'),
+                                        style: const TextStyle(
+                                          color: AppColors.lightgrey,
+                                          fontSize: 15,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      const Text(
+                                        'Contact Number',
+                                        style: TextStyle(
+                                            color: AppColors.darkGreen,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Text(
+                                        technicianDetails['phone_number'] ??
+                                            'Not provided',
+                                        style: const TextStyle(
+                                          color: AppColors.lightgrey,
+                                          fontSize: 15,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 10),
+                                    ],
+                                  );
+                                } else {
+                                  return const Text('Request is still Pending');
+                                }
+                              } else {
+                                return const Text(
+                                    'No technician details available');
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    MyButton(
+                      text: 'Go Back Home',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HomePage(token: widget.token),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
               );
             } else {
@@ -289,11 +468,6 @@ class _RequestDetailsState extends State<RequestDetails> {
             }
           },
         ),
-      ),
-      bottomNavigationBar: BottomNav(
-        onTap: _onTapTapped,
-        currentIndex: _currentIndex,
-        token: widget.token,
       ),
     );
   }

@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:customer_app/API/getCustToken.dart';
+import 'package:customer_app/Assets/components/AppBar.dart';
+import 'package:customer_app/Assets/components/navbar.dart';
 import 'package:customer_app/pages/Confirmation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:customer_app/Assets/components/Divider.dart';
@@ -10,7 +12,6 @@ import 'package:customer_app/assets/components/sectionbar.dart';
 import 'package:customer_app/assets/components/textbox.dart';
 import 'package:customer_app/core/app_colors.dart';
 import 'package:customer_app/pages/currentPage.dart';
-import 'package:customer_app/pages/home.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -27,6 +28,7 @@ class RequisitionForm extends StatefulWidget {
 }
 
 class _RequisitionFormState extends State<RequisitionForm> {
+  int _currentIndex = 0;
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
   String? selectedLocation;
@@ -244,24 +246,19 @@ class _RequisitionFormState extends State<RequisitionForm> {
     }
   }
 
+  void _onTapTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
       backgroundColor: AppColors.primary,
-      appBar: AppBar(
-        backgroundColor: AppColors.primary,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => HomePage(token: widget.token)),
-          ),
-        ),
-      ),
+      appBar: CustomAppBar(token: widget.token),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(
@@ -394,10 +391,18 @@ class _RequisitionFormState extends State<RequisitionForm> {
                   text: 'Continue',
                   onTap: () => _handleContinue(),
                 ),
+                const SizedBox(
+                  height: 20,
+                ),
               ],
             ),
           ),
         ),
+      ),
+      bottomNavigationBar: BottomNav(
+        onTap: _onTapTapped,
+        currentIndex: _currentIndex,
+        token: widget.token,
       ),
     );
   }

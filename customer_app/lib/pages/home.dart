@@ -9,6 +9,7 @@ import 'package:customer_app/pages/Request_details.dart';
 import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:intl/intl.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 
 class HomePage extends StatefulWidget {
   final String token;
@@ -56,7 +57,7 @@ class _HomePageState extends State<HomePage> {
     _latestOrderFuture = customerId.isNotEmpty
         ? customerOrder.getCustomerOrders(widget.token, customerId)
         : Future.value([]);
-        firebaseapi.initNotifications(widget.token, customerId);   
+    firebaseapi.initNotifications(widget.token, customerId);
   }
 
   @override
@@ -96,9 +97,30 @@ class _HomePageState extends State<HomePage> {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: Image.asset(
-                      'lib/assets/images/banner.png',
-                      fit: BoxFit.contain,
+                    child: CarouselSlider(
+                      options: CarouselOptions(
+                        autoPlay: true, // Enable auto-play
+                        enlargeCenterPage: true, // Enlarge the center image
+                        aspectRatio:
+                            2.0, // Adjust the aspect ratio of the carousel
+                        viewportFraction:
+                            1.0, // This ensures images fill the entire container
+                      ),
+                      items: [
+                        // Add images as list of items
+                        'lib/assets/images/banner.png',
+                        'lib/assets/images/banner.png', 
+                        'lib/assets/images/banner.png', // Add more image paths here
+                      ].map((imagePath) {
+                        return Builder(
+                          builder: (BuildContext context) {
+                            return Image.asset(
+                              imagePath,
+                              fit: BoxFit.contain,
+                            );
+                          },
+                        );
+                      }).toList(),
                     ),
                   ),
                 ),
