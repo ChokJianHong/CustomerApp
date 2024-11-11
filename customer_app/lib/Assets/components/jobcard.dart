@@ -1,4 +1,3 @@
-
 import 'package:customer_app/core/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -25,7 +24,7 @@ class JobCard extends StatelessWidget {
           horizontal: 8,
           vertical: 8), // Adjust margin for spacing between cards
       decoration: BoxDecoration(
-        color: AppColors.secondary,
+        color: AppColors.lightBlue,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -43,7 +42,7 @@ class JobCard extends StatelessWidget {
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18,
-              color: Colors.grey,
+              color: AppColors.darkGray,
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -53,7 +52,7 @@ class JobCard extends StatelessWidget {
             description,
             style: const TextStyle(
               fontSize: 14,
-              color: Colors.grey,
+              color: AppColors.darkGray,
             ),
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
