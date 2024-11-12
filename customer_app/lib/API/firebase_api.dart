@@ -2,9 +2,11 @@ import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:http/http.dart' as http;
 
+
+
 const baseUrl = "http://82.112.238.13:5005"; // Adjust if needed
 
-Future<void> handleBackgroundMessage(RemoteMessage message) async{
+Future<void> handleBackgroundMessage(RemoteMessage message) async {
   print('Title: ${message.notification?.title}');
   print('Body: ${message.notification?.body}');
   print('Payload: ${message.data}');
@@ -23,14 +25,13 @@ class FirebaseApi {
     if (fCMToken != null) {
       // Insert the FCM token into the database
       await saveFcmTokenToDatabase(token, customerId, fCMToken);
-      
     }
 
     FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
-    
   }
 
-  Future<Map<String, dynamic>> saveFcmTokenToDatabase(String token, String customerId,String fCMToken) async {
+  Future<Map<String, dynamic>> saveFcmTokenToDatabase(
+      String token, String customerId, String fCMToken) async {
     try {
       print('Function did get activated');
       final response = await http.post(
@@ -56,3 +57,4 @@ class FirebaseApi {
     }
   }
 }
+

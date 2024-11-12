@@ -7,6 +7,7 @@ import 'package:customer_app/assets/components/appbar.dart';
 import 'package:customer_app/assets/components/navbar.dart';
 import 'package:customer_app/core/app_colors.dart';
 import 'package:customer_app/pages/home.dart';
+import 'package:customer_app/pages/messages.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -459,6 +460,35 @@ class _RequestDetailsState extends State<RequestDetails> {
                           ),
                         );
                       },
+                    ),
+                    // Add this ElevatedButton below MyButton
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            Colors.blue, // Set button color if needed
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      ),
+                      onPressed: () {
+                        // Replace these with actual values
+                        String currentUserId = widget
+                            .token; // Or retrieve it from the order or user context
+                        String chatPartnerId = widget
+                            .orderId; // Or the technician's ID or another identifier
+                        String token = widget.token;
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ChatScreen(
+                              currentUserId: currentUserId,
+                              chatPartnerId: chatPartnerId,
+                              token: token,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Text('Go to Messages'),
                     ),
                   ],
                 ),
