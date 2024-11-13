@@ -11,11 +11,11 @@ class ChatScreen extends StatefulWidget {
   final String token;
 
   const ChatScreen({
-    Key? key,
+    super.key,
     required this.currentUserId,
     required this.chatPartnerId,
     required this.token,
-  }) : super(key: key);
+  });
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -25,7 +25,7 @@ class _ChatScreenState extends State<ChatScreen> {
   late TextEditingController _messageController;
   late Future<Map<String, dynamic>> _orderDetailsFuture;
   late Future<Map<String, dynamic>> _technicianDetailsFuture;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   bool _isSending = false; // Track sending state
 
   @override
@@ -141,14 +141,14 @@ class _ChatScreenState extends State<ChatScreen> {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text('Technician: ${technicianDetails['name']}',
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold)),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: Text(
                             'Phone Number: ${technicianDetails['phone_number']}',
-                            style: TextStyle(fontSize: 16)),
+                            style: const TextStyle(fontSize: 16)),
                       ),
                       Expanded(
                         child: StreamBuilder<QuerySnapshot>(
@@ -208,12 +208,12 @@ class _ChatScreenState extends State<ChatScreen> {
                                                   BorderRadius.circular(12.0),
                                             ),
                                             child: Text(message,
-                                                style: TextStyle(fontSize: 16)),
+                                                style: const TextStyle(fontSize: 16)),
                                           ),
                                           Text(
                                             DateFormat('hh:mm a').format(
                                                 timestamp), // Format timestamp
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 fontSize: 12,
                                                 color: Colors.black54),
                                           ),
@@ -245,7 +245,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             ),
                             IconButton(
                               icon: _isSending
-                                  ? CircularProgressIndicator()
+                                  ? const CircularProgressIndicator()
                                   : const Icon(Icons.send),
                               onPressed: _isSending
                                   ? null

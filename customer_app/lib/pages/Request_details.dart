@@ -467,7 +467,7 @@ class _RequestDetailsState extends State<RequestDetails> {
                         backgroundColor:
                             Colors.blue, // Set button color if needed
                         padding:
-                            EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                            const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                       ),
                       onPressed: () {
                         // Replace these with actual values
@@ -488,7 +488,7 @@ class _RequestDetailsState extends State<RequestDetails> {
                           ),
                         );
                       },
-                      child: Text('Go to Messages'),
+                      child: const Text('Go to Messages'),
                     ),
                   ],
                 ),
