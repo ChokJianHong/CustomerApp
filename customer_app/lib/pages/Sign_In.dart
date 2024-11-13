@@ -112,13 +112,13 @@ class _SignInPageState extends State<SignInPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Forgot Password'),
+          title: const Text('Forgot Password'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: emailController,
-                decoration: InputDecoration(labelText: 'Enter your email'),
+                decoration: const InputDecoration(labelText: 'Enter your email'),
               ),
               DropdownButton<String>(
                 value: userType,
@@ -144,7 +144,7 @@ class _SignInPageState extends State<SignInPage> {
 
                 if (email.isEmpty || !EmailValidator.validate(email)) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Please enter a valid email')));
+                      const SnackBar(content: Text('Please enter a valid email')));
                   return;
                 }
 
@@ -175,13 +175,13 @@ class _SignInPageState extends State<SignInPage> {
                       SnackBar(content: Text('Error occurred: $error')));
                 }
               },
-              child: Text('Submit'),
+              child: const Text('Submit'),
             ),
             TextButton(
               onPressed: () {
                 Navigator.pop(context); // Close the dialog
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
           ],
         );

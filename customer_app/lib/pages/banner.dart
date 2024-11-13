@@ -5,7 +5,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 class BannerPage extends StatefulWidget {
   final String token; // Pass token to authenticate API request
 
-  const BannerPage({Key? key, required this.token}) : super(key: key);
+  const BannerPage({super.key, required this.token});
 
   @override
   _BannerPageState createState() => _BannerPageState();
