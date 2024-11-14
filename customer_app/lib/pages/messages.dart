@@ -1,9 +1,6 @@
-import 'package:customer_app/API/chatService.dart';
 import 'package:customer_app/API/chatService1.dart';
 import 'package:customer_app/assets/components/chatBubbles.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:customer_app/Assets/models/chatModel.dart';
 
 class ChatScreen1 extends StatefulWidget {
   final String orderId;

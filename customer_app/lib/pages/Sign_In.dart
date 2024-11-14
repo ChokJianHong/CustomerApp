@@ -25,82 +25,14 @@ class _SignInPageState extends State<SignInPage> {
   bool isLoading = false;
   String? errorMessage;
 
-  bool _validateInputs() {
-    final email = emailController.text;
-    final password = passwordController.text;
+  // Initialize the FlutterSecureStorage
+  final storage = const FlutterSecureStorage();
 
-    if (email.isEmpty || !EmailValidator.validate(email)) {
-      setState(() {
-        errorMessage = 'Please enter a valid email address.';
-      });
-      return false;
-    }
+  @override
+  void initState() {
+    super.initState();
 
-    if (password.isEmpty) {
-      setState(() {
-        errorMessage = 'Password cannot be empty.';
-      });
-      return false;
-    }
-
-    return true;
-  }
-
-  void _signIn() async {
-    setState(() {
-      isLoading = true;
-      errorMessage = null;
-    });
-
-    if (!_validateInputs()) {
-      setState(() {
-        isLoading = false;
-      });
-      return;
-    }
-
-    try {
-      final api = SignInAPI();
-      final userData =
-          await api.loginUser(emailController.text, passwordController.text);
-
-      // Assuming the token is returned in the 'token' field
-      final token = userData['token'];
-      print('Token: $token');
-
-      // Store the token securely
-      const storage = FlutterSecureStorage();
-      await storage.write(key: 'userToken', value: token);
-
-      // Fetch customer details using the token
-      await _getCustomerDetails(token);
-
-      // Navigate to home page or handle success
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-            builder: (context) => HomePage(
-                  token: token,
-                )),
-      );
-    } catch (e) {
-      setState(() {
-        errorMessage = e.toString();
-        isLoading = false;
-      });
-    }
-  }
-
-  Future<void> _getCustomerDetails(String token) async {
-    try {
-      final customerTokenApi = CustomerToken();
-      final customerData = await customerTokenApi.getCustomerByToken(token);
-      print('Customer Data: $customerData');
-      // Handle customer data (e.g., store it, display it, etc.)
-    } catch (e) {
-      print('Error fetching customer details: $e');
-      // Handle errors accordingly
-    }
+    _checkLoggedInStatus();
   }
 
   // Forgot Password Function
@@ -118,7 +50,8 @@ class _SignInPageState extends State<SignInPage> {
             children: [
               TextField(
                 controller: emailController,
-                decoration: const InputDecoration(labelText: 'Enter your email'),
+                decoration:
+                    const InputDecoration(labelText: 'Enter your email'),
               ),
               DropdownButton<String>(
                 value: userType,
@@ -143,8 +76,8 @@ class _SignInPageState extends State<SignInPage> {
                 final email = emailController.text;
 
                 if (email.isEmpty || !EmailValidator.validate(email)) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Please enter a valid email')));
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('Please enter a valid email')));
                   return;
                 }
 
@@ -189,10 +122,98 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
+  // Check if a valid token exists in storage
+  Future<void> _checkLoggedInStatus() async {
+    final token = await storage.read(key: 'userToken');
+
+    if (token != null) {
+      // If a token exists, navigate directly to the home page
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage(token: token)),
+      );
+    }
+  }
+
+  bool _validateInputs() {
+    final email = emailController.text;
+    final password = passwordController.text;
+
+    if (email.isEmpty || !EmailValidator.validate(email)) {
+      setState(() {
+        errorMessage = 'Please enter a valid email address.';
+      });
+      return false;
+    }
+
+    if (password.isEmpty) {
+      setState(() {
+        errorMessage = 'Password cannot be empty.';
+      });
+      return false;
+    }
+
+    return true;
+  }
+
+  void _signIn() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = null;
+    });
+
+    if (!_validateInputs()) {
+      setState(() {
+        isLoading = false;
+      });
+      return;
+    }
+
+    try {
+      final api = SignInAPI();
+      final userData =
+          await api.loginUser(emailController.text, passwordController.text);
+
+      // Assuming the token is returned in the 'token' field
+      final token = userData['token'];
+      print('Token: $token');
+
+      // Store the token securely
+      await storage.write(key: 'userToken', value: token);
+
+      // Fetch customer details using the token
+      await _getCustomerDetails(token);
+
+      // Navigate to home page
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (context) => HomePage(
+                  token: token,
+                )),
+      );
+    } catch (e) {
+      setState(() {
+        errorMessage = e.toString();
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _getCustomerDetails(String token) async {
+    try {
+      final customerTokenApi = CustomerToken();
+      final customerData = await customerTokenApi.getCustomerByToken(token);
+      print('Customer Data: $customerData');
+      // Handle customer data (e.g., store it, display it, etc.)
+    } catch (e) {
+      print('Error fetching customer details: $e');
+      // Handle errors accordingly
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    Theme.of(context);
-
     return Scaffold(
       backgroundColor: AppColors.darkblue,
       body: Padding(

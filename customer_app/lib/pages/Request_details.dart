@@ -5,7 +5,6 @@ import 'package:customer_app/Assets/components/Divider.dart';
 import 'package:customer_app/Assets/components/textbox.dart';
 import 'package:customer_app/core/app_colors.dart';
 import 'package:customer_app/pages/home.dart';
-import 'package:customer_app/pages/messages.dart';
 import 'package:customer_app/pages/messages1.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
