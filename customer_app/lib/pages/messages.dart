@@ -1,271 +1,96 @@
-import 'dart:convert';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:customer_app/API/get_technician.dart';
+import 'package:customer_app/API/chatService.dart';
+import 'package:customer_app/API/chatService1.dart';
+import 'package:customer_app/assets/components/chatBubbles.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart'; // For formatting timestamps
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:customer_app/Assets/models/chatModel.dart';
 
-class ChatScreen extends StatefulWidget {
-  final String currentUserId;
-  final String chatPartnerId; // orderId
+class ChatScreen1 extends StatefulWidget {
+  final String orderId;
   final String token;
+  final String userId; // Technician or Customer ID
 
-  const ChatScreen({
-    super.key,
-    required this.currentUserId,
-    required this.chatPartnerId,
-    required this.token,
-  });
+  const ChatScreen1(
+      {super.key, required this.orderId, required this.token, required this.userId});
 
   @override
-  State<ChatScreen> createState() => _ChatScreenState();
+  _ChatScreenState createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
-  late TextEditingController _messageController;
-  late Future<Map<String, dynamic>> _orderDetailsFuture;
-  late Future<Map<String, dynamic>> _technicianDetailsFuture;
-  final ScrollController _scrollController = ScrollController();
-  bool _isSending = false; // Track sending state
+class _ChatScreenState extends State<ChatScreen1> {
+  final TextEditingController _messageController = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-    _messageController = TextEditingController();
-    _orderDetailsFuture = _fetchOrderDetails(widget.chatPartnerId);
-  }
-
-  Future<Map<String, dynamic>> _fetchOrderDetails(String orderId) async {
-    try {
-      final response = await http.get(
-        Uri.parse(
-            'http://82.112.238.13:5005/dashboarddatabase/orders/details/$orderId'),
-        headers: {'Authorization': widget.token},
-      );
-
-      if (response.statusCode == 200) {
-        final orderDetails = json.decode(response.body);
-        if (orderDetails['result'] != null &&
-            orderDetails['result']['orderStatus'] == 'ongoing') {
-          final technicianId =
-              orderDetails['result']['TechnicianID'].toString();
-          _technicianDetailsFuture =
-              TechnicianService.getTechnician(widget.token, technicianId);
-          return orderDetails;
-        } else {
-          throw Exception('Order is not ongoing');
-        }
-      } else {
-        throw Exception('Failed to fetch order details');
-      }
-    } catch (error) {
-      throw Exception('Error fetching order details: $error');
-    }
-  }
-
-  Future<void> _sendMessage(String message) async {
-    if (message.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Message cannot be empty')),
-      );
-      return;
-    }
-
-    setState(() {
-      _isSending = true; // Set sending state to true
-    });
+  // Send message to backend via ChatService1
+  void _sendMessage() async {
+    final message = _messageController.text.trim();
+    if (message.isEmpty) return;
 
     try {
-      final technicianId = await _fetchTechnicianId();
-      await FirebaseFirestore.instance
-          .collection('chats')
-          .doc(widget.chatPartnerId)
-          .collection('messages')
-          .add({
-        'senderId': widget.currentUserId,
-        'receiverId': technicianId,
-        'message': message,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
-
+      // Send the message using ChatService1
+      await ChatService1().sendMessage(widget.orderId, message, widget.token);
       _messageController.clear();
-      _scrollToBottom();
-    } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error sending message: $error')));
-    } finally {
-      setState(() {
-        _isSending = false; // Reset sending state in finally block
-      });
-    }
-  }
-
-  Future<String> _fetchTechnicianId() async {
-    final orderDetails = await _orderDetailsFuture;
-    return orderDetails['result']['TechnicianID'].toString();
-  }
-
-  void _scrollToBottom() {
-    if (_scrollController.hasClients) {
-      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    } catch (e) {
+      print("Error sending message: $e");
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Chat with Technician')),
-      body: FutureBuilder<Map<String, dynamic>>(
-        future: _orderDetailsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (snapshot.hasData) {
-            final orderDetails = snapshot.data!;
-            return FutureBuilder<Map<String, dynamic>>(
-              future: _technicianDetailsFuture,
-              builder: (context, technicianSnapshot) {
-                if (technicianSnapshot.connectionState ==
-                    ConnectionState.waiting) {
+      appBar: AppBar(title: const Text("Chat")),
+      body: Column(
+        children: [
+          Expanded(
+            child: StreamBuilder<List<Map<String, dynamic>>>(
+              stream: ChatService1().listenToMessages(widget.orderId),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
-                } else if (technicianSnapshot.hasError) {
-                  return Center(
-                      child: Text('Error: ${technicianSnapshot.error}'));
-                } else if (technicianSnapshot.hasData) {
-                  final technicianDetails =
-                      technicianSnapshot.data!['technician'][0];
-                  return Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text('Technician: ${technicianDetails['name']}',
-                            style: const TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold)),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Text(
-                            'Phone Number: ${technicianDetails['phone_number']}',
-                            style: const TextStyle(fontSize: 16)),
-                      ),
-                      Expanded(
-                        child: StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance
-                              .collection('chats')
-                              .doc(widget.chatPartnerId)
-                              .collection('messages')
-                              .orderBy('timestamp')
-                              .snapshots(),
-                          builder: (context, chatSnapshot) {
-                            if (chatSnapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const Center(
-                                  child: CircularProgressIndicator());
-                            }
-                            if (chatSnapshot.hasData &&
-                                chatSnapshot.data!.docs.isNotEmpty) {
-                              final messages = chatSnapshot.data!.docs;
-                              return ListView.builder(
-                                controller: _scrollController,
-                                itemCount: messages.length,
-                                itemBuilder: (context, index) {
-                                  final message = messages[index]['message'];
-                                  final senderId = messages[index]['senderId'];
-                                  // Safely handle the timestamp
-                                  final timestampData =
-                                      messages[index]['timestamp'];
-                                  DateTime timestamp;
-                                  if (timestampData is Timestamp) {
-                                    timestamp = timestampData.toDate();
-                                  } else {
-                                    // Handle null or unexpected types
-                                    timestamp = DateTime
-                                        .now(); // Default to current time or handle as needed
-                                  }
-
-                                  return Align(
-                                    alignment: senderId == widget.currentUserId
-                                        ? Alignment.centerRight
-                                        : Alignment.centerLeft,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            senderId == widget.currentUserId
-                                                ? CrossAxisAlignment.end
-                                                : CrossAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            padding: const EdgeInsets.all(12.0),
-                                            decoration: BoxDecoration(
-                                              color: senderId ==
-                                                      widget.currentUserId
-                                                  ? Colors.blue[100]
-                                                  : Colors.grey[300],
-                                              borderRadius:
-                                                  BorderRadius.circular(12.0),
-                                            ),
-                                            child: Text(message,
-                                                style: const TextStyle(fontSize: 16)),
-                                          ),
-                                          Text(
-                                            DateFormat('hh:mm a').format(
-                                                timestamp), // Format timestamp
-                                            style: const TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.black54),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                },
-                              );
-                            } else {
-                              return const Center(
-                                  child: Text('No messages yet.'));
-                            }
-                          },
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                controller: _messageController,
-                                decoration: const InputDecoration(
-                                    labelText: 'Type your message...',
-                                    border: OutlineInputBorder()),
-                                onSubmitted: (text) => _sendMessage(text),
-                              ),
-                            ),
-                            IconButton(
-                              icon: _isSending
-                                  ? const CircularProgressIndicator()
-                                  : const Icon(Icons.send),
-                              onPressed: _isSending
-                                  ? null
-                                  : () => _sendMessage(_messageController.text),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  );
-                } else {
-                  return const Center(
-                      child: Text('No technician details available'));
                 }
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text("No messages yet"));
+                }
+
+                final messages = snapshot.data!;
+                return ListView.builder(
+                  reverse: true,
+                  itemCount: messages.length,
+                  itemBuilder: (context, index) {
+                    final messageData = messages[index];
+                    bool isMe = messageData['senderId'] == widget.userId;
+
+                    return ChatBubble(
+                      message: messageData['message'],
+                      isMe: isMe,
+                    );
+                  },
+                );
               },
-            );
-          } else {
-            return const Center(child: Text('Order not found or not ongoing'));
-          }
-        },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _messageController,
+                    decoration: InputDecoration(
+                      hintText: "Enter message...",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.send, color: Colors.blue),
+                  onPressed: _sendMessage,
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

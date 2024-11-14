@@ -8,6 +8,7 @@ import 'package:customer_app/assets/components/navbar.dart';
 import 'package:customer_app/core/app_colors.dart';
 import 'package:customer_app/pages/home.dart';
 import 'package:customer_app/pages/messages.dart';
+import 'package:customer_app/pages/messages1.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -181,6 +182,7 @@ class _RequestDetailsState extends State<RequestDetails> {
             } else if (snapshot.hasData) {
               final orderDetails = snapshot.data!['result'];
               final technicianId = orderDetails['TechnicianID'].toString();
+              final customerId = orderDetails['CustomerID'].toString();
 
               _technicianDetailFuture ??= _fetchTechnicianDetails(technicianId);
 
@@ -466,16 +468,15 @@ class _RequestDetailsState extends State<RequestDetails> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor:
                             Colors.blue, // Set button color if needed
-                        padding:
-                            const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 12),
                       ),
                       onPressed: () {
                         // Replace these with actual values
-                        String currentUserId = widget
-                            .token; // Or retrieve it from the order or user context
+                        String currentUserId =
+                            customerId; // Or retrieve it from the order or user context
                         String chatPartnerId = widget
                             .orderId; // Or the technician's ID or another identifier
-                        String token = widget.token;
 
                         Navigator.push(
                           context,
@@ -483,7 +484,7 @@ class _RequestDetailsState extends State<RequestDetails> {
                             builder: (context) => ChatScreen(
                               currentUserId: currentUserId,
                               chatPartnerId: chatPartnerId,
-                              token: token,
+                              token: widget.token,
                             ),
                           ),
                         );

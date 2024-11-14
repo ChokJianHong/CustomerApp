@@ -12,7 +12,7 @@ class ChatService {
   }
 
   // Sends a message to Firestore
-  Future<void> sendMessage(ChatMessage message, String chatId) async {
+  Future<void> sendMessage(ChatMessage message, String chatId, String token) async {
     await _firestore
         .collection('chats')
         .doc(chatId)
