@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:customer_app/assets/models/OrderModel.dart';
 import 'package:http/http.dart' as http;
 
-const baseUrl = "http://82.112.238.13:5005";
+const baseUrl = "http://10.0.2.2:5005";
 
 class CustomerOrder {
   Future<List<OrderModel>> getCustomerOrders(String token, String customerId,

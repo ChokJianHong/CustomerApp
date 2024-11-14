@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 class ForgotPasswordService {
   
   static const String apiUrl =
-      'http://82.112.238.13:5005/dashboarddatabase/forgot-password';
+      'http://10.0.2.2:5005/dashboarddatabase/forgot-password';
 
   Future<Map<String, dynamic>> forgotPassword(
       String email, String userType) async {

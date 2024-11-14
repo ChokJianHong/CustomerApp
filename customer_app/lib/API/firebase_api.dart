@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:http/http.dart' as http;
 
-const baseUrl = "http://82.112.238.13:5005"; // Adjust if needed
+const baseUrl = "http://10.0.2.2:5005"; // Adjust if needed
 
 Future<void> handleBackgroundMessage(RemoteMessage message) async {
   print('Title: ${message.notification?.title}');

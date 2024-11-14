@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 
 class OrderAPI {
   static const String baseUrl =
-      "http://82.112.238.13:5005"; // Localhost for Android Emulator
+      "http://10.0.2.2:5005"; // Localhost for Android Emulator
 
   static Future<Map<String, dynamic>> createOrder({
     required String token,
