@@ -5,6 +5,7 @@ import 'package:customer_app/assets/components/textbox.dart';
 import 'package:customer_app/core/app_colors.dart';
 import 'package:customer_app/pages/home.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
 class Profile extends StatefulWidget {
@@ -58,13 +59,13 @@ class _ProfileState extends State<Profile> {
         phoneNumberController.text =
             customerDetails['data']['phone_number'] ?? '';
         alarmWarrantyController.text =
-            customerDetails['data']['alarm_warranty'] ?? '';
+            formatDateTime(customerDetails['data']['alarm_warranty'] ?? '');
         locationController.text = customerDetails['data']['location'] ?? '';
         autoGateController.text =
             customerDetails['data']['auto_gate_brand'] ?? '';
         alarmController.text = customerDetails['data']['alarm_brand'] ?? '';
         autoGateWarantyController.text =
-            customerDetails['data']['auto_gate_warranty'] ?? '';
+            formatDateTime(customerDetails['data']['auto_gate_warranty'] ?? '');
       });
 
       return customerDetails;
@@ -134,6 +135,17 @@ class _ProfileState extends State<Profile> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(message),
     ));
+  }
+
+  String formatDateTime(String utcDateTime) {
+    try {
+      DateTime parsedDate = DateTime.parse(utcDateTime);
+      DateTime localDate = parsedDate.toLocal();
+      return DateFormat('yyyy-MM-dd').format(localDate);
+    } catch (e) {
+      print('Error parsing date: $e');
+      return 'Invalid date';
+    }
   }
 
   void _showErrorDialog(String errorMessage) {

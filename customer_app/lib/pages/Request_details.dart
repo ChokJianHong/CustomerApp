@@ -3,8 +3,6 @@ import 'package:customer_app/API/getOrderDetails.dart';
 import 'package:customer_app/API/get_technician.dart';
 import 'package:customer_app/Assets/components/Divider.dart';
 import 'package:customer_app/Assets/components/textbox.dart';
-import 'package:customer_app/assets/components/appbar.dart';
-import 'package:customer_app/assets/components/navbar.dart';
 import 'package:customer_app/core/app_colors.dart';
 import 'package:customer_app/pages/home.dart';
 import 'package:customer_app/pages/messages.dart';
