@@ -4,6 +4,7 @@ import 'package:customer_app/core/app_colors.dart';
 import 'package:customer_app/pages/Sign_In.dart';
 import 'package:customer_app/pages/profile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:customer_app/API/getCustToken.dart';
 
@@ -55,6 +56,20 @@ class _SettingState extends State<Setting> {
       });
     }
   }
+  void _logout() async {
+  const storage = FlutterSecureStorage();
+
+  // Remove the stored token securely
+  await storage.delete(key: 'userToken');
+
+  // After deleting the token, navigate the user back to the Sign-In page
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(
+      builder: (context) => const SignInPage(),
+    ),
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -155,14 +170,7 @@ class _SettingState extends State<Setting> {
             child: MyButton(
               text: 'Sign Out',
               backgroundColor: AppColors.orange,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SignInPage(),
-                  ),
-                );
-              },
+              onTap: _logout
             ),
           ),
           const SizedBox(

@@ -44,29 +44,4 @@ class SignInAPI {
       throw Exception('Error logging in: $error');
     }
   }
-
-  Future<http.Response> fetchUserData() async {
-    // Retrieve the JWT token from secure storage
-    final String? token = await storage.read(key: 'jwt_token');
-
-    if (token == null) {
-      throw Exception('User is not authenticated');
-    }
-
-    // Use the token in the authorization header for the API request
-    final response = await http.get(
-      Uri.parse(
-          '$baseUrl/protected-route'), // Replace with your actual endpoint
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      // Handle successful response
-      return response;
-    } else {
-      throw Exception('Failed to load user data');
-    }
-  }
 }
