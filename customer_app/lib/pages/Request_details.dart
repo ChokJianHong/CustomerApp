@@ -87,7 +87,6 @@ class _RequestDetailsState extends State<RequestDetails> {
       final response = await GetCancelOrder().cancelOrder(
         widget.token,
         widget.orderId,
-        'Customer cancelled the order',
       );
 
       if (mounted) Navigator.of(context).pop();
