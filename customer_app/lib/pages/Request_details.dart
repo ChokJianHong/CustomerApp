@@ -2,6 +2,7 @@ import 'package:customer_app/API/cancelCustOrder.dart';
 import 'package:customer_app/API/getOrderDetails.dart';
 import 'package:customer_app/API/get_technician.dart';
 import 'package:customer_app/Assets/components/Divider.dart';
+import 'package:customer_app/Assets/components/review_popout.dart';
 import 'package:customer_app/Assets/components/textbox.dart';
 import 'package:customer_app/core/app_colors.dart';
 import 'package:customer_app/pages/home.dart';
@@ -487,6 +488,28 @@ class _RequestDetailsState extends State<RequestDetails> {
                       },
                       child: const Text('Go to Messages'),
                     ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    MyButton(text: 'cancel', onTap: _cancelOrder),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    if (orderDetails['orderStatus'] == 'complete')
+                      MyButton(
+                        text: 'Review',
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return ReviewDialog(
+                                orderId: widget.orderId,
+                                token: widget.token,
+                              );
+                            },
+                          );
+                        },
+                      ),
                   ],
                 ),
               );
