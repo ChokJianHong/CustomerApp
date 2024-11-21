@@ -460,16 +460,12 @@ class _RequestDetailsState extends State<RequestDetails> {
                         );
                       },
                     ),
-                    // Add this ElevatedButton below MyButton
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            Colors.blue, // Set button color if needed
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 12),
-                      ),
-                      onPressed: () {
-                        // Replace these with actual values
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    MyButton(
+                      backgroundColor: AppColors.darkGreen,
+                      onTap: () {
                         String currentUserId =
                             customerId; // Or retrieve it from the order or user context
                         String chatPartnerId = widget
@@ -486,12 +482,15 @@ class _RequestDetailsState extends State<RequestDetails> {
                           ),
                         );
                       },
-                      child: const Text('Go to Messages'),
+                      text: 'Go to Messages',
                     ),
                     const SizedBox(
                       height: 20,
                     ),
-                    MyButton(text: 'cancel', onTap: _cancelOrder),
+                    MyButton(
+                        text: 'cancel',
+                        backgroundColor: Colors.red,
+                        onTap: _cancelOrder),
                     const SizedBox(
                       height: 20,
                     ),
