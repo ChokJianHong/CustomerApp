@@ -494,7 +494,8 @@ class _RequestDetailsState extends State<RequestDetails> {
                     const SizedBox(
                       height: 20,
                     ),
-                    if (orderDetails['orderStatus'] == 'complete')
+                    if (orderDetails != null &&
+                        orderDetails['orderStatus'] == 'complete')
                       MyButton(
                         text: 'Review',
                         onTap: () {
