@@ -27,7 +27,12 @@ class FirebaseApi {
     }
 
     FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
-    
+    // Foreground message listener
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('Foreground message - Title: ${message.notification?.title}');
+      print('Foreground message - Body: ${message.notification?.body}');
+      print('Foreground message - Payload: ${message.data}');
+    });
   }
 
   Future<Map<String, dynamic>> saveFcmTokenToDatabase(String token, String customerId,String fCMToken) async {
