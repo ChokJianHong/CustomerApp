@@ -74,38 +74,49 @@ class _RequestDetailsState extends State<RequestDetails> {
   }
 
   Future<void> _cancelOrder() async {
-    try {
-      if (mounted) {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return const Center(child: CircularProgressIndicator());
-          },
-        );
-      }
-
-      final response = await GetCancelOrder().cancelOrder(
-        widget.token,
-        widget.orderId,
+  try {
+    if (mounted) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return const Center(child: CircularProgressIndicator());
+        },
       );
+    }
 
-      if (mounted) Navigator.of(context).pop();
+    final response = await GetCancelOrder().cancelOrder(
+      widget.token,
+      widget.orderId,
+    );
 
-      if (response['status'] == 200 || response['success'] == true) {
-        if (mounted) _showSuccessDialog('Order cancelled successfully');
+    if (mounted) Navigator.of(context).pop();
+
+    if (response['status'] == 200 || response['success'] == true) {
+      // Successful cancellation
+      if (mounted) _showSuccessDialog('Order cancelled successfully');
+    } else {
+      // Handle specific backend messages
+      String errorMessage;
+      if (response['status'] == 400 && response['message'] == "Cancellation period has expired.") {
+        errorMessage = "You are unable to cancel the order because it is over 2 hours.";
       } else {
-        if (mounted) {
-          _showErrorDialog(response['message'] ?? 'Failed to cancel order.');
-        }
+        errorMessage = response['message'] ?? 'Failed to cancel the order.';
       }
-    } catch (error) {
-      if (mounted) Navigator.of(context).pop();
+
       if (mounted) {
-        _showErrorDialog('Error cancelling order: $error');
+        _showErrorDialog(errorMessage);
       }
     }
+  } catch (error) {
+    if (mounted) Navigator.of(context).pop();
+    if (mounted) {
+      // General error fallback
+      _showErrorDialog("You are unable to cancel the order because it is over 2 hours.");
+    }
   }
+}
+
 
   void _showErrorDialog(String errorMessage) {
     if (mounted) {
