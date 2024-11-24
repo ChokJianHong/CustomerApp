@@ -113,7 +113,7 @@ class _RequestDetailsState extends State<RequestDetails> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Error'),
+            title: const Text('Alert'),
             content: Text(errorMessage),
             actions: [
               TextButton(
