@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:customer_app/core/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -42,8 +43,17 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("User Current Location"),
-        centerTitle: true,
+        title: const Text(
+          'Contact with Technician',
+          style: TextStyle(color: AppColors.lightgrey),
+        ),
+        backgroundColor: AppColors.darkTeal,
+        elevation: 0,
+        leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () {
+              Navigator.pop(context);
+            }),
       ),
       body: Column(
         children: [
@@ -290,4 +300,3 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
         .animateCamera(CameraUpdate.newLatLngZoom(newPosition, 14));
   }
 }
-
