@@ -38,7 +38,7 @@ class JobCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AutoSizeText(
-            name,
+            'Problem Type: ${_capitalizeFirstLetterOfEachWord(name)}',
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18,
@@ -49,7 +49,7 @@ class JobCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           AutoSizeText(
-            description,
+            'Description: $description',
             style: const TextStyle(
               fontSize: 14,
               color: AppColors.darkGray,
@@ -74,6 +74,14 @@ class JobCard extends StatelessWidget {
       default:
         return Colors.red;
     }
+  }
+
+  String _capitalizeFirstLetterOfEachWord(String text) {
+    return text.split(' ').map((word) {
+      return word.isNotEmpty
+          ? word[0].toUpperCase() + word.substring(1).toLowerCase()
+          : '';
+    }).join(' ');
   }
 }
 
