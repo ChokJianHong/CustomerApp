@@ -212,7 +212,6 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -224,13 +223,8 @@ class _SignInPageState extends State<SignInPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Image.asset('lib/assets/images/signinlock.png'),
+                Image.asset('lib/assets/images/Logo.png'),
                 const SizedBox(height: 20),
-                const Text('Welcome Back!',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                    )),
                 const SizedBox(height: 20),
                 MyTextField(
                   controller: emailController,
