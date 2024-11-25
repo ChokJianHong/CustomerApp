@@ -214,6 +214,8 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: AppColors.darkblue,
       body: Padding(
@@ -223,8 +225,12 @@ class _SignInPageState extends State<SignInPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Image.asset('lib/assets/images/Logo.png'),
-                const SizedBox(height: 20),
+                Image.asset(
+                  'lib/assets/images/Logo.png',
+                  width: screenWidth * 0.5,
+                  height: screenHeight * 0.3,
+                  fit: BoxFit.contain,
+                ),
                 const SizedBox(height: 20),
                 MyTextField(
                   controller: emailController,

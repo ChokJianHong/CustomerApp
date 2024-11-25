@@ -78,7 +78,7 @@ class _HomePageState extends State<HomePage> {
   Future<Image> _loadImage(String imageUrl) async {
     final image = Image.network(imageUrl);
     await precacheImage(
-        image.image, context); // Cache the image to retrieve its size
+        image.image, context); 
     return image;
   }
 
