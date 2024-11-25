@@ -34,7 +34,7 @@ class CustomerToken {
 
   Future<Map<String, dynamic>> updateCustomerProfile(
       String token,
-      String customerId, // Add customerId as a parameter
+      String customerId,
       String name,
       String email,
       String location,
@@ -58,7 +58,7 @@ class CustomerToken {
               'alarm_brand': alarmBrand,
               'autogate_brand': autogateBrand,
               'phone_number': phoneNumber,
-              'alarm_waranty': alarmWarranty,
+              'alarm_warranty': alarmWarranty,
               'auto_gate_warranty': autogateWarranty,
             }),
           )

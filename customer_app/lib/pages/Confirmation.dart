@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:customer_app/API/cancelCustOrder.dart';
 import 'package:customer_app/assets/components/textbox.dart';
 import 'package:customer_app/core/app_colors.dart';
@@ -18,7 +20,7 @@ class ConfirmationRequest extends StatelessWidget {
     final api = GetCancelOrder();
     try {
       // Call the API without the cancel details
-      final response = await api.cancelOrder(token, orderId!, "");
+      final response = await api.cancelOrder(token, orderId!);
 
       if (response['status'] == 200) {
         ScaffoldMessenger.of(context).showSnackBar(

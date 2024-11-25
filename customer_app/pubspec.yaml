@@ -59,7 +59,14 @@ dependencies:
   firebase_core: ^3.7.0
   firebase_messaging: ^15.1.4
   carousel_slider: ^5.0.0
+
+  firebase_auth: 
+  cloud_firestore: 
+  shared_preferences: ^2.3.3
+
+
   flutter_local_notifications: ^18.0.1
+
 
 
 dev_dependencies:
@@ -93,6 +100,7 @@ flutter:
     - lib/assets/images/Profile.png
     - lib/assets/images/smallProfile.png
     - lib/assets/images/Time.png
+    - lib/assets/images/Logo.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

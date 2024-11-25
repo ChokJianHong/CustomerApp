@@ -2,9 +2,11 @@ import 'package:customer_app/API/cancelCustOrder.dart';
 import 'package:customer_app/API/getOrderDetails.dart';
 import 'package:customer_app/API/get_technician.dart';
 import 'package:customer_app/Assets/components/Divider.dart';
+import 'package:customer_app/Assets/components/review_popout.dart';
 import 'package:customer_app/Assets/components/textbox.dart';
 import 'package:customer_app/core/app_colors.dart';
 import 'package:customer_app/pages/home.dart';
+import 'package:customer_app/pages/messages1.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -72,39 +74,49 @@ class _RequestDetailsState extends State<RequestDetails> {
   }
 
   Future<void> _cancelOrder() async {
-    try {
-      if (mounted) {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return const Center(child: CircularProgressIndicator());
-          },
-        );
-      }
-
-      final response = await GetCancelOrder().cancelOrder(
-        widget.token,
-        widget.orderId,
-        'Customer cancelled the order',
+  try {
+    if (mounted) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return const Center(child: CircularProgressIndicator());
+        },
       );
+    }
 
-      if (mounted) Navigator.of(context).pop();
+    final response = await GetCancelOrder().cancelOrder(
+      widget.token,
+      widget.orderId,
+    );
 
-      if (response['status'] == 200 || response['success'] == true) {
-        if (mounted) _showSuccessDialog('Order cancelled successfully');
+    if (mounted) Navigator.of(context).pop();
+
+    if (response['status'] == 200 || response['success'] == true) {
+      // Successful cancellation
+      if (mounted) _showSuccessDialog('Order cancelled successfully');
+    } else {
+      // Handle specific backend messages
+      String errorMessage;
+      if (response['status'] == 400 && response['message'] == "Cancellation period has expired.") {
+        errorMessage = "You are unable to cancel the order because it is over 2 hours.";
       } else {
-        if (mounted) {
-          _showErrorDialog(response['message'] ?? 'Failed to cancel order.');
-        }
+        errorMessage = response['message'] ?? 'Failed to cancel the order.';
       }
-    } catch (error) {
-      if (mounted) Navigator.of(context).pop();
+
       if (mounted) {
-        _showErrorDialog('Error cancelling order: $error');
+        _showErrorDialog(errorMessage);
       }
     }
+  } catch (error) {
+    if (mounted) Navigator.of(context).pop();
+    if (mounted) {
+      // General error fallback
+      _showErrorDialog("You are unable to cancel the order because it is over 2 hours.");
+    }
   }
+}
+
 
   void _showErrorDialog(String errorMessage) {
     if (mounted) {
@@ -112,7 +124,7 @@ class _RequestDetailsState extends State<RequestDetails> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Error'),
+            title: const Text('Alert'),
             content: Text(errorMessage),
             actions: [
               TextButton(
@@ -178,6 +190,7 @@ class _RequestDetailsState extends State<RequestDetails> {
             } else if (snapshot.hasData) {
               final orderDetails = snapshot.data!['result'];
               final technicianId = orderDetails['TechnicianID'].toString();
+              final customerId = orderDetails['CustomerID'].toString();
 
               _technicianDetailFuture ??= _fetchTechnicianDetails(technicianId);
 
@@ -458,6 +471,56 @@ class _RequestDetailsState extends State<RequestDetails> {
                         );
                       },
                     ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    MyButton(
+                      backgroundColor: AppColors.darkGreen,
+                      onTap: () {
+                        String currentUserId =
+                            customerId; // Or retrieve it from the order or user context
+                        String chatPartnerId = widget
+                            .orderId; // Or the technician's ID or another identifier
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ChatScreen(
+                              currentUserId: currentUserId,
+                              chatPartnerId: chatPartnerId,
+                              token: widget.token,
+                            ),
+                          ),
+                        );
+                      },
+                      text: 'Go to Messages',
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    MyButton(
+                        text: 'cancel',
+                        backgroundColor: Colors.red,
+                        onTap: _cancelOrder),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    if (orderDetails != null &&
+                        orderDetails['orderStatus'] == 'complete')
+                      MyButton(
+                        text: 'Review',
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return ReviewDialog(
+                                orderId: widget.orderId,
+                                token: widget.token,
+                              );
+                            },
+                          );
+                        },
+                      ),
                   ],
                 ),
               );
