@@ -371,9 +371,9 @@ class _RequestDetailsState extends State<RequestDetails> {
                                   )
                                 else
                                   const Text(
-                                      "Currently Not Complete"), // Placeholder text if no image URL
+                                      "Currently Not Complete"), 
 
-                                // Expanded widget for text and button
+                                
                               ],
                             ),
                           ),
