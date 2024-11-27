@@ -7,13 +7,24 @@ import 'package:google_maps_webservice/geocoding.dart';
 import 'package:google_maps_webservice/places.dart';
 
 class CurrentLocationScreen extends StatefulWidget {
-  const CurrentLocationScreen({super.key});
+  final String? initialLocation;
+  const CurrentLocationScreen({super.key, this.initialLocation});
 
   @override
   _CurrentLocationScreenState createState() => _CurrentLocationScreenState();
 }
 
 class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.initialLocation != null) {
+      searchController.text = widget.initialLocation!;
+      selectedAddress = widget.initialLocation;
+    }
+  }
+
   late GoogleMapController googleMapController;
   late TextEditingController searchController = TextEditingController();
   List<PlacesSearchResult> placeSuggestions = [];
@@ -145,12 +156,8 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
           const SizedBox(height: 10),
           FloatingActionButton.extended(
             onPressed: () {
-              if (selectedPosition != null && selectedAddress != null) {
-                Navigator.pop(context, {
-                  'latitude': selectedPosition!.latitude,
-                  'longitude': selectedPosition!.longitude,
-                  'address': selectedAddress
-                });
+              if (selectedAddress != null) {
+                Navigator.pop(context, selectedAddress);
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('No location selected')),

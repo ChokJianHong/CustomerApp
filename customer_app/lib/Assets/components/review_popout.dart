@@ -37,7 +37,7 @@ class _ReviewDialogState extends State<ReviewDialog> {
       reviewText: _reviewController.text,
     );
 
-    print('Response: ${response}'); // Print the raw response
+    print('Response: $response'); // Print the raw response
 
     if (response['success']) {
       Navigator.pop(context); // Close the dialog on success
