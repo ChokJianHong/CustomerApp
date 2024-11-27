@@ -55,7 +55,7 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Contact with Technician',
+          'Location',
           style: TextStyle(color: AppColors.lightgrey),
         ),
         backgroundColor: AppColors.darkTeal,
