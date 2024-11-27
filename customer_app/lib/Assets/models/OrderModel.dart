@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 class OrderModel {
   final int orderId;
   final int customerId;
@@ -18,6 +20,12 @@ class OrderModel {
   final String priceStatus;
   final int? totalPrice;
   final int accept;
+  final DateTime createAt;
+
+  final String? customerName;
+  final String? customerLocation;
+  final String? autoGateBrand;
+  final String? alarmBrand;
 
   OrderModel({
     required this.orderId,
@@ -39,11 +47,16 @@ class OrderModel {
     required this.priceStatus,
     required this.totalPrice,
     required this.accept,
+    required this.createAt,
+    this.customerName,
+    this.customerLocation,
+    this.autoGateBrand,
+    this.alarmBrand,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     return OrderModel(
-      orderId: json['order_id'] ?? 0, // Provide a default value if necessary
+      orderId: json['order_id'] ?? 0,
       customerId: json['customer_id'] ?? 0,
       orderDate: json['order_date'] ?? '',
       orderDoneDate: json['order_done_date'],
@@ -55,6 +68,9 @@ class OrderModel {
       urgencyLevel: json['urgency_level'] ?? '',
       problemType: json['problem_type'] ?? '',
       technicianId: json['technician_id'],
+      createAt: json['create_at'] != null
+          ? DateTime.parse(json['create_at']) 
+          : DateTime.now(),
       technicianEta: json['technician_eta'] != null
           ? DateTime.parse(json['technician_eta'])
           : null,
@@ -62,9 +78,12 @@ class OrderModel {
       locationDetails: json['location_details'] ?? '',
       priceDetails: json['price_details'] ?? '',
       priceStatus: json['price_status'] ?? '',
-      totalPrice:
-          json['total_price'] ?? 0, // Provide a default value if necessary
+      totalPrice: json['total_price'] ?? 0,
       accept: json['accept'] ?? 0,
+      customerName: json['customer_name'],
+      customerLocation: json['customer_location'],
+      autoGateBrand: json['auto_gate_brand'],
+      alarmBrand: json['alarm_brand'],
     );
   }
 }

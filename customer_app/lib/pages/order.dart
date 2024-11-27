@@ -59,8 +59,10 @@ class _OrdersPageState extends State<OrdersPage> {
     final orders = await CustomerOrder()
         .getCustomerOrders(widget.token, customerId, status: _selectedStatus);
 
-    // Sort orders by date in descending order (newest first)
-    orders.sort((a, b) => b.orderDate.compareTo(a.orderDate));
+    orders.sort((a, b) {
+      // Compare the createAt dates of the orders
+      return b.createAt.compareTo(a.createAt); // Newest first
+    });
     return orders;
   }
 
