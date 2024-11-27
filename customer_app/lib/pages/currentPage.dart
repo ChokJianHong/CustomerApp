@@ -157,7 +157,10 @@ class _CurrentLocationScreenState extends State<CurrentLocationScreen> {
           FloatingActionButton.extended(
             onPressed: () {
               if (selectedAddress != null) {
-                Navigator.pop(context, selectedAddress);
+                Navigator.pop(
+                  context,
+                  selectedAddress, // Return only the address (location name)
+                );
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('No location selected')),

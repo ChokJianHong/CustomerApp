@@ -221,27 +221,34 @@ class _RequisitionFormState extends State<RequisitionForm> {
   }
 
   Future<void> _selectLocation() async {
-    // Navigate to the location selection page and wait for the result
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const CurrentLocationScreen()),
-    );
-
-    // If a new location is selected, update the state
-    if (result != null && result is String) {
-      setState(() {
-        customerLocation = result; // Update the customerLocation
-      });
+    // Fetch location name from the token or database
+    String? initialLocationName;
+    try {
+      initialLocationName = await fetchCustomerLocationFromAPI(
+          widget.token); // Replace with your actual implementation
+      print('Fetched location name: $initialLocationName');
+    } catch (e) {
+      print('Error fetching location: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to fetch initial location.')),
+      );
+      return;
     }
 
-    // Check if the result is not null and is a Map
-    if (result != null && result is Map<String, dynamic>) {
+    // Navigate to CurrentLocationScreen
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            CurrentLocationScreen(initialLocation: initialLocationName),
+      ),
+    );
+
+    // Handle result from CurrentLocationScreen
+    if (result != null && result is String) {
       setState(() {
-        // Update with the actual location returned
-        selectedLocation = result['address']; // Assuming you want the address
-        double latitude = result['latitude'];
-        double longitude = result['longitude'];
-        customerLocation = result['address'];
+        selectedLocation = result; // Directly use the location name
+        print('Selected Location: $selectedLocation');
       });
     }
   }
@@ -425,7 +432,17 @@ class _RequisitionFormState extends State<RequisitionForm> {
   }
 
   void _handleContinue() async {
-    // Check if all required fields are filled
+    // Debugging field values
+    print('Debugging Fields:');
+    print('selectedDate: $selectedDate');
+    print('selectedTime: $selectedTime');
+    print('selectedLocation: $selectedLocation');
+    print('problemDescription: $problemDescription');
+    print('selectedEmergencyLevel: $selectedEmergencyLevel');
+    print('selectedCategory: $selectedCategory');
+    print('_image: $_image');
+
+    // Check for null fields
     if (selectedDate == null ||
         selectedTime == null ||
         selectedLocation == null ||
@@ -433,14 +450,8 @@ class _RequisitionFormState extends State<RequisitionForm> {
         selectedEmergencyLevel == null ||
         selectedCategory == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please fill in all fields!')));
-      return;
-    }
-
-    // Check if an image has been selected
-    if (_image == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select or take a picture!')));
+        const SnackBar(content: Text('Please fill in all required fields!')),
+      );
       return;
     }
 
@@ -455,24 +466,26 @@ class _RequisitionFormState extends State<RequisitionForm> {
     };
 
     try {
-      // Send data and image together
       final result = await _uploadImageAndData(orderData);
-      print(result);
+      print('Response: $result');
       if (result['message'] == 'success') {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => ConfirmationRequest(
-                  token: widget.token, orderId: widget.orderId)),
-        ); // Navigate to confirmation page
+            builder: (context) => ConfirmationRequest(
+                token: widget.token, orderId: widget.orderId),
+          ),
+        );
       } else {
-        String errorMessage = result['message'] ?? 'An error occurred';
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: $errorMessage')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text('Error: ${result['message'] ?? 'Unknown error'}')),
+        );
       }
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Network error: Unable to create order')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Network error: Unable to create order')),
+      );
     }
   }
 
