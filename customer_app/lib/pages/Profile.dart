@@ -1,5 +1,4 @@
 import 'package:customer_app/API/getCustToken.dart';
-
 import 'package:customer_app/assets/components/profileAttribute.dart';
 import 'package:customer_app/assets/components/textbox.dart';
 import 'package:customer_app/core/app_colors.dart';
