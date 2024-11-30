@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:customer_app/API/get_technician.dart';
+import 'package:customer_app/core/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -116,7 +117,12 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Chat with Customer')),
+      appBar: AppBar(
+          backgroundColor: AppColors.darkTeal,
+          title: const Text(
+            'Chat with Technician',
+            style: TextStyle(color: AppColors.lightgrey),
+          )),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _orderDetailsFuture,
         builder: (context, snapshot) {
