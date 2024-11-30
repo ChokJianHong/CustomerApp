@@ -1,4 +1,5 @@
 import 'package:customer_app/core/app_colors.dart';
+import 'package:customer_app/pages/notification.dart';
 import 'package:flutter/material.dart';
 import 'package:customer_app/pages/Settings.dart';
 
@@ -24,9 +25,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         IconButton(
           icon: const Icon(Icons.notifications, color: Colors.white),
           onPressed: () {
-            // Add notification action here
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("No new notifications")),
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => NotificationPage()),
             );
           },
         ),

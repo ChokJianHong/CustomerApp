@@ -62,7 +62,7 @@ dependencies:
   firebase_auth: 
   cloud_firestore: 
   shared_preferences: ^2.3.3
-
+  provider: ^6.0.3
 
   flutter_local_notifications: ^18.0.1
 

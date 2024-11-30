@@ -5,6 +5,7 @@ import 'package:customer_app/API/getCustOrder.dart';
 import 'package:customer_app/assets/components/appbar.dart';
 import 'package:customer_app/assets/components/jobcard.dart';
 import 'package:customer_app/assets/components/navbar.dart';
+import 'package:customer_app/assets/components/notification_manager.dart';
 import 'package:customer_app/assets/models/OrderModel.dart';
 
 import 'package:customer_app/core/app_colors.dart';
@@ -26,7 +27,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 1;
   final CustomerOrder customerOrder = CustomerOrder();
-  final FirebaseApi firebaseapi = FirebaseApi();
+  late FirebaseApi firebaseapi; // Declare firebaseApi
+  final NotificationManager notificationManager = NotificationManager();
   late String customerId;
   late Future<List<OrderModel>> _latestOrderFuture;
   late Future<List<String>> _bannerImagesFuture;
@@ -58,6 +60,7 @@ class _HomePageState extends State<HomePage> {
       print('Error decoding token: $error');
       customerId = 'default';
     }
+    firebaseapi = FirebaseApi(notificationManager);
     _latestOrderFuture = customerId.isNotEmpty
         ? customerOrder.getCustomerOrders(widget.token, customerId)
         : Future.value([]);
@@ -79,8 +82,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<Image> _loadImage(String imageUrl) async {
     final image = Image.network(imageUrl);
-    await precacheImage(
-        image.image, context); 
+    await precacheImage(image.image, context);
     return image;
   }
 
@@ -259,83 +261,82 @@ class _HomePageState extends State<HomePage> {
           overflow: TextOverflow.ellipsis,
           maxLines: 1,
         ),
-        
       ],
     );
   }
 
   Widget _buildCurrentOrders() {
-  return Padding(
-    padding: const EdgeInsets.all(16.0),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Current Orders',
-          style: TextStyle(
-            color: AppColors.darkGreen,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Current Orders',
+            style: TextStyle(
+              color: AppColors.darkGreen,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-        const SizedBox(height: 16),
-        FutureBuilder<List<OrderModel>>(
-          future: _latestOrderFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            } else if (snapshot.hasData) {
-              final latestOrders = snapshot.data!;
-              final ongoingOrders = latestOrders
-                  .where((order) => order.orderStatus == 'ongoing')
-                  .toList();
+          const SizedBox(height: 16),
+          FutureBuilder<List<OrderModel>>(
+            future: _latestOrderFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else if (snapshot.hasData) {
+                final latestOrders = snapshot.data!;
+                final ongoingOrders = latestOrders
+                    .where((order) => order.orderStatus == 'ongoing')
+                    .toList();
 
-              if (ongoingOrders.isEmpty) {
-                return const Text(
-                  'No ongoing orders.',
-                  style: TextStyle(color: Colors.white),
+                if (ongoingOrders.isEmpty) {
+                  return const Text(
+                    'No ongoing orders.',
+                    style: TextStyle(color: Colors.white),
+                  );
+                }
+
+                ongoingOrders.sort((a, b) {
+                  return b.createAt.compareTo(a.createAt);
+                });
+                return SizedBox(
+                  height: 300,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: ongoingOrders.length,
+                    itemBuilder: (context, index) {
+                      final OrderModel order = ongoingOrders[index];
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => RequestDetails(
+                                orderId: order.orderId.toString(),
+                                token: widget.token,
+                              ),
+                            ),
+                          );
+                        },
+                        child: JobCard(
+                          name: order.problemType,
+                          description: order.orderDetail,
+                          status: order.orderStatus,
+                        ),
+                      );
+                    },
+                  ),
                 );
               }
-
-              ongoingOrders.sort((a, b) {
-  return b.createAt.compareTo(a.createAt);
-});
-              return SizedBox(
-                height: 300,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: ongoingOrders.length,
-                  itemBuilder: (context, index) {
-                    final OrderModel order = ongoingOrders[index];
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => RequestDetails(
-                              orderId: order.orderId.toString(),
-                              token: widget.token,
-                            ),
-                          ),
-                        );
-                      },
-                      child: JobCard(
-                        name: order.problemType,
-                        description: order.orderDetail,
-                        status: order.orderStatus,
-                      ),
-                    );
-                  },
-                ),
-              );
-            }
-            return const SizedBox();
-          },
-        ),
-      ],
-    ),
-  );
-}
+              return const SizedBox();
+            },
+          ),
+        ],
+      ),
+    );
+  }
 }

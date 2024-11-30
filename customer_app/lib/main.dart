@@ -1,11 +1,12 @@
+import 'package:customer_app/API/firebase_api.dart';
+import 'package:customer_app/assets/components/notification_manager.dart';
 import 'package:customer_app/pages/splash.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:provider/provider.dart';
 import 'package:customer_app/pages/Sign_In.dart';
-
-// Splash Page Widget
 
 Future<void> _showNotification(RemoteMessage message) async {
   const AndroidNotificationDetails androidPlatformChannelSpecifics =
@@ -49,7 +50,12 @@ Future<void> main() async {
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
 
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => NotificationManager(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -57,9 +63,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Use the 'read' method here, which now works because of Provider
+    final notificationManager = context.read<NotificationManager>();
+    final firebaseApi = FirebaseApi(notificationManager);
+    firebaseApi.initNotifications("yourTokenHere", "yourCustomerId");
+
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print('Foreground Notification: ${message.notification?.title}');
       _showNotification(message);
+
+      // Save notification to NotificationManager
+      notificationManager.addNotification({
+        "title": message.notification?.title ?? "No Title",
+        "body": message.notification?.body ?? "No Content",
+      });
     });
 
     return MaterialApp(
