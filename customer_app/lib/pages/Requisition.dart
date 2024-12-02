@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:customer_app/API/getCustToken.dart';
 import 'package:customer_app/Assets/components/AppBar.dart';
 import 'package:customer_app/Assets/components/navbar.dart';
-import 'package:customer_app/pages/Confirmation.dart';
+import 'package:customer_app/pages/home.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:customer_app/Assets/components/Divider.dart';
 import 'package:customer_app/assets/components/categorybuttons.dart';
@@ -472,8 +472,7 @@ class _RequisitionFormState extends State<RequisitionForm> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ConfirmationRequest(
-                token: widget.token, orderId: widget.orderId),
+            builder: (context) => HomePage(token: widget.token),
           ),
         );
       } else {
