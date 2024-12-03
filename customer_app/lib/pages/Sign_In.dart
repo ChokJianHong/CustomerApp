@@ -1,11 +1,15 @@
 import 'package:customer_app/API/SignInAPI.dart';
+import 'package:customer_app/API/getCustToken.dart';
 import 'package:customer_app/Assets/components/button.dart';
-import 'package:customer_app/Assets/components/text_box.dart';
-import 'package:customer_app/pages/HomePage.dart';
-import 'package:customer_app/pages/Reqister.dart';
-import 'package:flutter/gestures.dart';
+import 'package:customer_app/assets/components/forgetPass.dart';
+import 'package:customer_app/assets/components/textbox.dart';
+import 'package:customer_app/core/app_colors.dart';
+import 'package:customer_app/pages/Register.dart';
+import 'package:customer_app/pages/home.dart';
 import 'package:flutter/material.dart';
-import 'package:email_validator/email_validator.dart'; // Import the email validator package
+import 'package:flutter/gestures.dart';
+import 'package:email_validator/email_validator.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -17,8 +21,70 @@ class SignInPage extends StatefulWidget {
 class _SignInPageState extends State<SignInPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final storage = const FlutterSecureStorage();
+
   bool isLoading = false;
   String? errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkLoggedInStatus();
+  }
+
+  Future<void> _checkLoggedInStatus() async {
+    final token = await storage.read(key: 'userToken');
+    if (token != null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage(token: token)),
+      );
+    }
+  }
+
+  void _signIn() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = null;
+    });
+
+    if (!_validateInputs()) {
+      setState(() {
+        isLoading = false;
+      });
+      return;
+    }
+
+    try {
+      final api = SignInAPI();
+      final userData =
+          await api.loginUser(emailController.text, passwordController.text);
+
+      final token = userData['token'];
+      await storage.write(key: 'userToken', value: token);
+      await _getCustomerDetails(token);
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage(token: token)),
+      );
+    } catch (e) {
+      setState(() {
+        errorMessage = "Invalid email or password. Please try again.";
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _getCustomerDetails(String token) async {
+    try {
+      final customerTokenApi = CustomerToken();
+      final customerData = await customerTokenApi.getCustomerByToken(token);
+      print('Customer Data: $customerData');
+    } catch (e) {
+      print('Error fetching customer details: $e');
+    }
+  }
 
   bool _validateInputs() {
     final email = emailController.text;
@@ -41,44 +107,19 @@ class _SignInPageState extends State<SignInPage> {
     return true;
   }
 
-
-  void _signIn() async {
-    setState(() {
-      isLoading = true;
-      errorMessage = null; // Reset error message
-    });
-
-    if (!_validateInputs()) {
-      setState(() {
-        isLoading = false; // Stop loading if validation fails
-      });
-      return; // Exit if validation fails
-    }
-
-    try {
-      final api = SignInAPI();
-      final userData =
-          await api.loginUser(emailController.text, passwordController.text);
-      print('User Data: $userData');
-      // Navigate to home page or handle success
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
-      );
-    } catch (e) {
-      setState(() {
-        errorMessage = e.toString(); // Set error message
-        isLoading = false;
-      });
-    }
+  void _forgotPassword() {
+    showDialog(
+      context: context,
+      builder: (context) => const ForgotPasswordDialog(),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: theme.primaryColor,
+      backgroundColor: AppColors.primary,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
@@ -86,13 +127,10 @@ class _SignInPageState extends State<SignInPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                // Logo
-                Image.asset('lib/assets/photos/signinlock.png'),
-                const SizedBox(height: 20),
-                const Text('Welcome Back!',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                    )),
+                Image.asset(
+                  'lib/assets/images/Logo.png',
+                  width: screenWidth * 0.5,
+                ),
                 const SizedBox(height: 20),
                 MyTextField(
                   controller: emailController,
@@ -106,58 +144,27 @@ class _SignInPageState extends State<SignInPage> {
                   obscureText: true,
                 ),
                 const SizedBox(height: 10),
-                if (errorMessage != null)
-                  Text(
-                    errorMessage!,
-                    style: const TextStyle(color: Colors.red),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: _forgotPassword,
+                    child: const Text(
+                      "Forgot Password?",
+                      style: TextStyle(color: Colors.grey, fontSize: 14),
+                    ),
                   ),
+                ),
+                if (errorMessage != null)
+                  Text(errorMessage!,
+                      style: const TextStyle(color: Colors.red)),
                 const SizedBox(height: 20),
                 isLoading
                     ? const CircularProgressIndicator()
                     : MyButton(
                         text: "Sign In",
                         onTap: _signIn,
+                        backgroundColor: AppColors.orange,
                       ),
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    const Expanded(
-                      child: Divider(
-                          thickness: 1, color: Colors.white, endIndent: 10),
-                    ),
-                    Text("or continue with",
-                        style:
-                            TextStyle(color: Colors.grey[400], fontSize: 14)),
-                    const Expanded(
-                      child: Divider(
-                          thickness: 1, color: Colors.white, endIndent: 10),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.account_circle),
-                      color: Colors.white,
-                      iconSize: 50,
-                      onPressed: () {
-                        // Handle Google login
-                      },
-                    ),
-                    const SizedBox(width: 30),
-                    IconButton(
-                      icon: const Icon(
-                          Icons.settings), // Substitute with your second icon
-                      color: Colors.white,
-                      iconSize: 50,
-                      onPressed: () {
-                        // Handle second login
-                      },
-                    ),
-                  ],
-                ),
                 const SizedBox(height: 20),
                 RichText(
                   text: TextSpan(
@@ -171,10 +178,9 @@ class _SignInPageState extends State<SignInPage> {
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
                             Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const Register()),
-                            );
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const Register()));
                           },
                       ),
                     ],
